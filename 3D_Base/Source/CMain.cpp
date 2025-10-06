@@ -261,36 +261,39 @@ LRESULT CALLBACK CMain::MsgProc(
 	case WM_CREATE:
 		// Lock cursor when the window is created
 		LockCursorToWindow(hWnd);
-		//SetCursorPos((WND_W/ 2),(WND_H/ 2));
+		SetCursorPos((WND_W / 2), (WND_H / 2));
 		ShowCursor(FALSE);
+		break;
+	case WM_SETFOCUS:
+		LockCursorToWindow(hWnd);
 		break;
 	case WM_DESTROY://ウィンドウが破棄されたとき.
 		// Unlock cursor when the window is destroyed
 		UnlockCursor();
 		ShowCursor(TRUE);
 		//アプリケーションの終了をWindowsに通知する.
-		PostQuitMessage( 0 );
+		PostQuitMessage(0);
 		break;
-
 	case WM_KEYDOWN://キーボードが押されたとき.
 		//キー別の処理.
-		switch( static_cast<char>( wParam ) ) {
+		switch (static_cast<char>(wParam)) {
 		case VK_ESCAPE:	//ESCｷｰ.
 			// Unlock cursor when Escape key is pressed
 			UnlockCursor();
 			ShowCursor(TRUE);
-			if( MessageBox( nullptr,
-				_T( "ゲームを終了しますか？" ),
-				_T( "警告" ), MB_YESNO ) == IDYES )
+			if (MessageBox(nullptr,
+				_T("ゲームを終了しますか？"),
+				_T("警告"), MB_YESNO) == IDYES)
 			{
 				//ウィンドウを破棄する.
-				DestroyWindow( hWnd );
+				DestroyWindow(hWnd);
 			}
 			break;
 		}
+	default:
+		UnlockCursor();
 		break;
 	}
-
 	//メインに返す情報.
 	return DefWindowProc( hWnd, uMsg, wParam, lParam );
 }

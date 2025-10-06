@@ -420,16 +420,18 @@ void CGame::Update()
 	//BGMのループ再生
 	CSoundManager::PlayLoop(CSoundManager::BGM_Bonus);
 	
-	//マウスの位置更新
-	GetCursorPos(&m_mousePos);
-	ClientToScreen(m_hWnd, &m_mousePos);
-	//マウスの位置の変更更新
-	m_mouseDelta = { 
-		m_mousePos.x - m_mouseBeforePos.x , 
-		m_mousePos.y - m_mouseBeforePos.y
-	};
+	POINT mousePos;
+	GetCursorPos(&mousePos);
+	ScreenToClient(m_hWnd, &mousePos);
 
-	m_mouseBeforePos = m_mousePos;
+	// Calculate delta from center
+	POINT center = { WND_W / 2, WND_H / 2 };
+	m_mouseDelta.x = mousePos.x - center.x;
+	m_mouseDelta.y = mousePos.y - center.y;
+
+	// Reset cursor to center
+	ClientToScreen(m_hWnd, &center);
+	SetCursorPos(center.x, center.y);
 
 	//カメラ座標のデバックコマンド.
 	float add_value = 0.1f;
@@ -547,15 +549,20 @@ void CGame::Update()
 	}
 
 	//三人称カメラ
-	ThirdPersonCamera(
+	//ThirdPersonCamera(
+	//	&m_Camera,
+	//	m_pPlayer->GetPosition(),
+	//	m_pPlayer->GetRotation().y);
+
+	TopDownCamera(
 		&m_Camera,
 		m_pPlayer->GetPosition(),
 		m_pPlayer->GetRotation().y);
 
-	//TopDownCamera(
-	//	&m_Camera,
-	//	m_pPlayer->GetPosition(),
-	//	m_pPlayer->GetRotation().y);
+	CameraRotToMouse(&m_Camera, m_mouseDelta, m_mouseSense);
+
+	float rotX = m_Camera.yaw;
+	m_pPlayer->SetRotation(0, rotX, 0);
 
 	//FirstPersonCamera(
 	//	&m_Camera,
@@ -781,5 +788,21 @@ void CGame::TopDownCamera(
 
 	pCamera->vPosition	+= vecAxisY * 25.f ;
 	pCamera->vLook		+= vecAxisZ * 8.f - vecAxisY * 1.f;
+
+}
+
+void CGame::CameraRotToMouse(CAMERA* pCamera, POINT delta, float sense)
+{
+
+	return;
+	//FIX THIS!!
+	pCamera->yaw += (float)delta.x * sense;
+
+	D3DXVECTOR3 lookDirection;
+	lookDirection.x = cosf(pCamera->pitch) * sinf(pCamera->yaw);
+	lookDirection.y = sinf(pCamera->pitch);
+	lookDirection.z = cosf(pCamera->pitch) * cosf(pCamera->yaw);
+
+	pCamera->vLook = lookDirection;
 
 }

@@ -9,12 +9,30 @@ class CPlayer
 	: public CCharacter	//キャラクタークラスを継承.
 {
 public:
+
+	enum enShotNumber
+	{
+		Single = 0,
+		Double,
+		Triple,
+	};
+
+	enum enShotType
+	{
+		Simple = 0,
+		Rapid,
+		Homing,
+		Laser,
+	};
+
 	//移動状態列挙型
 	enum enMoveState
 	{
 		Stop = 0,	//停止
 		Forward,	//前進
 		Backward,	//後退
+		Leftward,
+		Rightward,
 		TurnLeft,	//左回転
 		TurnRight,	//右回転
 	};
@@ -30,6 +48,8 @@ public:
 	void RadioControl();
 
 protected:
+
+	int			m_shotMax;
 	float		m_TurnSpeed;	//回転速度
 	float		m_MoveSpeed;	//移動速度
 	enMoveState	m_MoveState;	//移動状態

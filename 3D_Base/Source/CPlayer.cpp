@@ -2,9 +2,9 @@
 #include "CSoundManager.h"
 
 CPlayer::CPlayer()
-	: m_TurnSpeed	(0.1f)	//きっちりやりたい場合はラジアン値を設定すること
-	, m_MoveSpeed	(0.1f)
-	, m_MoveState	( enMoveState::Stop )
+	: m_TurnSpeed(0.1f)	//きっちりやりたい場合はラジアン値を設定すること
+	, m_MoveSpeed(0.1f)
+	, m_MoveState(enMoveState::Stop)
 {
 }
 
@@ -16,33 +16,32 @@ void CPlayer::Update()
 {
 #if 1
 	//前進
-	if (GetAsyncKeyState(VK_UP) & 0x8000) {
+	if (GetAsyncKeyState(VK_UP) & 0x8000 || GetAsyncKeyState('W') & 0x8000) {
 		m_MoveState = enMoveState::Forward;
 	}
 	//後退
-	if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
+	if (GetAsyncKeyState(VK_DOWN) & 0x8000 || GetAsyncKeyState('S') & 0x8000) {
 		m_MoveState = enMoveState::Backward;
 	}
-	if (GetAsyncKeyState(VK_RIGHT) & 0x8000) {
-		m_vRotation.y += m_TurnSpeed;
+	if (GetAsyncKeyState(VK_RIGHT) & 0x8000 || GetAsyncKeyState('A') & 0x8000) {
+		m_MoveState = enMoveState::Rightward;
 	}
-	if (GetAsyncKeyState(VK_LEFT) & 0x8000) {
-		m_vRotation.y -= m_TurnSpeed;
+	if (GetAsyncKeyState(VK_LEFT) & 0x8000 || GetAsyncKeyState('D') & 0x8000) {
+		m_MoveState = enMoveState::Leftward;
 	}
-
 	RadioControl();
 #else
 	float add_value = 0.1f;
-	if( GetAsyncKeyState( VK_UP ) & 0x8000 ){
+	if (GetAsyncKeyState(VK_UP) & 0x8000) {
 		m_vPosition.y += add_value;
 	}
-	if( GetAsyncKeyState( VK_DOWN ) & 0x8000 ){
+	if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
 		m_vPosition.y -= add_value;
 	}
-	if( GetAsyncKeyState( VK_RIGHT ) & 0x8000 ){
+	if (GetAsyncKeyState(VK_RIGHT) & 0x8000) {
 		m_vPosition.x += add_value;
 	}
-	if( GetAsyncKeyState( VK_LEFT ) & 0x8000 ){
+	if (GetAsyncKeyState(VK_LEFT) & 0x8000) {
 		m_vPosition.x -= add_value;
 	}
 #endif
@@ -56,7 +55,7 @@ void CPlayer::Update()
 		//SEの再生
 		CSoundManager::PlaySE(CSoundManager::SE_Jump);
 	}
-	
+
 	//レイの位置をプレイヤーの座標にそろえる
 	m_pRayY->Position = m_vPosition;
 	//地面めり込み回避のためプレイヤーの位置よりも少し上にしておく
@@ -78,7 +77,7 @@ void CPlayer::Update()
 void CPlayer::Draw(
 	D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera)
 {
-	CCharacter::Draw( View, Proj, Light, Camera );
+	CCharacter::Draw(View, Proj, Light, Camera);
 }
 
 //ラジオ操作
@@ -87,6 +86,7 @@ void CPlayer::RadioControl()
 	//Z軸ベクトル(Z+方向への単位ベクトル)
 	//※大きさ（長さ）が１のベクトルを単位ベクトルという
 	D3DXVECTOR3 vecAxisZ(0.f, 0.f, 1.f);
+	D3DXVECTOR3 vecAxisX(1.f, 0.f, 0.f);
 
 	//Y方向の回転行列
 	D3DXMATRIX mRotationY;
@@ -101,6 +101,11 @@ void CPlayer::RadioControl()
 		&vecAxisZ,		//(in)Z軸ベクトル
 		&mRotationY);	//Y軸回転行列
 
+	D3DXVec3TransformCoord(
+		&vecAxisX,		//(out)Z軸ベクトル
+		&vecAxisX,		//(in)Z軸ベクトル
+		&mRotationY);	//Y軸回転行列
+
 	//移動状態によって処理を分ける
 	switch (m_MoveState) {
 	case enMoveState::Forward:	//前進
@@ -108,6 +113,12 @@ void CPlayer::RadioControl()
 		break;
 	case enMoveState::Backward:	//後退
 		m_vPosition -= vecAxisZ * m_MoveSpeed;
+		break;
+	case enMoveState::Leftward:	//左移動
+		m_vPosition += vecAxisX * m_MoveSpeed;
+		break;
+	case enMoveState::Rightward:	//右移動
+		m_vPosition -= vecAxisX * m_MoveSpeed;
 		break;
 	default:
 		break;

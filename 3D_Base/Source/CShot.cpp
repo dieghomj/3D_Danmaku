@@ -42,7 +42,7 @@ void CShot::Reload(const D3DXVECTOR3& Pos, float RotY)
 	
 	m_vPosition		= Pos;
 	m_Display		= true;
-	//m_vRotation.y	= RotY;		//弾の向き（見た目）も変える
+	m_vRotation.y	= RotY;		//弾の向き（見た目）も変える
 	m_MoveSpeed		= 0.2f;		//移動速度　※とりあえず0.2fを設定
 	m_DisplayTime	= FPS * 3;	//約3秒くらい表示する
 
