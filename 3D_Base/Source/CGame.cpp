@@ -58,7 +58,7 @@ CGame::CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd )
 	, m_mousePos		({0,0})
 	, m_mouseBeforePos	({0,0})
 	, m_mouseDelta		({ 0,0 })
-	, m_mouseSense		(10.0f)
+	, m_mouseSense		(0.01f)
 {
 	//ƒJƒƒ‰À•W.
 	m_Camera.vPosition	= D3DXVECTOR3( 0.0f, 2.0f, 0.0f );
@@ -559,7 +559,11 @@ void CGame::Update()
 		m_pPlayer->GetPosition(),
 		m_pPlayer->GetRotation().y);
 
-	CameraRotToMouse(&m_Camera, m_mouseDelta, m_mouseSense);
+	CameraRotToMouse(
+			&m_Camera,
+			m_pPlayer->GetPosition(),
+			m_mouseDelta,
+			m_mouseSense);
 
 	float rotX = m_Camera.yaw;
 	m_pPlayer->SetRotation(0, rotX, 0);
@@ -791,11 +795,9 @@ void CGame::TopDownCamera(
 
 }
 
-void CGame::CameraRotToMouse(CAMERA* pCamera, POINT delta, float sense)
+void CGame::CameraRotToMouse(CAMERA* pCamera, const D3DXVECTOR3& TargetPos, POINT delta, float sense)
 {
 
-	return;
-	//FIX THIS!!
 	pCamera->yaw += (float)delta.x * sense;
 
 	D3DXVECTOR3 lookDirection;
@@ -803,6 +805,8 @@ void CGame::CameraRotToMouse(CAMERA* pCamera, POINT delta, float sense)
 	lookDirection.y = sinf(pCamera->pitch);
 	lookDirection.z = cosf(pCamera->pitch) * cosf(pCamera->yaw);
 
-	pCamera->vLook = lookDirection;
+	D3DXVECTOR3 position = D3DXVECTOR3(TargetPos.x, 0, TargetPos.z);
+
+	pCamera->vLook =  position + lookDirection;
 
 }

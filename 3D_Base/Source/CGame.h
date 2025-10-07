@@ -55,7 +55,7 @@ private:
 	void TopDownCamera(
 		CAMERA* pCamera, const D3DXVECTOR3& TargetPos, float TargetRotY);
 
-	void CameraRotToMouse(CAMERA* pCamera, POINT delta, float sense);
+	void CameraRotToMouse(CAMERA* pCamera, const D3DXVECTOR3& TargetPos, POINT delta, float sense);
 
 private:
 	CDirectX9*		m_pDx9;
