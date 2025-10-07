@@ -171,6 +171,9 @@
     <ClCompile Include="Source\CRay.cpp">
       <Filter>Source\Ray</Filter>
     </ClCompile>
+    <ClCompile Include="Source\CTime.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\CDirectX11.h">
@@ -262,6 +265,9 @@
     </ClInclude>
     <ClInclude Include="Source\CRay.h">
       <Filter>Source\Ray</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CTime.h">
+      <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

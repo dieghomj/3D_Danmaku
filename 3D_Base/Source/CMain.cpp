@@ -25,9 +25,11 @@ CMain::CMain()
 	, m_pDx9	( nullptr )
 	, m_pDx11	( nullptr )
 	, m_pGame	( nullptr )
+	, m_pTime	( nullptr )
 {
 	m_pDx9	= new CDirectX9();
 	m_pDx11 = new CDirectX11();
+	m_pTime = new CTime();
 }
 
 
@@ -36,6 +38,7 @@ CMain::CMain()
 //=================================================
 CMain::~CMain()
 {
+	SAFE_DELETE( m_pTime );
 	SAFE_DELETE( m_pGame );
 	SAFE_DELETE( m_pDx11 );
 	SAFE_DELETE( m_pDx9 );
@@ -58,6 +61,8 @@ void CMain::Update()
 	
 	//画面に表示.
 	m_pDx11->Present();
+
+	//m_pTime->Tick();
 }
 
 
@@ -119,9 +124,10 @@ void CMain::Loop()
 	//	フレームレート調整準備.
 	//------------------------------------------------
 	float Rate = 0.0f;	//レート.
+	double dt = 0.0f;
 	DWORD sync_old = timeGetTime();			//過去時間.
 	DWORD sync_now;							//現在時間.
-
+	m_pTime->Init(FPS);
 	//時間処理のため、最小単位を1ミリ秒に変更.
 	timeBeginPeriod( 1 );
 	Rate = 1000.0f / static_cast<float>(FPS); //理想時間を算出.
@@ -132,6 +138,7 @@ void CMain::Loop()
 
 	while( msg.message != WM_QUIT )
 	{
+		m_pTime->Tick();
 		sync_now = timeGetTime();	//現在の時間を取得.
 
 		if( PeekMessage( &msg, nullptr, 0, 0, PM_REMOVE ) )
@@ -139,7 +146,7 @@ void CMain::Loop()
 			TranslateMessage( &msg );
 			DispatchMessage( &msg );
 		}
-		else if( sync_now - sync_old >= Rate )
+		else if( m_pTime->FixedTick(dt))
 		{
 			sync_old = sync_now;	//現在時間に置き換え.
 

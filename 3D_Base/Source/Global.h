@@ -15,6 +15,7 @@
 #include <D3D10.h>
 
 #include "MyMacro.h"
+#include "CTime.h"
 
 //ƒ‰ƒCƒuƒ‰ƒŠ“Ç‚İ‚İ.
 #pragma comment( lib, "winmm.lib" )

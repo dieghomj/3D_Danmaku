@@ -464,13 +464,6 @@ void CGame::Update()
 		m_Camera.vPosition.z -= add_value;
 	}
 
-//	m_pStcMeshObj->Update();
-
-//	m_pGround->SetPosition(0.f, 0.f, -0.02f);
-//	float rotX = static_cast<float>( D3DXToRadian(90.0) );
-//	m_pGround->SetRotation(rotX, 0.f, 0.f);
-//	m_pGround->SetScale( 5.f, 5.f, 1.f );
-
 	m_pPlayer->Update();
 	m_pGround->Update();
 
