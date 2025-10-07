@@ -19,6 +19,7 @@
 #include "CRay.h"
 
 #include <vector>
+#include <queue>
 
 
 /********************************************************************************
@@ -27,7 +28,8 @@
 class CGame
 {
 public:
-	static constexpr int ENEMY_MAX = 3;	//エネミーの最大数
+	static constexpr int ENEMY_MAX = 3;		//エネミーの最大数
+	static constexpr int BULLET_MAX = 12;	//弾の最大
 
 	CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd );
 	~CGame();
@@ -124,7 +126,8 @@ private:
 	CGround*			m_pGround;
 
 	//弾クラス
-	CShot*				m_pShot;
+	CShot*				m_pShot[BULLET_MAX];
+	std::queue<CShot*>	m_Shot;
 
 	//ザコクラス
 	CZako*				m_pZako;

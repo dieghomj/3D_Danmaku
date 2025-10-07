@@ -179,6 +179,7 @@
     <ClCompile Include="Source\CSprite3D.cpp" />
     <ClCompile Include="Source\CStaticMesh.cpp" />
     <ClCompile Include="Source\CStaticMeshObject.cpp" />
+    <ClCompile Include="Source\CTime.cpp" />
     <ClCompile Include="Source\CUIObject.cpp" />
     <ClCompile Include="Source\CZako.cpp" />
     <ClCompile Include="Source\stdafx.cpp">
@@ -213,6 +214,7 @@
     <ClInclude Include="Source\CSprite3D.h" />
     <ClInclude Include="Source\CStaticMesh.h" />
     <ClInclude Include="Source\CStaticMeshObject.h" />
+    <ClInclude Include="Source\CTime.h" />
     <ClInclude Include="Source\CUIObject.h" />
     <ClInclude Include="Source\CZako.h" />
     <ClInclude Include="Source\Global.h" />

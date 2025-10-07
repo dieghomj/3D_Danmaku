@@ -50,7 +50,7 @@ CGame::CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd )
 
 	, m_pGround			( nullptr )
 
-	, m_pShot			( nullptr )
+	, m_Shot			()
 
 	, m_pZako			( nullptr )
 
@@ -85,10 +85,15 @@ CGame::~CGame()
 	SAFE_DELETE( m_pZako );
 
 	//弾の破棄
-	SAFE_DELETE( m_pShot );
+	if (m_pShot != nullptr) {
+		for (int No = BULLET_MAX - 1; No >= 0; No--) {
+			SAFE_DELETE(m_pShot[No]);
+		}
+	}
 
 	//地面の破棄.
 	SAFE_DELETE( m_pGround );
+
 
 	//エネミーの破壊
 #if 1
@@ -221,8 +226,11 @@ void CGame::Create()
 	m_pGround->SetPlayer(*m_pPlayer);	//レイの判定で必要
 
 	//弾クラスのインスタンス作成
-	m_pShot = new CShot();
-
+	for (int No = 0; No < BULLET_MAX; No++)
+	{
+		m_pShot[No] = new CShot();
+		m_Shot.push(m_pShot[No]);
+	}
 	//ザコクラスのインスタス作成
 	m_pZako = new CZako();
 
@@ -334,8 +342,10 @@ HRESULT CGame::LoadData()
 
 	//爆発スプライトを設定.
 	m_pExplosion->AttachSprite( *m_pSpriteExplosion );
-	m_pShot->AttachSprite( *m_pSpriteBullet);
+	for (int No = 0; No < BULLET_MAX; No++) {
+		m_pShot[No]->AttachSprite(*m_pSpriteBullet);
 
+	}
 
 	//Pモンスプライトを設定
 	m_pPmon->AttachSprite( *m_pSprite2DPmon );
@@ -454,23 +464,23 @@ void CGame::Update()
 		m_Camera.vPosition.z -= add_value;
 	}
 
-//	m_pStcMeshObj->Update();
-
-//	m_pGround->SetPosition(0.f, 0.f, -0.02f);
-//	float rotX = static_cast<float>( D3DXToRadian(90.0) );
-//	m_pGround->SetRotation(rotX, 0.f, 0.f);
-//	m_pGround->SetScale( 5.f, 5.f, 1.f );
-
 	m_pPlayer->Update();
 	m_pGround->Update();
 
 #if 1
 	//弾を飛ばしたい!
 	if (m_pPlayer->IsShot() == true) {
-		m_pShot->Reload(
+		auto bullet = m_Shot.front();
+		bullet->Reload(
 			m_pPlayer->GetPosition(),
 			m_pPlayer->GetRotation().y);
+		m_Shot.pop();
+		m_Shot.push(bullet);
+
 	}
+		/*m_pShot->Reload(
+			m_pPlayer->GetPosition(),
+			m_pPlayer->GetRotation().y);*/
 #else
 	//弾を飛ばしたい!
 	//dynamic_cast：親クラスのポインタを子クラスのポインタに変換する
@@ -478,7 +488,9 @@ void CGame::Update()
 		m_pShot->Reload(m_pPlayer->GetPosition());
 	}
 #endif
-	m_pShot->Update();
+	for (int No = 0; No < BULLET_MAX; No++) {
+		m_pShot[No]->Update();
+	}
 
 	m_pEnemy->Update();
 
@@ -652,7 +664,9 @@ void CGame::Draw()
 	//	m_pEnemy->SetPosition(0.f, 1.f, 20.f);	//奥へ再配置
 	//}
 	m_pExplosion->Draw(m_mView, m_mProj);
-	m_pShot->Draw(m_mView, m_mProj);
+	for (int No = 0; No < BULLET_MAX; No++) {
+		m_pShot[No]->Draw(m_mView, m_mProj);
+	}
 
 #else
 	//ゲームオブジェクトのポインタのリストを作成

@@ -5,6 +5,7 @@ CPlayer::CPlayer()
 	: m_TurnSpeed(0.1f)	//‚«‚Á‚¿‚è‚â‚è‚½‚¢ê‡‚Íƒ‰ƒWƒAƒ“’l‚ğİ’è‚·‚é‚±‚Æ
 	, m_MoveSpeed(0.1f)
 	, m_MoveState(enMoveState::Stop)
+	, m_shotMax(10)
 {
 }
 
