@@ -20,6 +20,8 @@ public:
 
 	void SetDisplay(bool disp) { m_Display = disp; }
 
+	virtual bool IsHit(CGameObject* obj, float rad);
+
 	float GetCadence() const { return m_Cadence; }
 
 protected:

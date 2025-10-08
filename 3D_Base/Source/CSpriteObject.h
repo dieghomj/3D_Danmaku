@@ -19,6 +19,8 @@ public:
 	//CSpriteObjectで宣言した関数で、以降はこれをoverrideさせる
 	virtual void Draw( D3DXMATRIX& View, D3DXMATRIX& Proj );
 
+	virtual bool IsHit(CGameObject* obj, float rad);
+
 	//スプライトを接続する.
 	void AttachSprite( CSprite3D& pSprite ){
 		m_pSprite = &pSprite;

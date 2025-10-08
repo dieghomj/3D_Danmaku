@@ -638,17 +638,23 @@ void CGame::Draw()
 	}
 
 	//弾とエネミーの当たり判定
-	//if (m_pShot->GetBSphere()->IsHit(*m_pEnemy->GetBSphere()))
-	//{
-	//	//爆発
-	//	m_pExplosion->SetPosition(m_pEnemy->GetPosition());	//エネミーの位置にそろえる
-	//	dynamic_cast<CExplosion*>( m_pExplosion )->ResetAnimation();//アニメーションリセット
-	//	//弾
-	//	m_pShot->SetDisplay(false);				//非表示
-	//	m_pShot->SetPosition(0.f, -10.f, 0.f);	//地面に埋める
-	//	//エネミー
-	//	m_pEnemy->SetPosition(0.f, 1.f, 20.f);	//奥へ再配置
-	//}
+
+	for (int No = 0; No < BULLET_MAX; No++)
+	{
+		if (m_pShot[No]->IsHit(m_pEnemy, 0.1))
+		{
+			//爆発
+			m_pExplosion->SetPosition(m_pEnemy->GetPosition());	//エネミーの位置にそろえる
+			dynamic_cast<CExplosion*>(m_pExplosion)->ResetAnimation();//アニメーションリセット
+			//弾
+			m_pShot[No]->SetDisplay(false);
+			m_pShot[No]->SetPosition(0.f, -10.f, 0.f);	//地面に埋める
+			//エネミー
+			m_pEnemy->SetPosition(0.f, 1.f, 20.f);	//奥へ再配置
+		}
+
+	}
+
 	m_pExplosion->Draw(m_mView, m_mProj);
 	for (int No = 0; No < BULLET_MAX; No++) {
 		m_pShot[No]->Draw(m_mView, m_mProj);

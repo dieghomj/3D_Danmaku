@@ -36,6 +36,15 @@ void CShot::Draw(D3DXMATRIX& View, D3DXMATRIX& Proj)
 	}
 }
 
+bool CShot::IsHit(CGameObject* obj, float rad)
+{
+	if (m_Display == true)
+	{
+		return CSpriteObject::IsHit(obj,rad);
+	}
+	return false;
+}
+
 void CShot::Reload(const D3DXVECTOR3& Pos, float RotY)
 {
 	//íeÇ™îÚÇÒÇ≈ÇΩÇÁèIóπ
