@@ -29,9 +29,9 @@ class CGame
 {
 public:
 	static constexpr int ENEMY_MAX = 3;		//エネミーの最大数
-	static constexpr int BULLET_MAX = 12;	//弾の最大
+	static constexpr int BULLET_MAX = 100;	//弾の最大
 
-	CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd );
+	CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime );
 	~CGame();
 
 	void Create();
@@ -50,9 +50,6 @@ private:
 	//三人称カメラ
 	void ThirdPersonCamera(
 		CAMERA* pCamera, const D3DXVECTOR3& TargetPos, float TargetRotY);
-
-	void FirstPersonCamera(
-		CAMERA* pCamera, const D3DXVECTOR3& TargetPos, POINT delta, float sense);
 
 	void TopDownCamera(
 		CAMERA* pCamera, const D3DXVECTOR3& TargetPos, float TargetRotY);
@@ -140,6 +137,10 @@ private:
 	POINT m_mouseBeforePos;
 	POINT m_mouseDelta;
 	float m_mouseSense;
+
+	//タイム
+	CTime*	m_pTime;
+	float	m_shotCd;
 
 private:
 	//=delete「削除定義」と呼ばれる機能.

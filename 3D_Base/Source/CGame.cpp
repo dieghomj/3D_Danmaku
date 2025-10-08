@@ -3,7 +3,7 @@
 #include "CEffect.h"	//Effekseerを使うためのクラス
 
 //コンストラクタ.
-CGame::CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd )
+CGame::CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime )
 	: m_pDx9			( &pDx9 )
 	, m_pDx11			( &pDx11 )
 	, m_pDbgText		( nullptr )
@@ -12,6 +12,7 @@ CGame::CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd )
 	, m_hWnd			( hWnd )
 	, m_mView			()
 	, m_mProj			()
+
 
 	, m_Camera			()
 	, m_Light			()
@@ -59,6 +60,9 @@ CGame::CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd )
 	, m_mouseBeforePos	({0,0})
 	, m_mouseDelta		({ 0,0 })
 	, m_mouseSense		(0.01f)
+
+	, m_pTime			(&pTime)
+	, m_shotCd			(0)
 {
 	//カメラ座標.
 	m_Camera.vPosition	= D3DXVECTOR3( 0.0f, 2.0f, 0.0f );
@@ -428,7 +432,7 @@ void CGame::Release()
 void CGame::Update()
 {
 	//BGMのループ再生
-	CSoundManager::PlayLoop(CSoundManager::BGM_Bonus);
+	//CSoundManager::PlayLoop(CSoundManager::BGM_Bonus);
 	
 	POINT mousePos;
 	GetCursorPos(&mousePos);
@@ -443,44 +447,26 @@ void CGame::Update()
 	ClientToScreen(m_hWnd, &center);
 	SetCursorPos(center.x, center.y);
 
-	//カメラ座標のデバックコマンド.
-	float add_value = 0.1f;
-	if( GetAsyncKeyState( 'W' ) & 0x8000 ){
-		m_Camera.vPosition.y += add_value;
-	}
-	if( GetAsyncKeyState( 'S') & 0x8000 ){
-		m_Camera.vPosition.y -= add_value;
-	}
-	if( GetAsyncKeyState( 'A' ) & 0x8000 ){
-		m_Camera.vPosition.x -= add_value;
-	}
-	if( GetAsyncKeyState( 'D' ) & 0x8000 ){
-		m_Camera.vPosition.x += add_value;
-	}
-	if( GetAsyncKeyState( 'Q' ) & 0x8000 ){
-		m_Camera.vPosition.z += add_value;
-	}
-	if( GetAsyncKeyState( 'E' ) & 0x8000 ){
-		m_Camera.vPosition.z -= add_value;
-	}
-
 	m_pPlayer->Update();
 	m_pGround->Update();
 
 #if 1
 	//弾を飛ばしたい!
 	if (m_pPlayer->IsShot() == true) {
-		auto bullet = m_Shot.front();
-		bullet->Reload(
-			m_pPlayer->GetPosition(),
-			m_pPlayer->GetRotation().y);
-		m_Shot.pop();
-		m_Shot.push(bullet);
+		CShot* bullet = m_Shot.front();
+		m_shotCd -= m_pTime->GetFixedDeltaTime()/1000.0f;
+		if( m_shotCd <= 0)
+		{ 
+			bullet->Reload(
+				m_pPlayer->GetPosition(),
+				m_pPlayer->GetRotation().y);
+			m_shotCd = bullet->GetCadence();
+			m_Shot.pop();
+			m_Shot.push(bullet);
+		}
 
 	}
-		/*m_pShot->Reload(
-			m_pPlayer->GetPosition(),
-			m_pPlayer->GetRotation().y);*/
+
 #else
 	//弾を飛ばしたい!
 	//dynamic_cast：親クラスのポインタを子クラスのポインタに変換する

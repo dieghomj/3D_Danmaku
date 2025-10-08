@@ -138,8 +138,8 @@ void CMain::Loop()
 
 	while( msg.message != WM_QUIT )
 	{
-		m_pTime->Tick();
 		sync_now = timeGetTime();	//Œ»Ý‚ÌŽžŠÔ‚ðŽæ“¾.
+		m_pTime->Tick();
 
 		if( PeekMessage( &msg, nullptr, 0, 0, PM_REMOVE ) )
 		{

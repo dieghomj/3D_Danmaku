@@ -5,6 +5,7 @@ CShot::CShot()
 	, m_MoveDirection	()
 	, m_MoveSpeed		()
 	, m_DisplayTime		()
+	, m_Cadence			(0.1f)
 {
 }
 

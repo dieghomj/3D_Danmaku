@@ -20,9 +20,12 @@ public:
 
 	void SetDisplay(bool disp) { m_Display = disp; }
 
+	float GetCadence() const { return m_Cadence; }
+
 protected:
 	bool		m_Display;			//•\¦Ø‘Ö
 	D3DXVECTOR3	m_MoveDirection;	//ˆÚ“®•ûŒü
 	float		m_MoveSpeed;		//ˆÚ“®‘¬“x
 	int			m_DisplayTime;		//•\¦‚·‚éŠÔ
+	float		m_Cadence;			//
 };
