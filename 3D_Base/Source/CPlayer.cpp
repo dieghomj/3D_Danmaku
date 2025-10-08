@@ -53,8 +53,8 @@ void CPlayer::Update()
 	if (GetAsyncKeyState('Z') & 0x8000) {
 		m_Shot = true;
 
-		//SEの再生
-		CSoundManager::PlaySE(CSoundManager::SE_Jump);
+		////SEの再生
+		//CSoundManager::PlaySE(CSoundManager::SE_Jump);
 	}
 
 	//レイの位置をプレイヤーの座標にそろえる
