@@ -1,6 +1,8 @@
 ### TODO LIST
 ---
 ## Gameplay
+	- #Main
+		- Add collider to sprites
 	- #Mechanics
 		- Timer
 	- #Player
@@ -10,5 +12,9 @@
 		- homing shot
 		- 
 	- #Enemies
+		- Set movement
+		-
+	- #Shader
+		- Add shader to the bg
 ---
 ## UI
