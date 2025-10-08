@@ -18,13 +18,21 @@ public:
     // Standard variable time update for rendering
     void VariableTick();
 
+    void StartTimer();
+    double StopTimer();
+
+    double GetTimerElapsed() const { return m_timerElapsed; };
+
     // Getters for external use
     float GetDeltaTime() const { return deltaTime; }
     double GetTotalTime() const { return m_totalTime; }
 
-private:
+
+protected:
     float deltaTime;        // Variable time (for rendering/animation)
     double m_totalTime;     // Total elapsed time
+
+    double m_timerElapsed;  // Elapsed time since timer was started
 
     LARGE_INTEGER m_lastTime;   // Last recorded counter value
     LARGE_INTEGER m_qpFreq;     // Performance counter frequency
