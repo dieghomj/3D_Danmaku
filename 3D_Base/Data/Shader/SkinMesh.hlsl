@@ -162,9 +162,9 @@ float4 PS_Main( PSSkinIn input ) : SV_Target
 	float4 diffuse = ( g_Diffuse * 0.5f + texColor * 0.5f ) * NL;
 
 	//ãæñ îΩéÀåı Å¶ÇR.
-	float3 reflect = normalize( 2.f * NL * input.Norm.xyz - input.Light.xyz );
+	float3 reflect = normalize( NL * input.Norm.xyz - input.Light.xyz );
 	float4 specular =
-		pow( saturate( dot( reflect, input.EyeVector.xyz ) ), 4.f ) * g_Specular;
+		pow( saturate( dot( reflect, input.EyeVector.xyz ) ), 1.f ) * g_Specular;
 
 	//ç≈èIêFÅ@Å¶ÇPÅCÇQÅCÇRÇÃçáåv.
 	float4 Color = ambient + diffuse + specular;

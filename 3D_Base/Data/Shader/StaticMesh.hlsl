@@ -145,7 +145,7 @@ float4 PS_NoTex( VS_OUTPUT input ) : SV_Target
 	float4 diffuse = g_Diffuse * NL;
 
 	//ãæñ îΩéÀåı Å¶ÇR.
-	float3 reflect = normalize( 2 * NL * input.Normal - input.Light );
+	float3 reflect = normalize( NL * input.Normal - input.Light );
 	float4 specular =
 		pow( saturate( dot( reflect, input.EyeVector ) ), 4 )*g_Specular;
 
