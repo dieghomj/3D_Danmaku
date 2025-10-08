@@ -1,8 +1,7 @@
 ### TODO LIST
----
 ## Gameplay
 	- #Main
-		- Add collider to sprites
+		- ~~Add collider to sprites~~
 	- #Mechanics
 		- Timer
 	- #Player
@@ -16,5 +15,4 @@
 		-
 	- #Shader
 		- Add shader to the bg
----
 ## UI
