@@ -31,7 +31,7 @@ bool CTime::FixedTick(double& fixedDeltaTime)
 {
 	if (m_timeAccumulator >= m_fixedStepDuration)
 	{
-		m_timeAccumulator -= m_fixedStepDuration;
+		m_timeAccumulator = 0;
 		fixedDeltaTime = m_fixedStepDuration;
 		return true;
 	}

@@ -25,6 +25,7 @@ public:
 
     // Getters for external use
     float GetDeltaTime() const { return deltaTime; }
+    double GetFixedDeltaTime() const { return m_fixedStepDuration; }
     double GetTotalTime() const { return m_totalTime; }
 
 

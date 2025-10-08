@@ -82,7 +82,7 @@ HRESULT CMain::Create()
 	}
 
 	//ゲームクラスのインスタンス生成.
-	m_pGame = new CGame( *m_pDx9, *m_pDx11, m_hWnd );
+	m_pGame = new CGame( *m_pDx9, *m_pDx11, m_hWnd, *m_pTime);
 
 	//ゲームクラスの構築（Loadも含める）.
 	m_pGame->Create();
