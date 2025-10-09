@@ -452,20 +452,32 @@ void CGame::Update()
 
 #if 1
 	//弾を飛ばしたい!
-	int bulletNo = m_pPlayer->GetShotNumber() + 1;
-	float start = 60 / PI + (PI / (bulletNo + 1));
-	float angle = (PI / (bulletNo + 1));
-	for (int No = 0; No < bulletNo; No++)
-	{
-		if (m_pPlayer->IsShot() == true) {
-			CShot* bullet = m_Shot.front();
-			m_shotCd -= m_pTime->GetFixedDeltaTime() / 1000.0f;
-			if (m_shotCd <= 0)
+	int bulletCount = m_pPlayer->GetShotNumber(); // existing convention: enum value + 1
+	const float spreadDeg = 60.0f; // total spread in degrees (change to widen/narrow pattern)
+	const float spreadRad = (bulletCount > 1) ? D3DXToRadian(spreadDeg) : 0.0f;
+	const float startAngle = -spreadRad * 0.5f; // start relative to forward (-half spread)
+	const float angleStep = (bulletCount > 1) ? (spreadRad / (bulletCount - 1)) : 0.0f;
+
+	if (m_pPlayer->IsShot() == true) {
+		
+		float cadence = m_shotCd;					//連射速度
+		m_shotCd -= m_pTime->GetFixedDeltaTime();	//連射速度を減少
+		
+		//連射速度を超えたら弾を発射
+		if (m_shotCd <= 0.0f)
+		{
+			for (int No = 0; No <= bulletCount; No++)
 			{
+				CShot* bullet = m_Shot.front();		//キューの先頭を取得
+
+				const float rotY = m_pPlayer->GetRotation().y + startAngle + angleStep * No;
+
 				bullet->Reload(
 					m_pPlayer->GetPosition(),
-					m_pPlayer->GetRotation().y + angle * (No - 1));
+					rotY);
 				m_shotCd = bullet->GetCadence();
+
+				//弾をキューの最後に移動
 				m_Shot.pop();
 				m_Shot.push(bullet);
 			}

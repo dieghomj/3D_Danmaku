@@ -34,6 +34,6 @@ protected:
 	
 	D3DXVECTOR3	m_MoveDirection;	//ˆÚ“®•ûŒü
 	float		m_MoveSpeed;		//ˆÚ“®‘¬“x
-	float		m_Cadence;			//
+	float		m_Cadence;			//˜AŽË‘¬“x
 	
 };

@@ -6,7 +6,7 @@ CPlayer::CPlayer()
 	, m_MoveSpeed	(0.1f)
 	, m_MoveState	(enMoveState::Stop)
 	, m_shotMax		(10)
-	, m_ShotNumber	(enShotNumber::Triple)
+	, m_ShotNumber	(enShotNumber::Single)
 	, m_ShotType	(enShotType::Simple)
 {
 }
