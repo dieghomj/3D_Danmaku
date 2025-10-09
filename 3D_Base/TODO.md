@@ -1,4 +1,13 @@
 ### TODO LIST
+
+## Main
+
+- ~~Add collider to sprites~~
+- Main Menu
+- Result screen
+- BGM
+- SE
+
 ## Gameplay
 
 # Mechanics
@@ -53,3 +62,14 @@
 - Post-processing shader
 
 ## UI
+
+- Main Menu
+- Result screen
+- Game Over screen
+- Health bar
+- Score display
+- Lives display
+- Timer display
+- Pause menu
+- Power-up indicators
+

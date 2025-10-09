@@ -6,7 +6,7 @@ CPlayer::CPlayer()
 	, m_MoveSpeed	(0.1f)
 	, m_MoveState	(enMoveState::Stop)
 	, m_shotMax		(10)
-	, m_ShotNumber	(enShotNumber::Triple)
+	, m_ShotNumber	(enShotNumber::Single)
 	, m_ShotType	(enShotType::Simple)
 {
 }
@@ -52,7 +52,7 @@ void CPlayer::Update()
 	m_Shot = false;
 
 	//íeÇîÚÇŒÇµÇΩÇ¢!
-	if (GetAsyncKeyState('Z') & 0x8000) {
+	if (GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
 		m_Shot = true;
 
 		////SEÇÃçƒê∂

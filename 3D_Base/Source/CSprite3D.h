@@ -12,6 +12,17 @@ class CDirectX11;
 class CSprite3D
 {
 public:
+	//
+	//
+	//
+
+	enum BILBOARD_MODE
+	{
+		BILLBOARD_OFF = 0,	//ビルボード機能OFF
+		BILLBOARD_FULL,		//フルビルボード
+		BILLBOARD_YAXIS 	//Y軸ビルボード
+	};
+
 	//======================================
 	//	構造体.
 	//======================================
@@ -101,7 +112,8 @@ public:
 	POINTS GetPatternMax() const { return m_PatternMax; }
 
 	//ビルボード機能のON/OFF切り替え
-	void SetBillboard(bool flag) { m_Billboard = flag; }
+	void SetBillboard(bool flag) { m_Billboard = flag ? BILLBOARD_FULL : BILLBOARD_OFF; }
+	void SetBillboardMode(BILBOARD_MODE mode) { m_Billboard = mode; }
 
 private:
 	CDirectX11*				m_pDx11;
@@ -130,5 +142,5 @@ private:
 	POINTS			m_PatternNo;	//パターン番号(マス目)
 	POINTS			m_PatternMax;	//最大パターン(マスの最大値)
 
-	bool			m_Billboard;	//ビルボード有効無効
+	int				m_Billboard;	//ビルボード有効無効
 };

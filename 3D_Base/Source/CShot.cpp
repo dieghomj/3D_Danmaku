@@ -5,7 +5,7 @@ CShot::CShot()
 	, m_DisplayTime		()
 	, m_MoveDirection	()
 	, m_MoveSpeed		()
-	, m_Cadence			(0.1f)
+	, m_Cadence			(100.0f)
 {
 }
 
@@ -31,7 +31,7 @@ void CShot::Update()
 void CShot::Draw(D3DXMATRIX& View, D3DXMATRIX& Proj)
 {
 	if (m_Display == true) {
-		m_pSprite->SetBillboard(true);
+		m_pSprite->SetBillboardMode(CSprite3D::BILLBOARD_YAXIS);
 		CSpriteObject::Draw(View, Proj);
 	}
 }
@@ -52,9 +52,9 @@ void CShot::Reload(const D3DXVECTOR3& Pos, float RotY)
 	
 	m_vPosition		= Pos;
 	m_Display		= true;
-	m_vRotation.y	= RotY;		//弾の向き（見た目）も変える
-	m_MoveSpeed		= 0.2f;		//移動速度　※とりあえず0.2fを設定
-	m_DisplayTime	= FPS * 3;	//約3秒くらい表示する
+	m_vRotation		= D3DXVECTOR3(0.0, RotY, 0.0);		//弾の向き（見た目）も変える
+	m_MoveSpeed		= 0.2f;								//移動速度　※とりあえず0.2fを設定
+	m_DisplayTime	= FPS * 3;							//約3秒くらい表示する
 
 	//Z軸ベクトル
 	m_MoveDirection = D3DXVECTOR3(0.f, 0.f, 1.f);
