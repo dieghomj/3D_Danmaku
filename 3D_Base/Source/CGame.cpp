@@ -564,11 +564,6 @@ void CGame::Update()
 		}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
 	}
 
-	//三人称カメラ
-	//ThirdPersonCamera(
-	//	&m_Camera,
-	//	m_pPlayer->GetPosition(),
-	//	m_pPlayer->GetRotation().y);
 
 	TopDownCamera(
 		&m_Camera,
@@ -576,14 +571,19 @@ void CGame::Update()
 		m_pPlayer->GetRotation().y);
 
 	CameraRotToMouse(
-			&m_Camera,
-			m_pPlayer->GetPosition(),
-			m_mouseDelta,
-			m_mouseSense);
+		&m_Camera,
+		m_pPlayer->GetPosition(),
+		m_mouseDelta,
+		m_mouseSense);
 
 	float rotX = m_Camera.yaw;
 	m_pPlayer->SetRotation(0, rotX, 0);
 
+//	//三人称カメラ
+//	ThirdPersonCamera(
+//		&m_Camera,
+//		m_pPlayer->GetPosition(),
+//		m_pPlayer->GetRotation().y);
 }
 
 //描画処理.

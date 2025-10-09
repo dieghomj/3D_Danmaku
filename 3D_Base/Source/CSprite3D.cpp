@@ -24,7 +24,7 @@ CSprite3D::CSprite3D()
 	, m_SpriteState		()
 	, m_PatternNo		()
 	, m_PatternMax		()
-	, m_Billboard		( false )
+	, m_Billboard		( CSprite3D::BILLBOARD_OFF )
 {
 }
 
@@ -361,13 +361,23 @@ void CSprite3D::Render(
 
 
 	//ビルボード用.
-	if (m_Billboard == true) {
+	if (m_Billboard == CSprite3D::BILLBOARD_FULL) {
 		D3DXMATRIX CancelRotation = mView;//ビュー行列.
 		CancelRotation._41
 			= CancelRotation._42 = CancelRotation._43 = 0.0f;//xyzを0にする.
 		//CancelRotationの逆行列を求めます.
 		D3DXMatrixInverse(&CancelRotation, nullptr, &CancelRotation);
 		mWorld = CancelRotation * mWorld;
+	}
+
+	else if (m_Billboard == CSprite3D::BILLBOARD_YAXIS)
+	{
+		D3DXMATRIX camWorld;
+		D3DXMatrixInverse(&camWorld, nullptr, &mView); // camWorld is camera transform (world)
+
+		D3DXMATRIX pitchMat;
+		D3DXMatrixRotationX(&pitchMat, D3DX_PI * 0.5f);
+		mWorld = pitchMat * mWorld;
 	}
 
 	//使用するシェーダの登録.
