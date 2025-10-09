@@ -52,7 +52,7 @@ void CPlayer::Update()
 	m_Shot = false;
 
 	//’e‚ğ”ò‚Î‚µ‚½‚¢!
-	if (GetAsyncKeyState('Z') & 0x8000) {
+	if (GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
 		m_Shot = true;
 
 		////SE‚ÌÄ¶
