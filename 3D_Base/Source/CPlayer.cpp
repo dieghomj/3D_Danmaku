@@ -2,10 +2,12 @@
 #include "CSoundManager.h"
 
 CPlayer::CPlayer()
-	: m_TurnSpeed(0.1f)	//きっちりやりたい場合はラジアン値を設定すること
-	, m_MoveSpeed(0.1f)
-	, m_MoveState(enMoveState::Stop)
-	, m_shotMax(10)
+	: m_TurnSpeed	(0.1f)	//きっちりやりたい場合はラジアン値を設定すること
+	, m_MoveSpeed	(0.1f)
+	, m_MoveState	(enMoveState::Stop)
+	, m_shotMax		(10)
+	, m_ShotNumber	(enShotNumber::Triple)
+	, m_ShotType	(enShotType::Simple)
 {
 }
 
@@ -53,8 +55,8 @@ void CPlayer::Update()
 	if (GetAsyncKeyState('Z') & 0x8000) {
 		m_Shot = true;
 
-		//SEの再生
-		CSoundManager::PlaySE(CSoundManager::SE_Jump);
+		////SEの再生
+		//CSoundManager::PlaySE(CSoundManager::SE_Jump);
 	}
 
 	//レイの位置をプレイヤーの座標にそろえる

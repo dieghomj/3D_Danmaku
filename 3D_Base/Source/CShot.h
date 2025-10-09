@@ -9,6 +9,10 @@ class CShot
 	: public CSpriteObject
 {
 public:
+
+
+
+public:
 	CShot();
 	virtual ~CShot() override;
 
@@ -20,9 +24,16 @@ public:
 
 	void SetDisplay(bool disp) { m_Display = disp; }
 
+	virtual bool IsHit(CGameObject* obj, float rad);
+
+	float GetCadence() const { return m_Cadence; }
+
 protected:
 	bool		m_Display;			//表示切替
+	int			m_DisplayTime;		//表示する時間
+	
 	D3DXVECTOR3	m_MoveDirection;	//移動方向
 	float		m_MoveSpeed;		//移動速度
-	int			m_DisplayTime;		//表示する時間
+	float		m_Cadence;			//
+	
 };

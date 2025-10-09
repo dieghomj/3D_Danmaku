@@ -2,9 +2,10 @@
 
 CShot::CShot()
 	: m_Display			(false)
+	, m_DisplayTime		()
 	, m_MoveDirection	()
 	, m_MoveSpeed		()
-	, m_DisplayTime		()
+	, m_Cadence			(0.1f)
 {
 }
 
@@ -33,6 +34,15 @@ void CShot::Draw(D3DXMATRIX& View, D3DXMATRIX& Proj)
 		m_pSprite->SetBillboard(true);
 		CSpriteObject::Draw(View, Proj);
 	}
+}
+
+bool CShot::IsHit(CGameObject* obj, float rad)
+{
+	if (m_Display == true)
+	{
+		return CSpriteObject::IsHit(obj,rad);
+	}
+	return false;
 }
 
 void CShot::Reload(const D3DXVECTOR3& Pos, float RotY)

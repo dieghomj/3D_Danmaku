@@ -28,10 +28,27 @@
 class CGame
 {
 public:
-	static constexpr int ENEMY_MAX = 3;		//エネミーの最大数
-	static constexpr int BULLET_MAX = 12;	//弾の最大
+	enum enShotNumber
+	{
+		Zero,
+		Single = 0,
+		Double,
+		Triple,
+	};
 
-	CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd );
+	enum enShotType
+	{
+		Simple = 0,
+		Rapid,
+		Homing,
+		Laser,
+	};
+
+public:
+	static constexpr int ENEMY_MAX = 3;		//エネミーの最大数
+	static constexpr int BULLET_MAX = 100;	//弾の最大
+
+	CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime );
 	~CGame();
 
 	void Create();
@@ -50,9 +67,6 @@ private:
 	//三人称カメラ
 	void ThirdPersonCamera(
 		CAMERA* pCamera, const D3DXVECTOR3& TargetPos, float TargetRotY);
-
-	void FirstPersonCamera(
-		CAMERA* pCamera, const D3DXVECTOR3& TargetPos, POINT delta, float sense);
 
 	void TopDownCamera(
 		CAMERA* pCamera, const D3DXVECTOR3& TargetPos, float TargetRotY);
@@ -116,10 +130,10 @@ private:
 	CStaticMeshObject*	m_pStcMeshObj;
 
 	//キャラクタークラス
-	CCharacter*			m_pPlayer;
-	CCharacter*			m_pEnemy;
-	CCharacter*			m_pEnemies[ENEMY_MAX];
-	CCharacter**		m_ppEnemies;
+	CPlayer*			m_pPlayer;
+	CEnemy*				m_pEnemy;
+	CEnemy*				m_pEnemies[ENEMY_MAX];
+	CEnemy**			m_ppEnemies;
 	int					m_EnemyMax;
 
 	//地面クラス
@@ -140,6 +154,10 @@ private:
 	POINT m_mouseBeforePos;
 	POINT m_mouseDelta;
 	float m_mouseSense;
+
+	//タイム
+	CTime*	m_pTime;
+	float	m_shotCd;
 
 private:
 	//=delete「削除定義」と呼ばれる機能.

@@ -97,6 +97,7 @@ public:
 		m_PatternNo.y = y;
 	}
 	//最大パターン数(マス目)を取得
+	POINTS GetPatterNo() const { return POINTS{ m_PatternNo.x, m_PatternNo.y }; }
 	POINTS GetPatternMax() const { return m_PatternMax; }
 
 	//ビルボード機能のON/OFF切り替え

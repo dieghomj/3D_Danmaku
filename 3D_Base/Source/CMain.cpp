@@ -82,7 +82,7 @@ HRESULT CMain::Create()
 	}
 
 	//ゲームクラスのインスタンス生成.
-	m_pGame = new CGame( *m_pDx9, *m_pDx11, m_hWnd );
+	m_pGame = new CGame( *m_pDx9, *m_pDx11, m_hWnd, *m_pTime);
 
 	//ゲームクラスの構築（Loadも含める）.
 	m_pGame->Create();
@@ -138,8 +138,8 @@ void CMain::Loop()
 
 	while( msg.message != WM_QUIT )
 	{
-		m_pTime->Tick();
 		sync_now = timeGetTime();	//現在の時間を取得.
+		m_pTime->Tick();
 
 		if( PeekMessage( &msg, nullptr, 0, 0, PM_REMOVE ) )
 		{

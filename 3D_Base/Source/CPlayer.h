@@ -10,21 +10,6 @@ class CPlayer
 {
 public:
 
-	enum enShotNumber
-	{
-		Single = 0,
-		Double,
-		Triple,
-	};
-
-	enum enShotType
-	{
-		Simple = 0,
-		Rapid,
-		Homing,
-		Laser,
-	};
-
 	//移動状態列挙型
 	enum enMoveState
 	{
@@ -47,10 +32,15 @@ public:
 	//ラジコン操作
 	void RadioControl();
 
+	int GetShotNumber() const { return m_ShotNumber; }
+	int GetShotType()	const { return m_ShotType; }
+
 protected:
 
-	int			m_shotMax;
-	float		m_TurnSpeed;	//回転速度
-	float		m_MoveSpeed;	//移動速度
-	enMoveState	m_MoveState;	//移動状態
+	int			 m_shotMax;
+	float		 m_TurnSpeed;	//回転速度
+	float		 m_MoveSpeed;	//移動速度
+	enMoveState	 m_MoveState;	//移動状態
+	enShotNumber m_ShotNumber;
+	enShotType	 m_ShotType;
 };

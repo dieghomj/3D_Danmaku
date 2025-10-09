@@ -3,7 +3,7 @@
 #include "CEffect.h"	//Effekseerを使うためのクラス
 
 //コンストラクタ.
-CGame::CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd )
+CGame::CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime )
 	: m_pDx9			( &pDx9 )
 	, m_pDx11			( &pDx11 )
 	, m_pDbgText		( nullptr )
@@ -12,6 +12,7 @@ CGame::CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd )
 	, m_hWnd			( hWnd )
 	, m_mView			()
 	, m_mProj			()
+
 
 	, m_Camera			()
 	, m_Light			()
@@ -59,6 +60,9 @@ CGame::CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd )
 	, m_mouseBeforePos	({0,0})
 	, m_mouseDelta		({ 0,0 })
 	, m_mouseSense		(0.01f)
+
+	, m_pTime			(&pTime)
+	, m_shotCd			(0)
 {
 	//カメラ座標.
 	m_Camera.vPosition	= D3DXVECTOR3( 0.0f, 2.0f, 0.0f );
@@ -211,7 +215,7 @@ void CGame::Create()
 #if 1
 	//エネミーを動的に確保
 	m_EnemyMax = 3;
-	m_ppEnemies = new CCharacter*[m_EnemyMax]();
+	m_ppEnemies = new CEnemy*[m_EnemyMax]();
 	for (int No = 0; No < m_EnemyMax; No++) {
 		m_ppEnemies[No] = new CEnemy();
 	}
@@ -428,7 +432,7 @@ void CGame::Release()
 void CGame::Update()
 {
 	//BGMのループ再生
-	CSoundManager::PlayLoop(CSoundManager::BGM_Bonus);
+	//CSoundManager::PlayLoop(CSoundManager::BGM_Bonus);
 	
 	POINT mousePos;
 	GetCursorPos(&mousePos);
@@ -443,44 +447,32 @@ void CGame::Update()
 	ClientToScreen(m_hWnd, &center);
 	SetCursorPos(center.x, center.y);
 
-	//カメラ座標のデバックコマンド.
-	float add_value = 0.1f;
-	if( GetAsyncKeyState( 'W' ) & 0x8000 ){
-		m_Camera.vPosition.y += add_value;
-	}
-	if( GetAsyncKeyState( 'S') & 0x8000 ){
-		m_Camera.vPosition.y -= add_value;
-	}
-	if( GetAsyncKeyState( 'A' ) & 0x8000 ){
-		m_Camera.vPosition.x -= add_value;
-	}
-	if( GetAsyncKeyState( 'D' ) & 0x8000 ){
-		m_Camera.vPosition.x += add_value;
-	}
-	if( GetAsyncKeyState( 'Q' ) & 0x8000 ){
-		m_Camera.vPosition.z += add_value;
-	}
-	if( GetAsyncKeyState( 'E' ) & 0x8000 ){
-		m_Camera.vPosition.z -= add_value;
-	}
-
 	m_pPlayer->Update();
 	m_pGround->Update();
 
 #if 1
 	//弾を飛ばしたい!
-	if (m_pPlayer->IsShot() == true) {
-		auto bullet = m_Shot.front();
-		bullet->Reload(
-			m_pPlayer->GetPosition(),
-			m_pPlayer->GetRotation().y);
-		m_Shot.pop();
-		m_Shot.push(bullet);
+	int bulletNo = m_pPlayer->GetShotNumber() + 1;
+	float start = 60 / PI + (PI / (bulletNo + 1));
+	float angle = (PI / (bulletNo + 1));
+	for (int No = 0; No < bulletNo; No++)
+	{
+		if (m_pPlayer->IsShot() == true) {
+			CShot* bullet = m_Shot.front();
+			m_shotCd -= m_pTime->GetFixedDeltaTime() / 1000.0f;
+			if (m_shotCd <= 0)
+			{
+				bullet->Reload(
+					m_pPlayer->GetPosition(),
+					m_pPlayer->GetRotation().y + angle * (No - 1));
+				m_shotCd = bullet->GetCadence();
+				m_Shot.pop();
+				m_Shot.push(bullet);
+			}
+		}
 
 	}
-		/*m_pShot->Reload(
-			m_pPlayer->GetPosition(),
-			m_pPlayer->GetRotation().y);*/
+
 #else
 	//弾を飛ばしたい!
 	//dynamic_cast：親クラスのポインタを子クラスのポインタに変換する
@@ -580,11 +572,6 @@ void CGame::Update()
 	float rotX = m_Camera.yaw;
 	m_pPlayer->SetRotation(0, rotX, 0);
 
-	//FirstPersonCamera(
-	//	&m_Camera,
-	//	m_pPlayer->GetPosition(),
-	//	m_mouseDelta,
-	//	m_mouseSense);
 }
 
 //描画処理.
@@ -592,8 +579,6 @@ void CGame::Draw()
 {
 	Camera();
 	Projection();
-
-//	m_pStcMeshObj->Draw( m_mView, m_mProj, m_Light, m_Camera );
 
 #if 1
 	m_pGround->Draw( m_mView, m_mProj, m_Light, m_Camera );
@@ -652,17 +637,23 @@ void CGame::Draw()
 	}
 
 	//弾とエネミーの当たり判定
-	//if (m_pShot->GetBSphere()->IsHit(*m_pEnemy->GetBSphere()))
-	//{
-	//	//爆発
-	//	m_pExplosion->SetPosition(m_pEnemy->GetPosition());	//エネミーの位置にそろえる
-	//	dynamic_cast<CExplosion*>( m_pExplosion )->ResetAnimation();//アニメーションリセット
-	//	//弾
-	//	m_pShot->SetDisplay(false);				//非表示
-	//	m_pShot->SetPosition(0.f, -10.f, 0.f);	//地面に埋める
-	//	//エネミー
-	//	m_pEnemy->SetPosition(0.f, 1.f, 20.f);	//奥へ再配置
-	//}
+
+	for (int No = 0; No < BULLET_MAX; No++)
+	{
+		if (m_pShot[No]->IsHit(m_pEnemy, 0.1))
+		{
+			//爆発
+			m_pExplosion->SetPosition(m_pEnemy->GetPosition());	//エネミーの位置にそろえる
+			dynamic_cast<CExplosion*>(m_pExplosion)->ResetAnimation();//アニメーションリセット
+			//弾
+			m_pShot[No]->SetDisplay(false);
+			m_pShot[No]->SetPosition(0.f, -10.f, 0.f);	//地面に埋める
+			//エネミー
+			m_pEnemy->SetPosition(0.f, 1.f, 20.f);	//奥へ再配置
+		}
+
+	}
+
 	m_pExplosion->Draw(m_mView, m_mProj);
 	for (int No = 0; No < BULLET_MAX; No++) {
 		m_pShot[No]->Draw(m_mView, m_mProj);
