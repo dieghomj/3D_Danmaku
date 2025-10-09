@@ -2,9 +2,9 @@
 
 CShot::CShot()
 	: m_Display			(false)
+	, m_DisplayTime		()
 	, m_MoveDirection	()
 	, m_MoveSpeed		()
-	, m_DisplayTime		()
 	, m_Cadence			(0.1f)
 {
 }

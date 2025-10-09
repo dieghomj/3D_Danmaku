@@ -2,10 +2,12 @@
 #include "CSoundManager.h"
 
 CPlayer::CPlayer()
-	: m_TurnSpeed(0.1f)	//きっちりやりたい場合はラジアン値を設定すること
-	, m_MoveSpeed(0.1f)
-	, m_MoveState(enMoveState::Stop)
-	, m_shotMax(10)
+	: m_TurnSpeed	(0.1f)	//きっちりやりたい場合はラジアン値を設定すること
+	, m_MoveSpeed	(0.1f)
+	, m_MoveState	(enMoveState::Stop)
+	, m_shotMax		(10)
+	, m_ShotNumber	(enShotNumber::Triple)
+	, m_ShotType	(enShotType::Simple)
 {
 }
 

@@ -28,6 +28,23 @@
 class CGame
 {
 public:
+	enum enShotNumber
+	{
+		Zero,
+		Single = 0,
+		Double,
+		Triple,
+	};
+
+	enum enShotType
+	{
+		Simple = 0,
+		Rapid,
+		Homing,
+		Laser,
+	};
+
+public:
 	static constexpr int ENEMY_MAX = 3;		//エネミーの最大数
 	static constexpr int BULLET_MAX = 100;	//弾の最大
 
@@ -113,10 +130,10 @@ private:
 	CStaticMeshObject*	m_pStcMeshObj;
 
 	//キャラクタークラス
-	CCharacter*			m_pPlayer;
-	CCharacter*			m_pEnemy;
-	CCharacter*			m_pEnemies[ENEMY_MAX];
-	CCharacter**		m_ppEnemies;
+	CPlayer*			m_pPlayer;
+	CEnemy*				m_pEnemy;
+	CEnemy*				m_pEnemies[ENEMY_MAX];
+	CEnemy**			m_ppEnemies;
 	int					m_EnemyMax;
 
 	//地面クラス

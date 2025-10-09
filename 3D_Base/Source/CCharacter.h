@@ -9,6 +9,23 @@ class CCharacter
 	: public CStaticMeshObject
 {
 public:
+	enum enShotNumber
+	{
+		Zero,
+		Single = 0,
+		Double,
+		Triple,
+	};
+
+	enum enShotType
+	{
+		Simple = 0,
+		Rapid,
+		Homing,
+		Laser,
+	};
+
+public:
 	CCharacter();
 	virtual ~CCharacter();
 

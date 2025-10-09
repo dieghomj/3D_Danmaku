@@ -215,7 +215,7 @@ void CGame::Create()
 #if 1
 	//エネミーを動的に確保
 	m_EnemyMax = 3;
-	m_ppEnemies = new CCharacter*[m_EnemyMax]();
+	m_ppEnemies = new CEnemy*[m_EnemyMax]();
 	for (int No = 0; No < m_EnemyMax; No++) {
 		m_ppEnemies[No] = new CEnemy();
 	}
@@ -452,17 +452,23 @@ void CGame::Update()
 
 #if 1
 	//弾を飛ばしたい!
-	if (m_pPlayer->IsShot() == true) {
-		CShot* bullet = m_Shot.front();
-		m_shotCd -= m_pTime->GetFixedDeltaTime()/1000.0f;
-		if( m_shotCd <= 0)
-		{ 
-			bullet->Reload(
-				m_pPlayer->GetPosition(),
-				m_pPlayer->GetRotation().y);
-			m_shotCd = bullet->GetCadence();
-			m_Shot.pop();
-			m_Shot.push(bullet);
+	int bulletNo = m_pPlayer->GetShotNumber() + 1;
+	float start = 60 / PI + (PI / (bulletNo + 1));
+	float angle = (PI / (bulletNo + 1));
+	for (int No = 0; No < bulletNo; No++)
+	{
+		if (m_pPlayer->IsShot() == true) {
+			CShot* bullet = m_Shot.front();
+			m_shotCd -= m_pTime->GetFixedDeltaTime() / 1000.0f;
+			if (m_shotCd <= 0)
+			{
+				bullet->Reload(
+					m_pPlayer->GetPosition(),
+					m_pPlayer->GetRotation().y + angle * (No - 1));
+				m_shotCd = bullet->GetCadence();
+				m_Shot.pop();
+				m_Shot.push(bullet);
+			}
 		}
 
 	}
@@ -566,11 +572,6 @@ void CGame::Update()
 	float rotX = m_Camera.yaw;
 	m_pPlayer->SetRotation(0, rotX, 0);
 
-	//FirstPersonCamera(
-	//	&m_Camera,
-	//	m_pPlayer->GetPosition(),
-	//	m_mouseDelta,
-	//	m_mouseSense);
 }
 
 //描画処理.
@@ -578,8 +579,6 @@ void CGame::Draw()
 {
 	Camera();
 	Projection();
-
-//	m_pStcMeshObj->Draw( m_mView, m_mProj, m_Light, m_Camera );
 
 #if 1
 	m_pGround->Draw( m_mView, m_mProj, m_Light, m_Camera );
