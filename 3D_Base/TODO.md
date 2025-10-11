@@ -5,16 +5,17 @@
 - ~~Add collider to sprites~~
 - Main Menu
 - Result screen
-- BGM
-- SE
+- Continue screen
+- Game Over screen
 
 ## Gameplay
 
 # Mechanics
 
+- Boss fight
 - Timer
 - Score
-- Lives
+- Health bar
 - Game Over
 - Restart
 - Pause
@@ -23,11 +24,15 @@
 
 - ~~single shot shooting~~
 - ~~n-way shooting~~
+- ~~fix bullets rotation~~
+- Invincibility frames
+- Homing bullets
+- Bomb
+- Charged shot
 - movement *almost done*
-- fix bullets rotation <--
 - Health
 - Death
-- Power-ups
+- Power-ups ( health, speed )
 - Animation
 - Sound effects
 
@@ -43,6 +48,17 @@
 - Animation
 - Sound effects
 
+# Boss
+
+- Movement
+- Shooting
+	- Attak patterns:
+		- Circular spread
+		- Targeted shots
+		- Random shots
+		- Wave shots
+- Health ( Partially destroy parts of it )
+- Death
 
 
 ## Graphics
