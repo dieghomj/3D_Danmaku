@@ -452,7 +452,7 @@ void CGame::Update()
 
 #if 1
 	//’e‚ð”ò‚Î‚µ‚½‚¢!
-	int bulletCount = m_pPlayer->GetShotNumber(); // existing convention: enum value + 1
+	int bulletCount = m_pPlayer->GetShotNumber() + 1; // existing convention: enum value + 1
 	const float spreadDeg = 60.0f; // total spread in degrees (change to widen/narrow pattern)
 	const float spreadRad = (bulletCount > 1) ? D3DXToRadian(spreadDeg) : 0.0f;
 	const float startAngle = -spreadRad * 0.5f; // start relative to forward (-half spread)
@@ -466,7 +466,7 @@ void CGame::Update()
 		//˜AŽË‘¬“x‚ð’´‚¦‚½‚ç’e‚ð”­ŽË
 		if (m_shotCd <= 0.0f)
 		{
-			for (int No = 0; No <= bulletCount; No++)
+			for (int No = 0; No < bulletCount; No++)
 			{
 				CShot* bullet = m_Shot.front();		//ƒLƒ…[‚Ìæ“ª‚ðŽæ“¾
 
