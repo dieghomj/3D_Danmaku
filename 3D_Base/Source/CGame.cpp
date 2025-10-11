@@ -454,10 +454,7 @@ void CGame::Update()
 	//弾を飛ばしたい!
 	int bulletCount = m_pPlayer->GetShotNumber(); // existing convention: enum value + 1
 	const float spreadDeg = 60.0f; // total spread in degrees (change to widen/narrow pattern)
-	const float spreadRad = (bulletCount > 1) ? D3DXToRadian(spreadDeg) : 0.0f;
-	const float startAngle = -spreadRad * 0.5f; // start relative to forward (-half spread)
-	const float angleStep = (bulletCount > 1) ? (spreadRad / (bulletCount - 1)) : 0.0f;
-
+	
 	if (m_pPlayer->IsShot() == true) {
 		
 		float cadence = m_shotCd;					//連射速度
@@ -470,7 +467,7 @@ void CGame::Update()
 			{
 				CShot* bullet = m_Shot.front();		//キューの先頭を取得
 
-				const float rotY = m_pPlayer->GetRotation().y + startAngle + angleStep * No;
+				const float rotY = m_pPlayer->GetRotation().y + NWayShotRot(m_pPlayer->GetNWaySpreadDeg(), bulletCount, No);
 
 				bullet->Reload(
 					m_pPlayer->GetPosition(),
@@ -825,5 +822,15 @@ void CGame::CameraRotToMouse(CAMERA* pCamera, const D3DXVECTOR3& TargetPos, POIN
 	D3DXVECTOR3 position = D3DXVECTOR3(TargetPos.x, 0, TargetPos.z);
 
 	pCamera->vLook =  position + lookDirection;
+
+}
+
+const float CGame::NWayShotRot(float spreadDeg, int bulletCount, int bulletNo)
+{
+	const float spreadRad = (bulletCount > 1) ? D3DXToRadian(spreadDeg) : 0.0f;
+	const float startAngle = -spreadRad * 0.5f; // start relative to forward (-half spread)
+	const float angleStep = (bulletCount > 1) ? (spreadRad / (bulletCount - 1)) : 0.0f;
+
+	return startAngle + angleStep * bulletNo;
 
 }

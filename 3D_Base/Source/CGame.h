@@ -73,6 +73,7 @@ private:
 
 	void CameraRotToMouse(CAMERA* pCamera, const D3DXVECTOR3& TargetPos, POINT delta, float sense);
 
+	const float NWayShotRot(float spreadDeg, int bulletCount, int bulletNo);
 private:
 	CDirectX9*		m_pDx9;
 	CDirectX11*		m_pDx11;
