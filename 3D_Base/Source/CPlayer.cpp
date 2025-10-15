@@ -1,6 +1,8 @@
 #include "CPlayer.h"
 #include "CSoundManager.h"
 
+
+
 CPlayer::CPlayer()
 	: m_TurnSpeed	(0.1f)	//きっちりやりたい場合はラジアン値を設定すること
 	, m_MoveSpeed	(0.1f)
@@ -8,6 +10,10 @@ CPlayer::CPlayer()
 	, m_shotMax		(10)
 	, m_ShotNumber	(enShotNumber::Single)
 	, m_ShotType	(enShotType::Simple)
+	, m_Health		(100.f)
+	, m_IsInv		(false)
+	, m_InvTimer	(0.f)
+	, m_InvTimeMax	(2.f)
 {
 }
 
@@ -17,6 +23,13 @@ CPlayer::~CPlayer()
 
 void CPlayer::Update()
 {
+
+	if (m_InvTimer >= m_InvTimeMax)
+	{
+		m_InvTimer = 0.f;
+		m_IsInv = false;
+	}
+
 #if 1
 	//前進
 	if (GetAsyncKeyState(VK_UP) & 0x8000 || GetAsyncKeyState('W') & 0x8000) {
@@ -128,4 +141,12 @@ void CPlayer::RadioControl()
 	}
 	//上記の移動処理が終われば停止状態にしておく
 	m_MoveState = enMoveState::Stop;
+}
+
+void CPlayer::SetInvincible()
+{
+	if (m_IsInv)
+		return;
+	m_IsInv = true;
+	m_InvTimer = 0.0f;
 }

@@ -13,6 +13,7 @@
 #include "CPlayer.h"
 #include "CGround.h"
 #include "CEnemy.h"
+#include "CBoss.h"
 #include "CShot.h"
 #include "CSkinMesh.h"
 #include "CZako.h"
@@ -28,6 +29,15 @@
 class CGame
 {
 public:
+	
+	enum enGameScene
+	{
+		Title,
+		GameOver,
+		GameMain,
+		Result,
+	};
+
 	enum enShotNumber
 	{
 		Zero,
@@ -53,6 +63,7 @@ public:
 
 	void Create();
 	HRESULT LoadData();
+	void CreateElite(CEnemy*& pE);
 	void Release();
 
 	void Update();
@@ -100,6 +111,7 @@ private:
 	CSprite3D*		m_pSpritePlayer;
 	CSprite3D*		m_pSpriteExplosion;
 	CSprite3D*		m_pSpriteBullet;	//弾
+	CSprite3D*		m_pSpriteBossBullet;	//弾
 
 	//スプライト2Dデータ(使いまわす資源)
 	CSprite2D*		m_pSprite2DPmon;
@@ -110,6 +122,7 @@ private:
 	CStaticMesh*	m_pStaticMeshRoboA;		//ロボA
 	CStaticMesh*	m_pStaticMeshRoboB;		//ロボB
 	CStaticMesh*	m_pStaticMeshBSphere;	//バウンディングスフィア(当たり判定用)
+	CStaticMesh*	m_pStaticMeshBoss;
 
 	//スキンメッシュ(使いまわす資源)
 	CSkinMesh*		m_pSkinMeshZako;		//ザコ
@@ -136,12 +149,16 @@ private:
 	CEnemy**			m_ppEnemies;
 	int					m_EnemyMax;
 
+	CBoss*				m_pBoss;
+
 	//地面クラス
 	CGround*			m_pGround;
 
 	//弾クラス
 	CShot*				m_pShot[BULLET_MAX];
-	std::queue<CShot*>	m_Shot;
+	CShot*				m_pBossShot[BULLET_MAX];
+	std::queue<CShot*>	m_ShotQue;
+	std::queue<CShot*>	m_BossShotQue;
 
 	//ザコクラス
 	CZako*				m_pZako;
@@ -155,9 +172,15 @@ private:
 	POINT m_mouseDelta;
 	float m_mouseSense;
 
+	int m_Score;
+
 	//タイム
 	CTime*	m_pTime;
 	float	m_shotCd;
+	float	m_bossCd;
+
+	enGameScene m_GameState;
+
 
 private:
 	//=delete「削除定義」と呼ばれる機能.

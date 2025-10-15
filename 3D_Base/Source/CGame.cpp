@@ -1,6 +1,7 @@
 #include "CGame.h"
 #include "CSoundManager.h"
 #include "CEffect.h"	//Effekseerを使うためのクラス
+#include <random>
 
 //コンストラクタ.
 CGame::CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime )
@@ -30,7 +31,7 @@ CGame::CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime )
 	, m_pSpriteBullet	( nullptr )
 	, m_pStaticMeshBSphere	( nullptr )
 
-	, m_pSkinMeshZako	( nullptr )
+	, m_pSkinMeshZako	( nullptr ) 
 	, m_ZakoAnimNo		()
 	, m_ZakoAnimTime	()
 	, m_ZakoBonePos		()
@@ -45,24 +46,28 @@ CGame::CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime )
 	, m_pStcMeshObj		( nullptr )
 	, m_pPlayer			( nullptr )
 	, m_pEnemy			( nullptr )
+	, m_pBoss			(nullptr)
 	, m_pEnemies		()
 	, m_ppEnemies		()
-	, m_EnemyMax		( 0 )
+	, m_EnemyMax		( 100 )
 
 	, m_pGround			( nullptr )
 
-	, m_Shot			()
+	, m_pShot			()
+	, m_pBossShot		()
 
 	, m_pZako			( nullptr )
 
-	, m_Zako			()
 	, m_mousePos		({0,0})
 	, m_mouseBeforePos	({0,0})
 	, m_mouseDelta		({ 0,0 })
 	, m_mouseSense		(0.01f)
 
+	, m_Score			(0)
+
 	, m_pTime			(&pTime)
 	, m_shotCd			(0)
+	, m_bossCd			(0)
 {
 	//カメラ座標.
 	m_Camera.vPosition	= D3DXVECTOR3( 0.0f, 2.0f, 0.0f );
@@ -113,6 +118,7 @@ CGame::~CGame()
 		SAFE_DELETE( m_pEnemies[No] );
 	}
 #endif
+	SAFE_DELETE(m_pBoss);
 	SAFE_DELETE( m_pEnemy );
 
 	//プレイヤーの破棄.
@@ -134,7 +140,9 @@ CGame::~CGame()
 	SAFE_DELETE( m_pSkinMeshZako );
 
 	//スタティックメッシュの破棄
+	SAFE_DELETE( m_pStaticMeshBoss );
 	SAFE_DELETE( m_pStaticMeshBSphere );
+	SAFE_DELETE( m_pSpriteBossBullet)
 	SAFE_DELETE( m_pSpriteBullet );
 	SAFE_DELETE( m_pStaticMeshRoboB );
 	SAFE_DELETE( m_pStaticMeshRoboA );
@@ -183,6 +191,7 @@ void CGame::Create()
 	m_pSpritePlayer		= new CSprite3D();
 	m_pSpriteExplosion	= new CSprite3D();
 	m_pSpriteBullet		= new CSprite3D();
+	m_pSpriteBossBullet		= new CSprite3D();
 
 	//スプライト2Dのインスタンス作成
 	m_pSprite2DPmon	= new CSprite2D();
@@ -193,6 +202,7 @@ void CGame::Create()
 	m_pStaticMeshRoboA		= new CStaticMesh();
 	m_pStaticMeshRoboB		= new CStaticMesh();
 	m_pStaticMeshBSphere	= new CStaticMesh();
+	m_pStaticMeshBoss		= new CStaticMesh();
 
 	//スキンメッシュのインスタンス作成
 	m_pSkinMeshZako		= new CSkinMesh();
@@ -212,9 +222,9 @@ void CGame::Create()
 	//キャラクタークラスのインスタンス作成
 	m_pPlayer		= new CPlayer();
 	m_pEnemy		= new CEnemy();
+	m_pBoss			= new CBoss();
 #if 1
 	//エネミーを動的に確保
-	m_EnemyMax = 3;
 	m_ppEnemies = new CEnemy*[m_EnemyMax]();
 	for (int No = 0; No < m_EnemyMax; No++) {
 		m_ppEnemies[No] = new CEnemy();
@@ -233,8 +243,11 @@ void CGame::Create()
 	for (int No = 0; No < BULLET_MAX; No++)
 	{
 		m_pShot[No] = new CShot();
-		m_Shot.push(m_pShot[No]);
+		m_pBossShot[No] = new CShot();
+		m_ShotQue.push(m_pShot[No]);
+		m_BossShotQue.push(m_pBossShot[No]);
 	}
+
 	//ザコクラスのインスタス作成
 	m_pZako = new CZako();
 
@@ -254,6 +267,9 @@ void CGame::Create()
 //ロードデータ関数.
 HRESULT CGame::LoadData()
 {
+	std::random_device rd;
+
+
 	//デバッグテキストの読み込み
 	if (FAILED(m_pDbgText->Init( *m_pDx11 ))){
 		return E_FAIL;
@@ -306,7 +322,9 @@ HRESULT CGame::LoadData()
 	CSprite3D::SPRITE_STATE SSBullet =
 	{ 1.f, 1.f, 64.f, 64.f, 64.f, 64.f };
 	m_pSpriteBullet->Init(*m_pDx11,
-		_T("Data\\Texture\\Bullet\\bullet.png"), SSBullet);
+		_T("Data\\Texture\\Bullet\\bullet.png"), SSBullet); 
+	m_pSpriteBossBullet->Init(*m_pDx11,
+			_T("Data\\Texture\\Bullet\\bossBullet.png"), SSBullet);
 
 
 
@@ -329,16 +347,20 @@ HRESULT CGame::LoadData()
 	m_pStaticMeshFighter->Init( *m_pDx9, *m_pDx11,
 		_T( "Data\\Mesh\\Static\\Fighter\\Fighter.x" ) );
 	m_pStaticMeshGround->Init( *m_pDx9, *m_pDx11,
-//		_T("Data\\Mesh\\Static\\Ground\\ground.x" ));
-		_T("Data\\Mesh\\Static\\Stage\\stage.x"));
+		_T("Data\\Mesh\\Static\\Ground\\ground.x" ));
+		//_T("Data\\Mesh\\Static\\Stage\\stage.x"));
 	m_pStaticMeshRoboA->Init(*m_pDx9, *m_pDx11,
 		_T("Data\\Mesh\\Static\\Robo\\RobotA_pivot.x"));
 	m_pStaticMeshRoboB->Init(*m_pDx9, *m_pDx11,
 		_T("Data\\Mesh\\Static\\Robo\\RobotB_pivot.x"));
+	//ボスの読み込み
+	m_pStaticMeshBoss->Init(*m_pDx9, *m_pDx11,
+		_T("Data\\Mesh\\Static\\Boss\\boss.x"));
 
 	//バウンディングスフィア(当たり判定用)
 	m_pStaticMeshBSphere->Init(*m_pDx9, *m_pDx11,
 		_T("Data\\Collision\\Sphere.x"));
+
 
 	//スキンメッシュの読み込み
 	m_pSkinMeshZako->Init(*m_pDx9, *m_pDx11,
@@ -346,9 +368,10 @@ HRESULT CGame::LoadData()
 
 	//爆発スプライトを設定.
 	m_pExplosion->AttachSprite( *m_pSpriteExplosion );
+	m_pExplosion->SetScale(2.0f);
 	for (int No = 0; No < BULLET_MAX; No++) {
 		m_pShot[No]->AttachSprite(*m_pSpriteBullet);
-
+		m_pBossShot[No]->AttachSprite(*m_pSpriteBossBullet);
 	}
 
 	//Pモンスプライトを設定
@@ -360,8 +383,10 @@ HRESULT CGame::LoadData()
 	//スタティックメッシュを設定
 	m_pStcMeshObj->AttachMesh( *m_pStaticMeshFighter );
 	m_pPlayer->AttachMesh( *m_pStaticMeshFighter );
+	m_pPlayer->SetScale(2.f);
 	m_pGround->AttachMesh( *m_pStaticMeshGround );
 	m_pEnemy->AttachMesh( *m_pStaticMeshRoboB );
+	m_pBoss->AttachMesh(*m_pStaticMeshBoss);
 
 	//スキンメッシュを設定
 	m_pZako->AttachMesh( *m_pSkinMeshZako );
@@ -396,19 +421,35 @@ HRESULT CGame::LoadData()
 	//バウンディングスフィアの作成
 	m_pPlayer->CreateBSphereForMesh(*m_pStaticMeshBSphere);
 	m_pEnemy->CreateBSphereForMesh(*m_pStaticMeshBSphere);
+	m_pBoss->CreateBSphereForMesh(*m_pStaticMeshBSphere);
+
 	//m_pShot->CreateBSphereForMesh(*m_pStaticMeshBullet);
 
 	//キャラクターの初期座標を設定
 	m_pPlayer->SetPosition( 0.f, 1.f, 6.f );
-	m_pEnemy->SetPosition( 0.f, 1.f, 16.f );
-
+	m_pEnemy->SetPosition( 0.f, -10.f, 16.f );
+	m_pBoss->SetPosition( 0.f, -10.f, 0.f );
+	m_pBoss->SetScale(3.0);
 	//エネミー複数設定
 #if 1
 	for (int No = 0; No < m_EnemyMax; No++) {
 		auto& pE = m_ppEnemies[No];
-		pE->AttachMesh(*m_pStaticMeshRoboA);
-		pE->CreateBSphereForMesh(*m_pStaticMeshBSphere);
-		pE->SetPosition(-3.f + (No * 3.f), 1.f, 10.f);
+		std::mt19937 gen(rd());
+		std::uniform_real_distribution<float> dis(0.0, 1.0f);
+		float rng = dis(gen);
+		//ランダムでAかBを選択して設定
+		if (rng < 0.25f)
+		{
+			CreateElite(pE);
+			pE->Respawn();
+		}
+		else
+		{
+			pE->AttachMesh(*m_pStaticMeshRoboA);
+			pE->SetScale(1.0f);
+			pE->CreateBSphereForMesh(*m_pStaticMeshBSphere);
+			pE->Respawn();
+		}
 	}
 #else
 	for (int No = 0; No < ENEMY_MAX; No++) {
@@ -421,6 +462,8 @@ HRESULT CGame::LoadData()
 
 	return S_OK;
 }
+
+
 
 //解放関数.
 void CGame::Release()
@@ -447,13 +490,49 @@ void CGame::Update()
 	ClientToScreen(m_hWnd, &center);
 	SetCursorPos(center.x, center.y);
 
+	if (m_pPlayer->GetHealth() <= 0.f)
+	{
+		m_GameState = enGameScene::GameOver;
+		m_pPlayer->SetPosition(0.f, -2.f, 0.f);
+	}
+	if (m_Score > 5000)
+	{
+		m_pPlayer->SetShotType(CPlayer::Triple);
+	}
+	else if(m_Score > 1000)
+		m_pPlayer->SetShotType(CPlayer::Double);
+
 	m_pPlayer->Update();
+	m_pPlayer->TickInvTimer(m_pTime->GetFixedDeltaTime()/1000.f);
+
 	m_pGround->Update();
+
+	if (m_pBoss->IsShot() == true) 
+	{
+		for (int No = 0; No < BULLET_MAX; No++)
+		{
+			float cadence = m_bossCd;					//連射速度
+			m_bossCd -= m_pTime->GetFixedDeltaTime();	//連射速度を減少
+			if (m_bossCd <= 0.0f)
+			{
+				CShot* bullet = m_BossShotQue.front();
+				bullet->Reload(
+					m_pBoss->GetPosition(),
+					m_pBoss->GetRotation().y);
+				//弾をキューの最後に移動
+				m_bossCd = m_pBoss->GetShootCd();
+
+				m_BossShotQue.pop();
+				m_BossShotQue.push(bullet);
+			}
+
+		}
+	}
 
 #if 1
 	//弾を飛ばしたい!
 	int bulletCount = m_pPlayer->GetShotNumber() + 1; // existing convention: enum value + 1
-	const float spreadDeg = 60.0f; // total spread in degrees (change to widen/narrow pattern)
+	const float spreadDeg = 20.0f; // total spread in degrees (change to widen/narrow pattern)
 	const float spreadRad = (bulletCount > 1) ? D3DXToRadian(spreadDeg) : 0.0f;
 	const float startAngle = -spreadRad * 0.5f; // start relative to forward (-half spread)
 	const float angleStep = (bulletCount > 1) ? (spreadRad / (bulletCount - 1)) : 0.0f;
@@ -468,7 +547,7 @@ void CGame::Update()
 		{
 			for (int No = 0; No < bulletCount; No++)
 			{
-				CShot* bullet = m_Shot.front();		//キューの先頭を取得
+				CShot* bullet = m_ShotQue.front();		//キューの先頭を取得
 
 				const float rotY = m_pPlayer->GetRotation().y + startAngle + angleStep * No;
 
@@ -478,8 +557,8 @@ void CGame::Update()
 				m_shotCd = bullet->GetCadence();
 
 				//弾をキューの最後に移動
-				m_Shot.pop();
-				m_Shot.push(bullet);
+				m_ShotQue.pop();
+				m_ShotQue.push(bullet);
 			}
 		}
 
@@ -492,16 +571,27 @@ void CGame::Update()
 		m_pShot->Reload(m_pPlayer->GetPosition());
 	}
 #endif
-	for (int No = 0; No < BULLET_MAX; No++) {
-		m_pShot[No]->Update();
+	for (int sNo = 0; sNo < BULLET_MAX; sNo++) {
+
+		m_pShot[sNo]->Update();
+		m_pBossShot[sNo]->Update();
 	}
 
-	m_pEnemy->Update();
-
-#if 1
 	for (int No = 0; No < m_EnemyMax; No++) {
+		m_ppEnemies[No]->SetTargetPos(m_pPlayer->GetPosition());
 		m_ppEnemies[No]->Update();
 	}
+
+	if (m_Score >= 50 && m_pBoss->GetEnemyState() == CEnemy::DESPAWN && m_GameState != enGameScene::Result)
+	{
+		m_pBoss->SetEnemyState(CEnemy::CHASING);
+		m_pBoss->SetPosition(0.f, 1.f, m_pPlayer->GetPosition().z + 100.f);
+	}
+
+	m_pBoss->Update();
+	m_pBoss->SetTargetPos(m_pPlayer->GetPosition());
+
+#if 1
 #else
 	for (int No = 0; No < ENEMY_MAX; No++) {
 		m_pEnemies[No]->Update();
@@ -509,61 +599,6 @@ void CGame::Update()
 #endif
 
 	m_pExplosion->Update();
-
-	//----------------------------
-	// スキンメッシュ
-	//----------------------------
-	m_pZako->Update();
-
-	//ザコ複数
-	for (auto& e : m_Zako) {
-		e->Update();
-	}
-
-#if 1
-	static POINTS PatternNo = { 0, 0 };
-	const static POINTS PatternMax = m_pSprite2DPmon->GetPatternMax();
-
-	if (GetAsyncKeyState('P') & 0x0001) {
-		PatternNo.x++;
-		if (PatternNo.x >= PatternMax.x) {
-			PatternNo.x = 0;
-			PatternNo.y++;
-			if (PatternNo.y >= PatternMax.y) {
-				PatternNo.y = 0;
-			}
-		}
-		m_pPmon->SetPatternNo( PatternNo.x, PatternNo.y );
-	}
-#endif
-	m_pPmon->Update();
-	m_pBeedrill->Update();
-	m_pParasect->Update();
-	m_pScyther->Update();
-
-	//Effect制御
-	{
-		//エフェクトのインスタンスごとに必要なハンドル
-		//※３つ表示して制御するなら３つ必要になる
-		static ::EsHandle hEffect = -1;
-
-		if (GetAsyncKeyState('Y') & 0x0001) {
-			hEffect = CEffect::Play(CEffect::Test0, D3DXVECTOR3(0.f, 1.f, 0.f));
-
-			//拡大縮小
-			CEffect::SetScale(hEffect, D3DXVECTOR3(0.8f, 0.8f, 0.8f));
-
-			//回転(Y軸回転)
-			CEffect::SetRotation(hEffect, D3DXVECTOR3(0.f, D3DXToRadian(90.0f), 0.f));
-
-			//位置を再設定
-			CEffect::SetLocation(hEffect, D3DXVECTOR3(0.f, 1.f, 1.f));
-		}
-		if (GetAsyncKeyState('T') & 0x0001) {
-			CEffect::Stop(hEffect);
-		}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
-	}
-
 
 	TopDownCamera(
 		&m_Camera,
@@ -579,11 +614,11 @@ void CGame::Update()
 	float rotX = m_Camera.yaw;
 	m_pPlayer->SetRotation(0, rotX, 0);
 
-//	//三人称カメラ
-//	ThirdPersonCamera(
-//		&m_Camera,
-//		m_pPlayer->GetPosition(),
-//		m_pPlayer->GetRotation().y);
+	////三人称カメラ
+	//ThirdPersonCamera(
+	//	&m_Camera,
+	//	m_pPlayer->GetPosition(),
+	//	m_pPlayer->GetRotation().y);
 }
 
 //描画処理.
@@ -597,8 +632,7 @@ void CGame::Draw()
 
 	m_pPlayer->Draw( m_mView, m_mProj, m_Light, m_Camera );
 
-
-	m_pEnemy->Draw( m_mView, m_mProj, m_Light, m_Camera );
+	m_pBoss->Draw(m_mView, m_mProj, m_Light, m_Camera);
 
 #if 1
 	for (int No = 0; No < m_EnemyMax; No++) {
@@ -610,58 +644,85 @@ void CGame::Draw()
 	}
 #endif
 
-	//----------------------------
-	// スキンメッシュ
-	//----------------------------
-	m_pZako->Draw(m_mView, m_mProj, m_Light, m_Camera);
-//	//ボーン座標に合わせて球体を表示
-//	m_pStaticMeshBSphere->SetPosition(m_ZakoBonePos);
-//	m_pStaticMeshBSphere->Render(m_mView, m_mProj, m_Light, m_Camera.vPosition);
-
-	//ザコ複数
-	for (auto& e : m_Zako) {
-		e->Draw(m_mView, m_mProj, m_Light, m_Camera);
-	}
-
-	m_pPmon->Draw();
-
-	//深度テスト無効にすることで、処理順番で描画させることができる
-	m_pDx11->SetDepth(false);
-	m_pBeedrill->Draw();
-	m_pParasect->Draw();
-	m_pScyther->Draw();
-	//やりたいことが終わったので、深度テストを有効にしておく
-	m_pDx11->SetDepth(true);
-
 	//当たり判定の中心座標を更新する
 	m_pPlayer->UpdateBSpherePos();
 	m_pEnemy->UpdateBSpherePos();
+	m_pBoss->UpdateBSpherePos();
 	//m_pShot->UpdateBSpherePos();
 
 	//プレイヤーとエネミーの当たり判定
-	if (m_pPlayer->GetBSphere()->IsHit(*m_pEnemy->GetBSphere()))
+	if (m_pPlayer->GetBSphere()->IsHit(*m_pBoss->GetBSphere()))
 	{
-		SetWindowText(m_hWnd, _T("衝突しています"));
+		m_pPlayer->SetDamageValue(20);
 	}
 	else
 	{
 		SetWindowText(m_hWnd, _T(""));
 	}
 
+	for (int i = 0; i < m_EnemyMax; i++) {
+		m_ppEnemies[i]->UpdateBSpherePos();
+	}
+
 	//弾とエネミーの当たり判定
+	for (int eNo = 0; eNo < m_EnemyMax; eNo++)
+	{
+		//プレイヤーとエネミーの当たり判定
+		if (m_pPlayer->GetBSphere()->IsHit(*m_ppEnemies[eNo]->GetBSphere()))
+		{
+			m_pPlayer->SetDamageValue(5);
+			
+			
+		}
+
+		for (int No = 0; No < BULLET_MAX; No++)
+		{
+			if (m_pShot[No]->IsHit(m_ppEnemies[eNo], 1.f))
+			{
+				m_pExplosion->SetPosition(m_ppEnemies[eNo]->GetPosition());	//エネミーの位置にそろえる
+				dynamic_cast<CExplosion*>(m_pExplosion)->ResetAnimation();//アニメーションリセット
+				m_pShot[No]->SetDisplay(false);
+				m_pShot[No]->SetPosition(0.f, -10.f, 0.f);	//地面に埋める
+				m_ppEnemies[eNo]->SetDamagedValue(10.f);
+				if (m_ppEnemies[eNo]->GetHealth() <= 0.f)
+				{
+					m_Score += 10;
+				}
+			}
+
+
+		}
+	}
 
 	for (int No = 0; No < BULLET_MAX; No++)
 	{
-		if (m_pShot[No]->IsHit(m_pEnemy, 0.1))
+
+		if (m_pBossShot[No]->IsHit(m_pPlayer, 0.01))
+		{
+			m_pPlayer->SetDamageValue(10);
+
+			m_pExplosion->SetPosition(m_pPlayer->GetPosition());	//エネミーの位置にそろえる
+			dynamic_cast<CExplosion*>(m_pExplosion)->ResetAnimation();//アニメーションリセット
+			//弾
+			m_pBossShot[No]->SetDisplay(false);
+			m_pBossShot[No]->SetPosition(0.f, -10.f, 0.f);	//地面に埋める
+		}
+
+		if (m_pShot[No]->IsHit(m_pBoss, 0.1))
 		{
 			//爆発
-			m_pExplosion->SetPosition(m_pEnemy->GetPosition());	//エネミーの位置にそろえる
+			m_pExplosion->SetPosition(m_pBoss->GetPosition());	//エネミーの位置にそろえる
 			dynamic_cast<CExplosion*>(m_pExplosion)->ResetAnimation();//アニメーションリセット
 			//弾
 			m_pShot[No]->SetDisplay(false);
 			m_pShot[No]->SetPosition(0.f, -10.f, 0.f);	//地面に埋める
-			//エネミー
-			m_pEnemy->SetPosition(0.f, 1.f, 20.f);	//奥へ再配置
+			m_pBoss->SetDamagedValue(10);
+			if (m_pBoss->GetHealth() <= 0)
+			{
+				m_GameState = enGameScene::Result;
+				m_Score += 10000;
+				m_pBoss->SetPosition(0.f,-10.f,0.f);
+			}
 		}
 
 	}
@@ -669,6 +730,7 @@ void CGame::Draw()
 	m_pExplosion->Draw(m_mView, m_mProj);
 	for (int No = 0; No < BULLET_MAX; No++) {
 		m_pShot[No]->Draw(m_mView, m_mProj);
+		m_pBossShot[No]->Draw(m_mView, m_mProj);
 	}
 
 #else
@@ -702,19 +764,17 @@ void CGame::Draw()
 			m_mView, m_mProj, m_pPlayer->GetCrossRay().Ray[dir]);
 	}
 
-	//デバッグテキストの描画
-	m_pDbgText->SetColor(0.9f, 0.6f, 0.f);	//色の設定
-	m_pDbgText->Render(_T("ABCD"), 10, 100);
-
 	//デバッグテキスト(数値入り)の描画
-	m_pDbgText->SetColor(1.f, 0.f, 0.f);
-	TCHAR dbgText[64];
-	_stprintf_s(dbgText, _T("Float:%f, %f"), 1.f, 2.2f );
-	m_pDbgText->Render( dbgText, 10, 110 );
-
 	m_pDbgText->SetColor(1.f, 1.f, 1.f);
-	_stprintf_s(dbgText, _T("DELTA:%d, %d"), m_mouseDelta.x, m_mouseDelta.y);
+	TCHAR dbgText[64];
+	_stprintf_s(dbgText, _T("SCORE:%d"), m_Score);
+	m_pDbgText->Render( dbgText, 10, 110 );
+	m_pDbgText->SetColor(1.f, 1.f, 1.f);
+	_stprintf_s(dbgText, _T("HEALTH:%d"), m_pPlayer->GetHealth() );
 	m_pDbgText->Render(dbgText, 10, 150);
+
+	_stprintf_s(dbgText, _T("TIME:%.2f"), m_pTime->GetTotalTime()/1000.f);
+	m_pDbgText->Render(dbgText, 10, 100);
 }
 
 //カメラ関数.
@@ -826,4 +886,12 @@ void CGame::CameraRotToMouse(CAMERA* pCamera, const D3DXVECTOR3& TargetPos, POIN
 
 	pCamera->vLook =  position + lookDirection;
 
+}
+
+void CGame::CreateElite(CEnemy*& enemy)
+{
+	enemy->AttachMesh(*m_pStaticMeshRoboB);
+	enemy->SetScale(3.0f);
+	enemy->CreateBSphereForMesh(*m_pStaticMeshBSphere);
+	enemy->SetHealth(100);
 }
