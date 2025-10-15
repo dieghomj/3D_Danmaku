@@ -1,6 +1,8 @@
 #include "CPlayer.h"
 #include "CSoundManager.h"
 
+
+
 CPlayer::CPlayer()
 	: m_TurnSpeed	(0.1f)	//‚«‚Á‚¿‚è‚â‚è‚½‚¢ê‡‚Íƒ‰ƒWƒAƒ“’l‚ğİ’è‚·‚é‚±‚Æ
 	, m_MoveSpeed	(0.1f)

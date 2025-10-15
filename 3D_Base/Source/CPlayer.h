@@ -42,6 +42,10 @@ public:
 			m_Health -= dmg; 
 		}
 	};
+
+	void SetShotType(enShotNumber shotNumber) { m_ShotNumber = shotNumber; };
+
+
 	void SetInvincible();
 	bool IsInvincible() const { return m_IsInv; }
 

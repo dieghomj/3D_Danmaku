@@ -6,9 +6,6 @@
 
 class CBoss : public CEnemy
 {
-private:
-	static const int m_ShotMax = 50;
-
 public:
 	CBoss();
 	virtual ~CBoss();
@@ -18,7 +15,6 @@ public:
 
 	float GetShootCd() const { return m_ShootCd; };
 
-public:
 
 private:
 

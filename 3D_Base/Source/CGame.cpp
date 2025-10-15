@@ -430,7 +430,6 @@ HRESULT CGame::LoadData()
 	m_pEnemy->SetPosition( 0.f, -10.f, 16.f );
 	m_pBoss->SetPosition( 0.f, -10.f, 0.f );
 	m_pBoss->SetScale(3.0);
-	m_pBoss->SetHealth(1000.0f);
 	//エネミー複数設定
 #if 1
 	for (int No = 0; No < m_EnemyMax; No++) {
@@ -496,6 +495,13 @@ void CGame::Update()
 		m_GameState = enGameScene::GameOver;
 		m_pPlayer->SetPosition(0.f, -2.f, 0.f);
 	}
+	if (m_Score > 5000)
+	{
+		m_pPlayer->SetShotType(CPlayer::Triple);
+	}
+	else if(m_Score > 1000)
+		m_pPlayer->SetShotType(CPlayer::Double);
+
 	m_pPlayer->Update();
 	m_pPlayer->TickInvTimer(m_pTime->GetFixedDeltaTime()/1000.f);
 
@@ -525,8 +531,8 @@ void CGame::Update()
 
 #if 1
 	//弾を飛ばしたい!
-	int bulletCount = m_pPlayer->GetShotNumber(); // existing convention: enum value + 1
-	const float spreadDeg = 60.0f; // total spread in degrees (change to widen/narrow pattern)
+	int bulletCount = m_pPlayer->GetShotNumber() + 1; // existing convention: enum value + 1
+	const float spreadDeg = 20.0f; // total spread in degrees (change to widen/narrow pattern)
 	const float spreadRad = (bulletCount > 1) ? D3DXToRadian(spreadDeg) : 0.0f;
 	const float startAngle = -spreadRad * 0.5f; // start relative to forward (-half spread)
 	const float angleStep = (bulletCount > 1) ? (spreadRad / (bulletCount - 1)) : 0.0f;
@@ -539,7 +545,7 @@ void CGame::Update()
 		//連射速度を超えたら弾を発射
 		if (m_shotCd <= 0.0f)
 		{
-			for (int No = 0; No <= bulletCount; No++)
+			for (int No = 0; No < bulletCount; No++)
 			{
 				CShot* bullet = m_ShotQue.front();		//キューの先頭を取得
 
@@ -576,10 +582,10 @@ void CGame::Update()
 		m_ppEnemies[No]->Update();
 	}
 
-	if (m_Score >= 50 && m_pBoss->GetEnemyState() == CEnemy::DESPAWN)
+	if (m_Score >= 50 && m_pBoss->GetEnemyState() == CEnemy::DESPAWN && m_GameState != enGameScene::Result)
 	{
 		m_pBoss->SetEnemyState(CEnemy::CHASING);
-		m_pBoss->SetPosition(0.f, 1.f, 0.f);
+		m_pBoss->SetPosition(0.f, 1.f, m_pPlayer->GetPosition().z + 100.f);
 	}
 
 	m_pBoss->Update();
@@ -647,7 +653,7 @@ void CGame::Draw()
 	//プレイヤーとエネミーの当たり判定
 	if (m_pPlayer->GetBSphere()->IsHit(*m_pBoss->GetBSphere()))
 	{
-		m_pPlayer->SetDamageValue(5);
+		m_pPlayer->SetDamageValue(20);
 	}
 	else
 	{
@@ -693,7 +699,7 @@ void CGame::Draw()
 
 		if (m_pBossShot[No]->IsHit(m_pPlayer, 0.01))
 		{
-			m_pPlayer->SetDamageValue(2);
+			m_pPlayer->SetDamageValue(10);
 
 			m_pExplosion->SetPosition(m_pPlayer->GetPosition());	//エネミーの位置にそろえる
 			dynamic_cast<CExplosion*>(m_pExplosion)->ResetAnimation();//アニメーションリセット
@@ -710,9 +716,13 @@ void CGame::Draw()
 			//弾
 			m_pShot[No]->SetDisplay(false);
 			m_pShot[No]->SetPosition(0.f, -10.f, 0.f);	//地面に埋める
-			//エネミー
-			m_pBoss->SetPosition(0.f, 1.f, 20.f);	//奥へ再配置
-			m_GameState = enGameScene::Result;
+			m_pBoss->SetDamagedValue(10);
+			if (m_pBoss->GetHealth() <= 0)
+			{
+				m_GameState = enGameScene::Result;
+				m_Score += 10000;
+				m_pBoss->SetPosition(0.f,-10.f,0.f);
+			}
 		}
 
 	}
@@ -883,5 +893,5 @@ void CGame::CreateElite(CEnemy*& enemy)
 	enemy->AttachMesh(*m_pStaticMeshRoboB);
 	enemy->SetScale(3.0f);
 	enemy->CreateBSphereForMesh(*m_pStaticMeshBSphere);
-	enemy->SetHealth(50);
+	enemy->SetHealth(100);
 }

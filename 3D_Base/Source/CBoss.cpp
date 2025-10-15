@@ -9,7 +9,8 @@ CBoss::CBoss()
 	, m_angleStep		(0.0f)
 	
 {
-	m_MoveSpeed = 0.03f;
+	m_Health = 1000.f;
+	m_MoveSpeed = 0.04f;
 }
 
 enum enAttackPatter
@@ -28,6 +29,12 @@ void CBoss::Update()
 	D3DXVECTOR3 dir;
 	float distance;
 	GetTargetDir(&dir, &distance);
+
+	if (m_EnemyState == CEnemy::DESPAWN)
+	{
+
+	}
+
 
 	if (m_EnemyState == CBoss::CHASING)
 	{
