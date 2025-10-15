@@ -47,7 +47,7 @@ CGame::CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime )
 	, m_pEnemy			( nullptr )
 	, m_pEnemies		()
 	, m_ppEnemies		()
-	, m_EnemyMax		( 0 )
+	, m_EnemyMax		( 100 )
 
 	, m_pGround			( nullptr )
 
@@ -214,7 +214,6 @@ void CGame::Create()
 	m_pEnemy		= new CEnemy();
 #if 1
 	//エネミーを動的に確保
-	m_EnemyMax = 3;
 	m_ppEnemies = new CEnemy*[m_EnemyMax]();
 	for (int No = 0; No < m_EnemyMax; No++) {
 		m_ppEnemies[No] = new CEnemy();
@@ -409,6 +408,7 @@ HRESULT CGame::LoadData()
 		pE->AttachMesh(*m_pStaticMeshRoboA);
 		pE->CreateBSphereForMesh(*m_pStaticMeshBSphere);
 		pE->SetPosition(-3.f + (No * 3.f), 1.f, 10.f);
+		pE->SetScale(2.0f);
 	}
 #else
 	for (int No = 0; No < ENEMY_MAX; No++) {
@@ -500,6 +500,7 @@ void CGame::Update()
 
 #if 1
 	for (int No = 0; No < m_EnemyMax; No++) {
+		m_ppEnemies[No]->SetTargetPos(m_pPlayer->GetPosition());
 		m_ppEnemies[No]->Update();
 	}
 #else

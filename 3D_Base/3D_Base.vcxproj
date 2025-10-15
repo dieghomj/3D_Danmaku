@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\CBoss.cpp" />
     <ClCompile Include="Source\CBoundingSphere.cpp" />
     <ClCompile Include="Source\CCharacter.cpp" />
     <ClCompile Include="Source\CEffect.cpp" />
@@ -182,6 +183,7 @@
     <ClCompile Include="Source\CTime.cpp" />
     <ClCompile Include="Source\CUIObject.cpp" />
     <ClCompile Include="Source\CZako.cpp" />
+    <ClCompile Include="Source\CElite.cpp" />
     <ClCompile Include="Source\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -189,6 +191,7 @@
     <ClCompile Include="Source\WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\CBoss.h" />
     <ClInclude Include="Source\CBoundingSphere.h" />
     <ClInclude Include="Source\CCharacter.h" />
     <ClInclude Include="Source\CEffect.h" />
@@ -217,6 +220,7 @@
     <ClInclude Include="Source\CTime.h" />
     <ClInclude Include="Source\CUIObject.h" />
     <ClInclude Include="Source\CZako.h" />
+    <ClInclude Include="Source\CElite.h" />
     <ClInclude Include="Source\Global.h" />
     <ClInclude Include="Source\MyMacro.h" />
     <ClInclude Include="Source\stdafx.h" />
