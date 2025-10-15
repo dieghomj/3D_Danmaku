@@ -21,6 +21,7 @@ public:
 		TurnLeft,	//¶‰ñ“]
 		TurnRight,	//‰E‰ñ“]
 	};
+
 public:
 	CPlayer();
 	virtual ~CPlayer() override;
@@ -32,8 +33,21 @@ public:
 	//ƒ‰ƒWƒRƒ“‘€ì
 	void RadioControl();
 
-	int GetShotNumber() const { return m_ShotNumber; }
-	int GetShotType()	const { return m_ShotType; }
+	void TickInvTimer(float dt) { m_InvTimer += dt; }
+
+	void SetDamageValue(int dmg) { 
+		if (!m_IsInv)
+		{
+			SetInvincible();
+			m_Health -= dmg; 
+		}
+	};
+	void SetInvincible();
+	bool IsInvincible() const { return m_IsInv; }
+
+	int GetHealth() const { return m_Health; }
+	int GetShotNumber() const { return m_ShotNumber; };
+	int GetShotType()	const { return m_ShotType; };
 
 protected:
 
@@ -43,4 +57,10 @@ protected:
 	enMoveState	 m_MoveState;	//ˆÚ“®ó‘Ô
 	enShotNumber m_ShotNumber;
 	enShotType	 m_ShotType;
+	
+	float		 m_InvTimer;
+	float		 m_InvTimeMax;
+	bool		 m_IsInv;
+	float		 m_Health;
+private:
 };
