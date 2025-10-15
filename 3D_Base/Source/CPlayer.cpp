@@ -6,59 +6,22 @@ CPlayer::CPlayer()
 	, m_MoveSpeed	(0.1f)
 	, m_MoveState	(enMoveState::Stop)
 	, m_shotMax		(10)
-	, m_ShotNumber	(enShotNumber::Single)
-	, m_ShotType	(enShotType::Simple)
+	, m_ShotNumber	(enShotNumber::Triple)
+	, m_ShotType	(enShotType::Charged)
+	, m_Cadence(100.0f)	//連射速度
+	, m_NWaySrpeadDeg(30.0f)	//NWay弾の広がり角度
+	, m_ChargedShotTime(0.f)
+	, m_CadenceTimer(0.f)
+	, m_IsBomb(false)
+	
 {
 }
 
-CPlayer::~CPlayer()
-{
-}
+CPlayer::~CPlayer() = default;
 
 void CPlayer::Update()
 {
-#if 1
-	//前進
-	if (GetAsyncKeyState(VK_UP) & 0x8000 || GetAsyncKeyState('W') & 0x8000) {
-		m_MoveState = enMoveState::Forward;
-	}
-	//後退
-	if (GetAsyncKeyState(VK_DOWN) & 0x8000 || GetAsyncKeyState('S') & 0x8000) {
-		m_MoveState = enMoveState::Backward;
-	}
-	if (GetAsyncKeyState(VK_RIGHT) & 0x8000 || GetAsyncKeyState('A') & 0x8000) {
-		m_MoveState = enMoveState::Rightward;
-	}
-	if (GetAsyncKeyState(VK_LEFT) & 0x8000 || GetAsyncKeyState('D') & 0x8000) {
-		m_MoveState = enMoveState::Leftward;
-	}
-	RadioControl();
-#else
-	float add_value = 0.1f;
-	if (GetAsyncKeyState(VK_UP) & 0x8000) {
-		m_vPosition.y += add_value;
-	}
-	if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
-		m_vPosition.y -= add_value;
-	}
-	if (GetAsyncKeyState(VK_RIGHT) & 0x8000) {
-		m_vPosition.x += add_value;
-	}
-	if (GetAsyncKeyState(VK_LEFT) & 0x8000) {
-		m_vPosition.x -= add_value;
-	}
-#endif
-	//前回のフレームで弾を飛ばしているかも知れないのでfalseにする
-	m_Shot = false;
-
-	//弾を飛ばしたい!
-	if (GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
-		m_Shot = true;
-
-		////SEの再生
-		//CSoundManager::PlaySE(CSoundManager::SE_Jump);
-	}
-
+	HandleInput();			//入力処理
 	//レイの位置をプレイヤーの座標にそろえる
 	m_pRayY->Position = m_vPosition;
 	//地面めり込み回避のためプレイヤーの位置よりも少し上にしておく
@@ -73,9 +36,8 @@ void CPlayer::Update()
 		m_pCrossRay->Ray[dir].RotationY = m_vRotation.y;
 	}
 
-
 	CCharacter::Update();
-}
+}	
 
 void CPlayer::Draw(
 	D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera)
@@ -128,4 +90,72 @@ void CPlayer::RadioControl()
 	}
 	//上記の移動処理が終われば停止状態にしておく
 	m_MoveState = enMoveState::Stop;
+}
+
+void CPlayer::HandleInput()
+{
+#if 1
+	//前進
+	if (GetAsyncKeyState(VK_UP) & 0x8000 || GetAsyncKeyState('W') & 0x8000) {
+		m_MoveState = enMoveState::Forward;
+	}
+	//後退
+	if (GetAsyncKeyState(VK_DOWN) & 0x8000 || GetAsyncKeyState('S') & 0x8000) {
+		m_MoveState = enMoveState::Backward;
+	}
+	if (GetAsyncKeyState(VK_RIGHT) & 0x8000 || GetAsyncKeyState('A') & 0x8000) {
+		m_MoveState = enMoveState::Rightward;
+	}
+	if (GetAsyncKeyState(VK_LEFT) & 0x8000 || GetAsyncKeyState('D') & 0x8000) {
+		m_MoveState = enMoveState::Leftward;
+	}
+	RadioControl();
+#else
+	float add_value = 0.1f;
+	if (GetAsyncKeyState(VK_UP) & 0x8000) {
+		m_vPosition.y += add_value;
+	}
+	if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
+		m_vPosition.y -= add_value;
+	}
+	if (GetAsyncKeyState(VK_RIGHT) & 0x8000) {
+		m_vPosition.x += add_value;
+	}
+	if (GetAsyncKeyState(VK_LEFT) & 0x8000) {
+		m_vPosition.x -= add_value;
+	}
+#endif
+	//前回のフレームで弾を飛ばしているかも知れないのでfalseにする
+	m_Shot = false;
+
+	bool fireDown = (GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0;
+
+	//弾を飛ばしたい!
+	if (fireDown) 
+	{
+		m_IsCharging = true;
+
+		m_ChargedShotTime += 1000.0f / FPS;
+		m_ChargedShotTime = min(m_ChargedShotTime, m_ChargedShotMax);
+
+		if (m_CadenceTimer <= 0.0f && m_ShotType == CCharacter::Simple)
+		{
+			m_Shot = true;
+			//連射速度をリセット
+			ResetCadenceTimer();
+		}
+
+	}
+
+	if (!fireDown && m_WasFireDown)
+	{
+		m_Shot = true;
+
+		ChargedTime = m_ChargedShotTime;
+		m_ChargedShotTime = 0.0f;
+		m_IsCharging = false;
+	}
+
+	m_WasFireDown = fireDown;
+
 }

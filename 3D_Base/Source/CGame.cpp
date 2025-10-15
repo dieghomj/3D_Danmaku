@@ -62,7 +62,6 @@ CGame::CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime )
 	, m_mouseSense		(0.01f)
 
 	, m_pTime			(&pTime)
-	, m_shotCd			(0)
 {
 	//カメラ座標.
 	m_Camera.vPosition	= D3DXVECTOR3( 0.0f, 2.0f, 0.0f );
@@ -450,37 +449,17 @@ void CGame::Update()
 	m_pPlayer->Update();
 	m_pGround->Update();
 
+
+	if (m_pPlayer->IsBomb() == true)
+	{
+		//爆発エフェクトを再生
+		//画面にある敵を消す
+		//CEffect::Play(CEffect::Explosion, m_pPlayer->GetPosition());
+	}
+
 #if 1
 	//弾を飛ばしたい!
-	int bulletCount = m_pPlayer->GetShotNumber(); // existing convention: enum value + 1
-	const float spreadDeg = 60.0f; // total spread in degrees (change to widen/narrow pattern)
-	
-	if (m_pPlayer->IsShot() == true) {
-		
-		float cadence = m_shotCd;					//連射速度
-		m_shotCd -= m_pTime->GetFixedDeltaTime();	//連射速度を減少
-		
-		//連射速度を超えたら弾を発射
-		if (m_shotCd <= 0.0f)
-		{
-			for (int No = 0; No <= bulletCount; No++)
-			{
-				CShot* bullet = m_Shot.front();		//キューの先頭を取得
-
-				const float rotY = m_pPlayer->GetRotation().y + NWayShotRot(m_pPlayer->GetNWaySpreadDeg(), bulletCount, No);
-
-				bullet->Reload(
-					m_pPlayer->GetPosition(),
-					rotY);
-				m_shotCd = bullet->GetCadence();
-
-				//弾をキューの最後に移動
-				m_Shot.pop();
-				m_Shot.push(bullet);
-			}
-		}
-
-	}
+	HandlePlayerShot();
 
 #else
 	//弾を飛ばしたい!
@@ -825,7 +804,7 @@ void CGame::CameraRotToMouse(CAMERA* pCamera, const D3DXVECTOR3& TargetPos, POIN
 
 }
 
-const float CGame::NWayShotRot(float spreadDeg, int bulletCount, int bulletNo)
+float CGame::GetNWayRot(float spreadDeg, int bulletCount, int bulletNo)
 {
 	const float spreadRad = (bulletCount > 1) ? D3DXToRadian(spreadDeg) : 0.0f;
 	const float startAngle = -spreadRad * 0.5f; // start relative to forward (-half spread)
@@ -833,4 +812,75 @@ const float CGame::NWayShotRot(float spreadDeg, int bulletCount, int bulletNo)
 
 	return startAngle + angleStep * bulletNo;
 
+}
+
+
+
+void CGame::HandlePlayerShot()
+{
+	if (m_Shot.empty())		//弾が無いので発射できない
+		return;
+	
+	int bulletCount = m_pPlayer->GetShotNumber() + 1;				//連射数
+	m_pPlayer->DecCadenceTimer(m_pTime->GetFixedDeltaTime());	//連射速度を減少
+	//連射速度を超えたら弾を発射
+
+	if (m_pPlayer->IsShot() == true)
+	{
+		switch (m_pPlayer->GetShotType())
+		{
+		default:
+		case CCharacter::Simple:
+			HandleNWayShot(bulletCount);
+			break;
+		case CCharacter::Charged:
+			HandleChargedShot();
+			break;
+		case CCharacter::Homing:
+			break;
+
+		}
+
+	}
+}
+
+void CGame::HandleChargedShot()
+{
+	std::vector<CShot*> tempShots;
+	tempShots.clear();
+
+	for (int No = 0; No < m_Shot.size(); No++)
+	{
+		CShot* bullet = m_Shot.front();		//キューの先頭を取得
+		float ratio = 1.0f + m_pPlayer->ChargedTime/m_pPlayer->GetChargedShotMax();
+		bullet->SetScale(ratio);			//大きくする
+		bullet->Reload(
+		m_pPlayer->GetPosition(),
+		m_pPlayer->GetRotation().y);
+	}
+
+}
+
+void CGame::HandleNWayShot(int bulletCount)
+{
+	//NWay弾を発射
+	for (int No = 0; No < bulletCount; No++)
+	{
+		
+
+		CShot* bullet = m_Shot.front();		//キューの先頭を取得
+
+		const float rotY =
+			m_pPlayer->GetRotation().y +
+			GetNWayRot(m_pPlayer->GetNWaySpreadDeg(), bulletCount, No);	//弾のY軸回転を計算
+
+		bullet->Reload(
+			m_pPlayer->GetPosition(),
+			rotY);
+
+
+		//弾をキューの最後に移動
+		m_Shot.pop();
+		m_Shot.push(bullet);
+	}
 }

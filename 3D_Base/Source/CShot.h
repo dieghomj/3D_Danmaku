@@ -26,7 +26,7 @@ public:
 
 	virtual bool IsHit(CGameObject* obj, float rad);
 
-	float GetCadence() const { return m_Cadence; }
+	float GetCadence() const { return m_Cadence; }		//<---プレイヤーのクラス
 
 protected:
 	bool		m_Display;			//表示切替
