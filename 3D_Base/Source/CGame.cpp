@@ -30,7 +30,7 @@ CGame::CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime )
 	, m_pSpriteBullet	( nullptr )
 	, m_pStaticMeshBSphere	( nullptr )
 
-	, m_pSkinMeshZako	( nullptr )
+	, m_pSkinMeshZako	( nullptr ) 
 	, m_ZakoAnimNo		()
 	, m_ZakoAnimTime	()
 	, m_ZakoBonePos		()
@@ -492,17 +492,19 @@ void CGame::Update()
 		m_pShot->Reload(m_pPlayer->GetPosition());
 	}
 #endif
-	for (int No = 0; No < BULLET_MAX; No++) {
-		m_pShot[No]->Update();
+	for (int sNo = 0; sNo < BULLET_MAX; sNo++) {
+
+		m_pShot[sNo]->Update();
 	}
 
-	m_pEnemy->Update();
-
-#if 1
 	for (int No = 0; No < m_EnemyMax; No++) {
 		m_ppEnemies[No]->SetTargetPos(m_pPlayer->GetPosition());
 		m_ppEnemies[No]->Update();
 	}
+	
+	m_pEnemy->Update();
+
+#if 1
 #else
 	for (int No = 0; No < ENEMY_MAX; No++) {
 		m_pEnemies[No]->Update();
@@ -520,27 +522,6 @@ void CGame::Update()
 	for (auto& e : m_Zako) {
 		e->Update();
 	}
-
-#if 1
-	static POINTS PatternNo = { 0, 0 };
-	const static POINTS PatternMax = m_pSprite2DPmon->GetPatternMax();
-
-	if (GetAsyncKeyState('P') & 0x0001) {
-		PatternNo.x++;
-		if (PatternNo.x >= PatternMax.x) {
-			PatternNo.x = 0;
-			PatternNo.y++;
-			if (PatternNo.y >= PatternMax.y) {
-				PatternNo.y = 0;
-			}
-		}
-		m_pPmon->SetPatternNo( PatternNo.x, PatternNo.y );
-	}
-#endif
-	m_pPmon->Update();
-	m_pBeedrill->Update();
-	m_pParasect->Update();
-	m_pScyther->Update();
 
 	//Effect制御
 	{
@@ -664,6 +645,19 @@ void CGame::Draw()
 			//エネミー
 			m_pEnemy->SetPosition(0.f, 1.f, 20.f);	//奥へ再配置
 		}
+
+		for (int eNo = 0; eNo < m_EnemyMax; eNo++)
+		{
+			if (m_pShot[No]->IsHit(m_ppEnemies[eNo], 0.1))
+			{
+				m_pExplosion->SetPosition(m_ppEnemies[eNo]->GetPosition());	//エネミーの位置にそろえる
+				dynamic_cast<CExplosion*>(m_pExplosion)->ResetAnimation();//アニメーションリセット
+				m_pShot[No]->SetDisplay(false);
+				m_pShot[No]->SetPosition(0.f, -10.f, 0.f);	//地面に埋める
+				m_ppEnemies[eNo]->SetDamagedValue(10.f);
+			}
+		}
+
 
 	}
 

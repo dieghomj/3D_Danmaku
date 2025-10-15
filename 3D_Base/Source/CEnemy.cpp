@@ -6,23 +6,37 @@ CEnemy::CEnemy()
 	, m_EnemyState	( enEnemyState::DESPAWN )
 	, m_MoveSpeed	( 0.05f )
 	, m_TurnSpeed	( 0.05f )
+	, m_Health		( 10.0f )
 {
 
 }
 
 CEnemy::~CEnemy()
 {
+
 }
 
 void CEnemy::Respawn()
 {
-	m_vPosition = D3DXVECTOR3(0.f, -10.f, 0.f);
+	std::mt19937 gen(rd());
+	std::uniform_real_distribution<float> dis(-1.0f, 1.0f);
+	float rng = dis(gen);
+	m_vPosition.x = m_vTargetPos.x + 400.0 * rng / 1.0f;
+	m_vPosition.z = m_vTargetPos.z + 400.0 * rng / 1.0f;
+	m_vPosition.y = -10.f;
+	m_Health = MAX_HEALTH;
 }
 
 void CEnemy::Update()
 {
+
+	if (m_Health < 0.0f)
+	{
+		Respawn();
+	}
+
 	std::mt19937 gen(rd());
-	std::uniform_real_distribution<float> dis(0.1f, 1.1f);
+	std::uniform_real_distribution<float> dis(0.0, 1.0f);
 	float rng = dis(gen);
 	//Target player
 	//Make the enemy spawn randomly from outside the screen 
@@ -38,9 +52,9 @@ void CEnemy::Update()
 	distance = D3DXVec3LengthSq(&dir);
 	D3DXVec3Normalize(&dir,&dir);
 
-	if (distance <= 100.f && distance >= 20.f)
+	if (distance >= 50.f)
 	{
-		m_vPosition.y = 0.5f;
+		m_vPosition.y = 1.0f;
 		m_EnemyState = enEnemyState::CHASING;
 	}
 	else
