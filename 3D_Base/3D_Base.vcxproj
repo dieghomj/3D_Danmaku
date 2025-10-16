@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Result.cpp" />
     <ClCompile Include="Source\CBoss.cpp" />
     <ClCompile Include="Source\CBoundingSphere.cpp" />
     <ClCompile Include="Source\CCharacter.cpp" />
@@ -190,8 +191,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Source\WinMain.cpp" />
+    <ClCompile Include="CTitle.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Result.h" />
     <ClInclude Include="Source\CBoss.h" />
     <ClInclude Include="Source\CBoundingSphere.h" />
     <ClInclude Include="Source\CCharacter.h" />
@@ -226,6 +229,7 @@
     <ClInclude Include="Source\Global.h" />
     <ClInclude Include="Source\MyMacro.h" />
     <ClInclude Include="Source\stdafx.h" />
+    <ClInclude Include="CTitle.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Data\Shader\DebugText.hlsl">

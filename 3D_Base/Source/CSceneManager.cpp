@@ -1,5 +1,7 @@
 #include "CSceneManager.h"
 
+
+
 CSceneManager::CSceneManager()
 	: m_pCurrentScene	(nullptr)
 	, m_pSceneList		()

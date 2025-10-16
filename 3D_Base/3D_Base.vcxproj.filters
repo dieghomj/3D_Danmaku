@@ -82,7 +82,7 @@
     <Filter Include="Source\GameObject\SpriteObject\Shot">
       <UniqueIdentifier>{e2fb0f87-92e3-486c-b646-f236537f419a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Game\GameScene">
+    <Filter Include="Source\GameScene">
       <UniqueIdentifier>{36fb484d-c843-46ba-afb1-5a678918cf62}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -181,10 +181,16 @@
       <Filter>Source\GameObject\StaticMeshObject\Character\Enemy</Filter>
     </ClCompile>
     <ClCompile Include="Source\CScene.cpp">
-      <Filter>Source\Game\GameScene</Filter>
+      <Filter>Source\GameScene</Filter>
     </ClCompile>
     <ClCompile Include="Source\CSceneManager.cpp">
-      <Filter>Source\Game\GameScene</Filter>
+      <Filter>Source\GameScene</Filter>
+    </ClCompile>
+    <ClCompile Include="CTitle.cpp">
+      <Filter>Source\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Result.cpp">
+      <Filter>Source\Game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -285,10 +291,16 @@
       <Filter>Source\GameObject\StaticMeshObject\Character\Enemy</Filter>
     </ClInclude>
     <ClInclude Include="Source\CScene.h">
-      <Filter>Source\Game\GameScene</Filter>
+      <Filter>Source\GameScene</Filter>
     </ClInclude>
     <ClInclude Include="Source\CSceneManager.h">
-      <Filter>Source\Game\GameScene</Filter>
+      <Filter>Source\GameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="CTitle.h">
+      <Filter>Source\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Result.h">
+      <Filter>Source\Game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

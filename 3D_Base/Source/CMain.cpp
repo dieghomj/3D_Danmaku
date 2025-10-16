@@ -3,6 +3,7 @@
 #include "CDirectX11.h"
 #include "CGame.h"
 #include "CSceneManager.h"
+#include "../CTitle.h"
 
 //ウィンドウを画面中央で起動を有効にする.
 //#define ENABLE_WINDOWS_CENTERING
@@ -86,9 +87,12 @@ HRESULT CMain::Create()
 
 	//ゲームクラスのインスタンス生成.
 	m_pGame = new CGame( *m_pDx9, *m_pDx11, m_hWnd, *m_pTime);
-	
+	m_pTitle = new CTitle(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime);
+
 	m_pSceneManager->AddScene(m_pGame, "GameMain");
-	m_pSceneManager->ChangeScene("GameMain");
+	m_pSceneManager->AddScene(m_pTitle, "Title");
+
+	m_pSceneManager->ChangeScene("Title");
 
 	return S_OK;
 }

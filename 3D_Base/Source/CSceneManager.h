@@ -8,10 +8,17 @@ public:
 	CSceneManager();
 	~CSceneManager();
 
+	//Stacked State Machine追加
+	//<----------
+	
+	//シーンリストにシーンを追加
 	void AddScene(CScene* scene, const char* name);
+	//シーン変更
 	CScene* ChangeScene(const char* name);
 
+	//現在のシーンを更新
 	void Update();
+	//現在のシーンを描画
 	void Draw();	
 
 private:
