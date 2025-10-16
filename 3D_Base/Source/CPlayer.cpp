@@ -4,21 +4,21 @@
 
 
 CPlayer::CPlayer()
-	: m_TurnSpeed	(0.1f)	//きっちりやりたい場合はラジアン値を設定すること
-	, m_MoveSpeed	(0.1f)
-	, m_MoveState	(enMoveState::Stop)
-	, m_shotMax		(10)
-	, m_ShotNumber	(enShotNumber::Single)
-	, m_ShotType	(enShotType::Simple)
-	, m_Cadence(100.0f)	//連射速度
-	, m_NWaySrpeadDeg(30.0f)	//NWay弾の広がり角度
-	, m_ChargedShotTime(0.f)
-	, m_CadenceTimer(0.f)
-	, m_IsBomb(false)
-	, m_Health(100.f)
-	, m_IsInv(false)
-	, m_InvTimer(0.f)
-	, m_InvTimeMax(2.f)
+	: m_TurnSpeed		(0.1f)	//きっちりやりたい場合はラジアン値を設定すること
+	, m_MoveSpeed		(0.1f)
+	, m_MoveState		(enMoveState::Stop)
+	, m_shotMax			(10)
+	, m_ShotNumber		(enShotNumber::Single)
+	, m_ShotType		(enShotType::Simple)
+	, m_Cadence			(100.0f)	//連射速度
+	, m_NWaySrpeadDeg	(30.0f)	//NWay弾の広がり角度
+	, m_ChargedShotTime	(0.f)
+	, m_CadenceTimer	(0.f)
+	, m_IsBomb			(false)
+	, m_Health			(100.f)
+	, m_IsInv			(false)
+	, m_InvTimer		(0.f)
+	, m_InvTimeMax		(2.f)
 	
 {
 }

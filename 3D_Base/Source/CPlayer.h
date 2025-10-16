@@ -44,19 +44,15 @@ public:
 	};
 
 	void SetShotType(enShotNumber shotNumber) { m_ShotNumber = shotNumber; };
-
-
 	void SetInvincible();
+
+
 	bool IsInvincible() const { return m_IsInv; }
+	bool IsBomb() const { return m_IsBomb; }
 
 	int GetHealth() const { return m_Health; }
 	int GetShotNumber() const { return m_ShotNumber; };
 	int GetShotType()	const { return m_ShotType; };
-
-	bool IsBomb() const { return m_IsBomb; }
-
-	int GetShotNumber() const { return m_ShotNumber; }
-	int GetShotType()	const { return m_ShotType; }
 	float GetShotCadence() const { return m_Cadence; }
 	float GetNWaySpreadDeg() const { return m_NWaySrpeadDeg; }
 	float GetChargedShotTime() const { return m_ChargedShotTime; }

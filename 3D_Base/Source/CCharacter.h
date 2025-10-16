@@ -11,8 +11,7 @@ class CCharacter
 public:
 	enum enShotNumber
 	{
-		Zero = 0,
-		Single,
+		Single = 0,
 		Double,
 		Triple,
 	};

@@ -532,35 +532,6 @@ void CGame::Update()
 #if 1
 	//弾を飛ばしたい!
 	int bulletCount = m_pPlayer->GetShotNumber() + 1; // existing convention: enum value + 1
-
-
-	if (m_pPlayer->IsShot() == true) {
-		
-		float cadence = m_shotCd;					//連射速度
-		m_shotCd -= m_pTime->GetFixedDeltaTime();	//連射速度を減少
-		
-		//連射速度を超えたら弾を発射
-		if (m_shotCd <= 0.0f)
-		{
-			for (int No = 0; No < bulletCount; No++)
-			{
-				CShot* bullet = m_ShotQue.front();		//キューの先頭を取得
-
-				const float rotY = m_pPlayer->GetRotation().y + startAngle + angleStep * No;
-
-				bullet->Reload(
-					m_pPlayer->GetPosition(),
-					rotY);
-				m_shotCd = bullet->GetCadence();
-
-				//弾をキューの最後に移動
-				m_ShotQue.pop();
-				m_ShotQue.push(bullet);
-			}
-		}
-
-#if 1
-	//弾を飛ばしたい!
 	HandlePlayerShot();
 
 #else
@@ -901,7 +872,7 @@ float CGame::GetNWayRot(float spreadDeg, int bulletCount, int bulletNo)
 
 void CGame::HandlePlayerShot()
 {
-	if (m_Shot.empty())		//弾が無いので発射できない
+	if (m_ShotQue.empty())		//弾が無いので発射できない
 		return;
 	
 	int bulletCount = m_pPlayer->GetShotNumber() + 1;				//連射数
@@ -932,9 +903,9 @@ void CGame::HandleChargedShot()
 	std::vector<CShot*> tempShots;
 	tempShots.clear();
 
-	for (int No = 0; No < m_Shot.size(); No++)
+	for (int No = 0; No < m_ShotQue.size(); No++)
 	{
-		CShot* bullet = m_Shot.front();		//キューの先頭を取得
+		CShot* bullet = m_ShotQue.front();		//キューの先頭を取得
 		float ratio = 1.0f + m_pPlayer->ChargedTime/m_pPlayer->GetChargedShotMax();
 		bullet->SetScale(ratio);			//大きくする
 		bullet->Reload(
@@ -949,9 +920,7 @@ void CGame::HandleNWayShot(int bulletCount)
 	//NWay弾を発射
 	for (int No = 0; No < bulletCount; No++)
 	{
-		
-
-		CShot* bullet = m_Shot.front();		//キューの先頭を取得
+		CShot* bullet = m_ShotQue.front();		//キューの先頭を取得
 
 		const float rotY =
 			m_pPlayer->GetRotation().y +
@@ -963,8 +932,8 @@ void CGame::HandleNWayShot(int bulletCount)
 
 
 		//弾をキューの最後に移動
-		m_Shot.pop();
-		m_Shot.push(bullet);
+		m_ShotQue.pop();
+		m_ShotQue.push(bullet);
 	}
 
 }
