@@ -507,32 +507,11 @@ void CGame::Update()
 
 	m_pGround->Update();
 
-	if (m_pBoss->IsShot() == true) 
-	{
-		for (int No = 0; No < BULLET_MAX; No++)
-		{
-			float cadence = m_bossCd;					//連射速度
-			m_bossCd -= m_pTime->GetFixedDeltaTime();	//連射速度を減少
-			if (m_bossCd <= 0.0f)
-			{
-				CShot* bullet = m_BossShotQue.front();
-				bullet->Reload(
-					m_pBoss->GetPosition(),
-					m_pBoss->GetRotation().y);
-				//弾をキューの最後に移動
-				m_bossCd = m_pBoss->GetShootCd();
-
-				m_BossShotQue.pop();
-				m_BossShotQue.push(bullet);
-			}
-
-		}
-	}
 
 #if 1
 	//弾を飛ばしたい!
-	int bulletCount = m_pPlayer->GetShotNumber() + 1; // existing convention: enum value + 1
 	HandlePlayerShot();
+	HandleBossShot();
 
 #else
 	//弾を飛ばしたい!
@@ -555,7 +534,7 @@ void CGame::Update()
 	if (m_Score >= 50 && m_pBoss->GetEnemyState() == CEnemy::DESPAWN && m_GameState != enGameScene::Result)
 	{
 		m_pBoss->SetEnemyState(CEnemy::CHASING);
-		m_pBoss->SetPosition(0.f, 1.f, m_pPlayer->GetPosition().z + 100.f);
+		m_pBoss->SetPosition(0.f, 1.f, m_pPlayer->GetPosition().z + 40.f);
 	}
 
 	m_pBoss->Update();
@@ -868,6 +847,79 @@ float CGame::GetNWayRot(float spreadDeg, int bulletCount, int bulletNo)
 
 }
 
+void CGame::HandleBossShot()
+{
+	int attackPattern = m_pBoss->GetAttackPattern();
+	if (m_pBoss->IsShot() == true)
+	{
+		float cadence = m_bossCd;					//連射速度
+		m_bossCd -= m_pTime->GetFixedDeltaTime();	//連射速度を減少
+
+		switch (attackPattern)
+		{
+		case CBoss::ROTATING:
+	
+			if (m_bossCd <= 0.0f)
+			{
+				CShot* bullet = m_BossShotQue.front();
+				bullet->Reload(
+					m_pBoss->GetPosition(),
+					m_pBoss->GetRotation().y);
+				//弾をキューの最後に移動
+				m_bossCd = m_pBoss->GetShootCd();
+
+				m_BossShotQue.pop();
+				m_BossShotQue.push(bullet);
+
+				m_bossCd = m_pBoss->GetShootCd();
+			}
+
+			break;
+		case CBoss::WAYCROSS:
+
+			if (m_bossCd <= 0.0f)
+			{
+				CShot* bullet = m_BossShotQue.front();
+				bullet->Reload(
+					m_pBoss->GetPosition(),
+					m_pBoss->GetRotation().y + PI/4);
+				//弾をキューの最後に移動
+				m_BossShotQue.pop();
+				m_BossShotQue.push(bullet);
+
+				bullet = m_BossShotQue.front();
+				bullet->Reload(
+					m_pBoss->GetPosition(),
+					m_pBoss->GetRotation().y + PI/4 + PI/2);
+				//弾をキューの最後に移動
+				m_BossShotQue.pop();
+				m_BossShotQue.push(bullet);
+
+				bullet = m_BossShotQue.front();
+				bullet->Reload(
+					m_pBoss->GetPosition(),
+					m_pBoss->GetRotation().y + PI/4 + PI);
+				//弾をキューの最後に移動
+				m_BossShotQue.pop();
+				m_BossShotQue.push(bullet);
+
+				bullet = m_BossShotQue.front();
+				bullet->Reload(
+					m_pBoss->GetPosition(),
+					m_pBoss->GetRotation().y + PI/4 + 3 * PI /2);
+				//弾をキューの最後に移動
+				m_BossShotQue.pop();
+				m_BossShotQue.push(bullet);
+
+
+				m_bossCd = m_pBoss->GetShootCd();
+			}
+
+		}
+
+		
+	}
+}
 
 
 void CGame::HandlePlayerShot()

@@ -90,6 +90,8 @@ private:
 
 	float GetNWayRot(float spreadDeg, int bulletCount, int bulletNo);
 
+	void HandleBossShot();
+
 	void HandleChargedShot();
 
 private:

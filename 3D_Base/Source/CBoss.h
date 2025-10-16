@@ -7,6 +7,14 @@
 class CBoss : public CEnemy
 {
 public:
+
+	enum enAttackPattern
+	{
+		ROTATING,
+		WAYCROSS,
+		WAVE,
+	};
+
 	CBoss();
 	virtual ~CBoss();
 
@@ -14,7 +22,7 @@ public:
 	void Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera) override;
 
 	float GetShootCd() const { return m_ShootCd; };
-
+	int GetAttackPattern() const { return m_AttackPattern; }
 
 private:
 

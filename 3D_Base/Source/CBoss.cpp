@@ -1,9 +1,9 @@
 #include "CBoss.h"
 
 CBoss::CBoss()
-	: m_ShootCd			(2000.0f)
+	: m_ShootCd			(6.0f)
 	, m_ShootTimer		(0.0f)
-	, m_AttackPattern	(0)
+	, m_AttackPattern	(1)
 	, m_PatternStep		(0)
 	, m_PatternTimer	(0.0f)
 	, m_angleStep		(0.0f)
@@ -13,11 +13,7 @@ CBoss::CBoss()
 	m_MoveSpeed = 0.04f;
 }
 
-enum enAttackPatter
-{
-	ROTATING,
-	WAVE,
-};
+
 
 CBoss::~CBoss()
 {
@@ -35,6 +31,10 @@ void CBoss::Update()
 
 	}
 
+	if (m_Health <= 500.f)
+	{
+		m_AttackPattern = enAttackPattern::ROTATING;
+	}
 
 	if (m_EnemyState == CBoss::CHASING)
 	{
@@ -52,10 +52,19 @@ void CBoss::Update()
 
 	if (m_EnemyState == enEnemyState::ATTACKING)
 	{
-		SetRotation(0.f, m_angleStep * angle, 0.f);
-		m_angleStep++;
 
-		m_Shot = true;
+		switch (m_AttackPattern)
+		{
+		case enAttackPattern::ROTATING:
+			SetRotation(0.f, m_angleStep * angle, 0.f);
+			m_angleStep++;
+
+			m_Shot = true;
+			break;
+		case enAttackPattern::WAYCROSS:
+			m_Shot = true;
+			break;
+		}
 
 		if (distance >= 200.f)
 			m_EnemyState = CEnemy::CHASING;
