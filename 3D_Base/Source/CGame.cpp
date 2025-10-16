@@ -421,20 +421,11 @@ void CGame::Update()
 	m_pGround->Update();
 
 
-#if 1
 	//弾を飛ばしたい!
 	HandlePlayerShot();
 	HandleBossShot();
 
-#else
-	//弾を飛ばしたい!
-	//dynamic_cast：親クラスのポインタを子クラスのポインタに変換する
-	if (dynamic_cast<CPlayer*>(m_pPlayer)->IsShot() == true) {
-		m_pShot->Reload(m_pPlayer->GetPosition());
-	}
-#endif
 	for (int sNo = 0; sNo < BULLET_MAX; sNo++) {
-
 		m_pShot[sNo]->Update();
 		m_pBossShot[sNo]->Update();
 	}
