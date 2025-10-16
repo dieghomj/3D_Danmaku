@@ -1,6 +1,5 @@
 #pragma once
-#include "CDirectX9.h"
-#include "CDirectX11.h"
+#include "CScene.h"
 #include "CDebugText.h"
 #include "CSprite3D.h"
 #include "CSprite2D.h"
@@ -18,15 +17,13 @@
 #include "CSkinMesh.h"
 #include "CZako.h"
 #include "CRay.h"
-
 #include <vector>
 #include <queue>
-
 
 /********************************************************************************
 *	ゲームクラス.
 **/
-class CGame
+class CGame : public CScene
 {
 public:
 	
@@ -55,6 +52,7 @@ public:
 	};
 
 public:
+
 	static constexpr int ENEMY_MAX = 3;		//エネミーの最大数
 	static constexpr int BULLET_MAX = 100;	//弾の最大
 
@@ -63,9 +61,7 @@ public:
 
 	void Create();
 	HRESULT LoadData();
-	void CreateElite(CEnemy*& pE);
 	void Release();
-
 	void Update();
 	void Draw();
 
@@ -75,6 +71,8 @@ private:
 	//プロジェクション関数.
 	void Projection();
 
+	void CreateElite(CEnemy*& pE);
+
 	//三人称カメラ
 	void ThirdPersonCamera(
 		CAMERA* pCamera, const D3DXVECTOR3& TargetPos, float TargetRotY);
@@ -82,30 +80,25 @@ private:
 	void TopDownCamera(
 		CAMERA* pCamera, const D3DXVECTOR3& TargetPos, float TargetRotY);
 
+	//マウスの移動によってカメラの更新
 	void CameraRotToMouse(CAMERA* pCamera, const D3DXVECTOR3& TargetPos, POINT delta, float sense);
 
+	//自機の発射を管理する
 	void HandlePlayerShot();
-
+	//N‐WAYショットを管理する
 	void HandleNWayShot(int bulletCount);
 
 	float GetNWayRot(float spreadDeg, int bulletCount, int bulletNo);
-
+	
 	void HandleBossShot();
-
 	void HandleChargedShot();
 
 private:
-	CDirectX9*		m_pDx9;
-	CDirectX11*		m_pDx11;
-
 	CDebugText*		m_pDbgText;	//デバッグテキスト
 
 	//レイ表示クラス
 	CRay*			m_pRayY;	//Y方向(垂直)
 	CRay*			m_pCrossRay[CROSSRAY::max];	//十字
-
-	//ウィンドウハンドル.
-	HWND			m_hWnd;
 
 	//カメラ情報.
 	CAMERA			m_Camera;
@@ -123,9 +116,6 @@ private:
 	CSprite3D*		m_pSpriteBullet;	//弾
 	CSprite3D*		m_pSpriteBossBullet;	//弾
 
-	//スプライト2Dデータ(使いまわす資源)
-	CSprite2D*		m_pSprite2DPmon;
-
 	//スタティックメッシュ(使いまわす資源)
 	CStaticMesh*	m_pStaticMeshFighter;	//自機
 	CStaticMesh*	m_pStaticMeshGround;	//地面
@@ -134,23 +124,8 @@ private:
 	CStaticMesh*	m_pStaticMeshBSphere;	//バウンディングスフィア(当たり判定用)
 	CStaticMesh*	m_pStaticMeshBoss;
 
-	//スキンメッシュ(使いまわす資源)
-	CSkinMesh*		m_pSkinMeshZako;		//ザコ
-	int				m_ZakoAnimNo;			//ザコ：アニメーション番号
-	double			m_ZakoAnimTime;			//ザコ：アニメーション経過時間
-	D3DXVECTOR3		m_ZakoBonePos;			//ザコ：ボーン座標
-
 	//スプライトオブジェクトクラス.
 	CSpriteObject*		m_pExplosion;
-
-	//UIオブジェクトクラス
-	CUIObject*		m_pPmon;
-	CUIObject*		m_pBeedrill;	//#015:スピアー
-	CUIObject*		m_pParasect;	//#047:パラセクト
-	CUIObject*		m_pScyther;		//#123:ストライク
-
-	//スタティックメッシュオブジェクトクラス
-	CStaticMeshObject*	m_pStcMeshObj;
 
 	//キャラクタークラス
 	CPlayer*			m_pPlayer;
@@ -159,6 +134,7 @@ private:
 	CEnemy**			m_ppEnemies;
 	int					m_EnemyMax;
 
+	//ボース
 	CBoss*				m_pBoss;
 
 	//地面クラス
@@ -170,26 +146,12 @@ private:
 	std::queue<CShot*>	m_ShotQue;
 	std::queue<CShot*>	m_BossShotQue;
 
-	//ザコクラス
-	CZako*				m_pZako;
-
-	//std::vector<宣言したい型名> 変数名
-	std::vector<CZako*>	m_Zako;
-
-	//mouse入力
-	POINT m_mousePos;
-	POINT m_mouseBeforePos;
-	POINT m_mouseDelta;
-	float m_mouseSense;
-
+	//スーコア
 	int m_Score;
 
-	//タイム
-	CTime*	m_pTime;
+	//クールタイム
 	float	m_shotCd;
 	float	m_bossCd;
-
-	enGameScene m_GameState;
 
 
 private:

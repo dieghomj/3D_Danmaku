@@ -2,6 +2,7 @@
 #include "CDirectX9.h"
 #include "CDirectX11.h"
 #include "CGame.h"
+#include "CSceneManager.h"
 
 //ウィンドウを画面中央で起動を有効にする.
 //#define ENABLE_WINDOWS_CENTERING
@@ -40,6 +41,7 @@ CMain::~CMain()
 {
 	SAFE_DELETE( m_pTime );
 	SAFE_DELETE( m_pGame );
+	SAFE_DELETE( m_pSceneManager )
 	SAFE_DELETE( m_pDx11 );
 	SAFE_DELETE( m_pDx9 );
 
@@ -51,18 +53,17 @@ CMain::~CMain()
 void CMain::Update()
 {
 	//更新処理.
-	m_pGame->Update();
+	m_pSceneManager->Update();
 
 	//バックバッファをクリアにする.
 	m_pDx11->ClearBackBuffer();
 
 	//描画処理.
-	m_pGame->Draw();
+	m_pSceneManager->Draw();
 	
 	//画面に表示.
 	m_pDx11->Present();
 
-	//m_pTime->Tick();
 }
 
 
@@ -81,11 +82,13 @@ HRESULT CMain::Create()
 		return E_FAIL;
 	}
 
+	m_pSceneManager = new CSceneManager();
+
 	//ゲームクラスのインスタンス生成.
 	m_pGame = new CGame( *m_pDx9, *m_pDx11, m_hWnd, *m_pTime);
-
-	//ゲームクラスの構築（Loadも含める）.
-	m_pGame->Create();
+	
+	m_pSceneManager->AddScene(m_pGame, "GameMain");
+	m_pSceneManager->ChangeScene("GameMain");
 
 	return S_OK;
 }
@@ -93,8 +96,6 @@ HRESULT CMain::Create()
 //データロード処理.
 HRESULT CMain::LoadData()
 {
-	//データロード処理.
-	m_pGame->LoadData();
 
 	return S_OK;
 }

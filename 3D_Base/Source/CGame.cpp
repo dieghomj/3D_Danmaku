@@ -4,16 +4,13 @@
 #include <random>
 
 //コンストラクタ.
-CGame::CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime )
-	: m_pDx9			( &pDx9 )
-	, m_pDx11			( &pDx11 )
+CGame::CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime ) 
+	: CScene::CScene(pDx9,pDx11,hWnd,pTime)
 	, m_pDbgText		( nullptr )
 	, m_pRayY			( nullptr )
 	, m_pCrossRay		()
-	, m_hWnd			( hWnd )
 	, m_mView			()
 	, m_mProj			()
-
 
 	, m_Camera			()
 	, m_Light			()
@@ -21,8 +18,7 @@ CGame::CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime )
 	, m_pSpriteGround		( nullptr )
 	, m_pSpritePlayer		( nullptr )
 	, m_pSpriteExplosion	( nullptr )
-
-	, m_pSprite2DPmon		( nullptr )
+	, m_pSpriteBossBullet	( nullptr )
 
 	, m_pStaticMeshFighter	( nullptr )
 	, m_pStaticMeshGround	( nullptr )
@@ -30,20 +26,10 @@ CGame::CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime )
 	, m_pStaticMeshRoboB	( nullptr )
 	, m_pSpriteBullet		( nullptr )
 	, m_pStaticMeshBSphere	( nullptr )
-
-	, m_pSkinMeshZako	( nullptr ) 
-	, m_ZakoAnimNo		()
-	, m_ZakoAnimTime	()
-	, m_ZakoBonePos		()
+	, m_pStaticMeshBoss		( nullptr )
 
 	, m_pExplosion		( nullptr )
 
-	, m_pPmon			( nullptr )
-	, m_pBeedrill		( nullptr )
-	, m_pParasect		( nullptr )
-	, m_pScyther		( nullptr )
-
-	, m_pStcMeshObj		( nullptr )
 	, m_pPlayer			( nullptr )
 	, m_pEnemy			( nullptr )
 	, m_pBoss			(nullptr)
@@ -56,16 +42,8 @@ CGame::CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime )
 	, m_pShot			()
 	, m_pBossShot		()
 
-	, m_pZako			( nullptr )
-
-	, m_mousePos		({0,0})
-	, m_mouseBeforePos	({0,0})
-	, m_mouseDelta		({ 0,0 })
-	, m_mouseSense		( 0.01f )
-
 	, m_Score			(0)
 
-	, m_pTime			(&pTime)
 	, m_shotCd			(0)
 	, m_bossCd			(0)
 {
@@ -81,16 +59,6 @@ CGame::CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime )
 //デストラクタ.
 CGame::~CGame()
 {
-	//ザコ複数の破棄
-	// rbegin()	:末尾を指す逆イテレータを取得
-	// rend()	:先頭を指す逆イテレータを取得
-	for (auto it = m_Zako.rbegin(); it != m_Zako.rend(); ++it)
-	{
-		SAFE_DELETE( *it );
-	}
-
-	//ザコの破棄
-	SAFE_DELETE( m_pZako );
 
 	//弾の破棄
 	if (m_pShot != nullptr) {
@@ -140,9 +108,6 @@ CGame::~CGame()
 	SAFE_DELETE( m_pStaticMeshGround );
 	SAFE_DELETE( m_pStaticMeshFighter );
 
-	//スプライト2Dの破棄
-	SAFE_DELETE( m_pSprite2DPmon );
-
 	//爆発スプライトの解放.
 	SAFE_DELETE( m_pSpriteExplosion );
 	//プレイヤースプライトの解放.
@@ -159,10 +124,6 @@ CGame::~CGame()
 	//デバッグテキストの破棄
 	SAFE_DELETE( m_pDbgText );
 
-	//外部で作成しているので、ここでは破棄しない
-	m_hWnd = nullptr;
-	m_pDx11 = nullptr;
-	m_pDx9 = nullptr;
 }
 
 //構築.
@@ -184,9 +145,6 @@ void CGame::Create()
 	m_pSpriteBullet		= new CSprite3D();
 	m_pSpriteBossBullet		= new CSprite3D();
 
-	//スプライト2Dのインスタンス作成
-	m_pSprite2DPmon	= new CSprite2D();
-
 	//スタティックメッシュのインスタンス作成
 	m_pStaticMeshFighter	= new CStaticMesh();
 	m_pStaticMeshGround		= new CStaticMesh();
@@ -194,9 +152,6 @@ void CGame::Create()
 	m_pStaticMeshRoboB		= new CStaticMesh();
 	m_pStaticMeshBSphere	= new CStaticMesh();
 	m_pStaticMeshBoss		= new CStaticMesh();
-
-	//スキンメッシュのインスタンス作成
-	m_pSkinMeshZako		= new CSkinMesh();
 
 	//スプライトオブジェクトクラスのインスタス作成.
 	m_pExplosion	= new CExplosion();
@@ -230,16 +185,6 @@ void CGame::Create()
 		m_pBossShot[No] = new CShot();
 		m_ShotQue.push(m_pShot[No]);
 		m_BossShotQue.push(m_pBossShot[No]);
-	}
-
-	//ザコクラスのインスタス作成
-	m_pZako = new CZako();
-
-	//ザコ複数
-	for (int i = 0; i < 3; i++) {
-		//push_back(値)	:配列の末尾へ要素を追加
-		//size()		:配列の要素数を取得
-		m_Zako.push_back(new CZako());
 	}
 
 	//Effectクラス
@@ -389,23 +334,12 @@ void CGame::Update()
 {
 	//BGMのループ再生
 	//CSoundManager::PlayLoop(CSoundManager::BGM_Bonus);
-	
-	POINT mousePos;
-	GetCursorPos(&mousePos);
-	ScreenToClient(m_hWnd, &mousePos);
-
-	// Calculate delta from center
-	POINT center = { WND_W / 2, WND_H / 2 };
-	m_mouseDelta.x = mousePos.x - center.x;
-	m_mouseDelta.y = mousePos.y - center.y;
-
-	// Reset cursor to center
-	ClientToScreen(m_hWnd, &center);
-	SetCursorPos(center.x, center.y);
+	CScene::Update();
 
 	if (m_pPlayer->GetHealth() <= 0.f)
 	{
-		m_GameState = enGameScene::GameOver;
+		//m_GameState = enGameScene::GameOver;
+		//GAME OVER
 		m_pPlayer->SetPosition(0.f, -2.f, 0.f);
 	}
 	if (m_Score > 5000)
@@ -435,7 +369,7 @@ void CGame::Update()
 		m_ppEnemies[No]->Update();
 	}
 
-	if (m_Score >= 50 && m_pBoss->GetEnemyState() == CEnemy::DESPAWN && m_GameState != enGameScene::Result)
+	if (m_Score >= 50 && m_pBoss->GetEnemyState() == CEnemy::DESPAWN /*&& m_GameState != enGameScene::Result*/)
 	{
 		m_pBoss->SetEnemyState(CEnemy::CHASING);
 		m_pBoss->SetPosition(0.f, 1.f, m_pPlayer->GetPosition().z + 40.f);
@@ -566,7 +500,8 @@ void CGame::Draw()
 			m_pBoss->SetDamagedValue(10);
 			if (m_pBoss->GetHealth() <= 0)
 			{
-				m_GameState = enGameScene::Result;
+				//m_GameState = enGameScene::Result;
+				//RESULT
 				m_Score += 10000;
 				m_pBoss->SetPosition(0.f,-10.f,0.f);
 			}

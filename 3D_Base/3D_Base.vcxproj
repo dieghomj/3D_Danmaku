@@ -156,6 +156,8 @@
     <ClCompile Include="Source\CCharacter.cpp" />
     <ClCompile Include="Source\CEffect.cpp" />
     <ClCompile Include="Source\CEnemy.cpp" />
+    <ClCompile Include="Source\CScene.cpp" />
+    <ClCompile Include="Source\CSceneManager.cpp" />
     <ClCompile Include="Source\CGround.cpp" />
     <ClCompile Include="Source\CRay.cpp" />
     <ClCompile Include="Source\CShot.cpp" />
@@ -195,6 +197,8 @@
     <ClInclude Include="Source\CCharacter.h" />
     <ClInclude Include="Source\CEffect.h" />
     <ClInclude Include="Source\CEnemy.h" />
+    <ClInclude Include="Source\CScene.h" />
+    <ClInclude Include="Source\CSceneManager.h" />
     <ClInclude Include="Source\CGround.h" />
     <ClInclude Include="Source\CRay.h" />
     <ClInclude Include="Source\CShot.h" />

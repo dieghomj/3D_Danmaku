@@ -5,6 +5,8 @@
 class CDirectX9;
 class CDirectX11;
 class CGame;
+class CSceneManager;
+class CTime;
 
 /**************************************************
 *	メインクラス.
@@ -40,5 +42,9 @@ private:
 	CDirectX9*		m_pDx9;	//DirectX9セットアップクラス
 	CDirectX11*		m_pDx11;//DirectX11セットアップクラス.
 	CGame*			m_pGame;
+	//CScene*			m_pTitle;
+	//CScene*			m_pResult;
+	//CScene*			m_pGameOver;
+	CSceneManager*	m_pSceneManager;
 	CTime*			m_pTime;
 };
