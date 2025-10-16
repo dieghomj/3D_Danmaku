@@ -84,6 +84,14 @@ private:
 
 	void CameraRotToMouse(CAMERA* pCamera, const D3DXVECTOR3& TargetPos, POINT delta, float sense);
 
+	void HandlePlayerShot();
+
+	void HandleNWayShot(int bulletCount);
+
+	float GetNWayRot(float spreadDeg, int bulletCount, int bulletNo);
+
+	void HandleChargedShot();
+
 private:
 	CDirectX9*		m_pDx9;
 	CDirectX11*		m_pDx11;

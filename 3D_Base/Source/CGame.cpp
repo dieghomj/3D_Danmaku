@@ -532,10 +532,7 @@ void CGame::Update()
 #if 1
 	//’e‚ğ”ò‚Î‚µ‚½‚¢!
 	int bulletCount = m_pPlayer->GetShotNumber() + 1; // existing convention: enum value + 1
-	const float spreadDeg = 20.0f; // total spread in degrees (change to widen/narrow pattern)
-	const float spreadRad = (bulletCount > 1) ? D3DXToRadian(spreadDeg) : 0.0f;
-	const float startAngle = -spreadRad * 0.5f; // start relative to forward (-half spread)
-	const float angleStep = (bulletCount > 1) ? (spreadRad / (bulletCount - 1)) : 0.0f;
+
 
 	if (m_pPlayer->IsShot() == true) {
 		
@@ -562,7 +559,9 @@ void CGame::Update()
 			}
 		}
 
-	}
+#if 1
+	//’e‚ğ”ò‚Î‚µ‚½‚¢!
+	HandlePlayerShot();
 
 #else
 	//’e‚ğ”ò‚Î‚µ‚½‚¢!
@@ -885,6 +884,88 @@ void CGame::CameraRotToMouse(CAMERA* pCamera, const D3DXVECTOR3& TargetPos, POIN
 	D3DXVECTOR3 position = D3DXVECTOR3(TargetPos.x, 0, TargetPos.z);
 
 	pCamera->vLook =  position + lookDirection;
+
+}
+
+float CGame::GetNWayRot(float spreadDeg, int bulletCount, int bulletNo)
+{
+	const float spreadRad = (bulletCount > 1) ? D3DXToRadian(spreadDeg) : 0.0f;
+	const float startAngle = -spreadRad * 0.5f; // start relative to forward (-half spread)
+	const float angleStep = (bulletCount > 1) ? (spreadRad / (bulletCount - 1)) : 0.0f;
+
+	return startAngle + angleStep * bulletNo;
+
+}
+
+
+
+void CGame::HandlePlayerShot()
+{
+	if (m_Shot.empty())		//’e‚ª–³‚¢‚Ì‚Å”­Ë‚Å‚«‚È‚¢
+		return;
+	
+	int bulletCount = m_pPlayer->GetShotNumber() + 1;				//˜AË”
+	m_pPlayer->DecCadenceTimer(m_pTime->GetFixedDeltaTime());	//˜AË‘¬“x‚ğŒ¸­
+	//˜AË‘¬“x‚ğ’´‚¦‚½‚ç’e‚ğ”­Ë
+
+	if (m_pPlayer->IsShot() == true)
+	{
+		switch (m_pPlayer->GetShotType())
+		{
+		default:
+		case CCharacter::Simple:
+			HandleNWayShot(bulletCount);
+			break;
+		case CCharacter::Charged:
+			HandleChargedShot();
+			break;
+		case CCharacter::Homing:
+			break;
+
+		}
+
+	}
+}
+
+void CGame::HandleChargedShot()
+{
+	std::vector<CShot*> tempShots;
+	tempShots.clear();
+
+	for (int No = 0; No < m_Shot.size(); No++)
+	{
+		CShot* bullet = m_Shot.front();		//ƒLƒ…[‚Ìæ“ª‚ğæ“¾
+		float ratio = 1.0f + m_pPlayer->ChargedTime/m_pPlayer->GetChargedShotMax();
+		bullet->SetScale(ratio);			//‘å‚«‚­‚·‚é
+		bullet->Reload(
+		m_pPlayer->GetPosition(),
+		m_pPlayer->GetRotation().y);
+	}
+
+}
+
+void CGame::HandleNWayShot(int bulletCount)
+{
+	//NWay’e‚ğ”­Ë
+	for (int No = 0; No < bulletCount; No++)
+	{
+		
+
+		CShot* bullet = m_Shot.front();		//ƒLƒ…[‚Ìæ“ª‚ğæ“¾
+
+		const float rotY =
+			m_pPlayer->GetRotation().y +
+			GetNWayRot(m_pPlayer->GetNWaySpreadDeg(), bulletCount, No);	//’e‚ÌY²‰ñ“]‚ğŒvZ
+
+		bullet->Reload(
+			m_pPlayer->GetPosition(),
+			rotY);
+
+
+		//’e‚ğƒLƒ…[‚ÌÅŒã‚ÉˆÚ“®
+		m_Shot.pop();
+		m_Shot.push(bullet);
+	}
 
 }
 
