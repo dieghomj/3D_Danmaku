@@ -43,9 +43,11 @@ public:
 		}
 	};
 
-	void SetShotType(enShotNumber shotNumber) { m_ShotNumber = shotNumber; };
+	void SetHealth(float hp) { m_Health = hp; }
 	void SetInvincible();
-
+	void SetCadence(float cad) { m_Cadence = cad; }
+	void SetShotNumber(enShotNumber shotNumber) { m_ShotNumber = shotNumber; };
+	void SetShotType(enShotType type) { m_ShotType = type; }
 
 	bool IsInvincible() const { return m_IsInv; }
 	bool IsBomb() const { return m_IsBomb; }
@@ -61,9 +63,6 @@ public:
 	void IncCadenceTimer(float delta) { m_CadenceTimer += delta; }
 	void DecCadenceTimer(float delta) { m_CadenceTimer -= delta; }
 	void ResetCadenceTimer() { m_CadenceTimer = m_Cadence; }
-
-	void SetPlayerCadence(float cad) { m_Cadence = cad; }
-	void SetPlayerShotType(enShotType type) { m_ShotType = type; }
 
 public:
 	float			ChargedTime;

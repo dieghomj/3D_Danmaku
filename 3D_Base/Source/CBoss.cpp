@@ -28,7 +28,7 @@ void CBoss::Update()
 
 	if (m_EnemyState == CEnemy::DESPAWN)
 	{
-
+		m_AttackPattern = enAttackPattern::WAYCROSS;
 	}
 
 	if (m_Health <= 500.f)
@@ -62,6 +62,7 @@ void CBoss::Update()
 			m_Shot = true;
 			break;
 		case enAttackPattern::WAYCROSS:
+			m_EnemyState = CEnemy::CHASING;
 			m_Shot = true;
 			break;
 		}

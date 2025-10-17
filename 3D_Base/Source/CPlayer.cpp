@@ -11,7 +11,7 @@ CPlayer::CPlayer()
 	, m_ShotNumber		(enShotNumber::Single)
 	, m_ShotType		(enShotType::Simple)
 	, m_Cadence			(100.0f)	//˜AË‘¬“x
-	, m_NWaySrpeadDeg	(30.0f)	//NWay’e‚ÌL‚ª‚èŠp“x
+	, m_NWaySrpeadDeg	(12.0f)	//NWay’e‚ÌL‚ª‚èŠp“x
 	, m_ChargedShotTime	(0.f)
 	, m_CadenceTimer	(0.f)
 	, m_IsBomb			(false)
