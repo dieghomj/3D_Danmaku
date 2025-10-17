@@ -1,10 +1,11 @@
 #include "CScene.h"
 
-CScene::CScene(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime)
+CScene::CScene(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& pManager)
 	: m_pDx9(&pDx9)
 	, m_pDx11(&pDx11)
 	, m_hWnd(hWnd)
 	, m_pTime(&pTime)
+	, m_pManager(&pManager)
 
 	, m_mousePos		({0,0})
 	, m_mouseBeforePos	({0,0})
@@ -17,6 +18,7 @@ CScene::~CScene()
 {
 
 	//äOïîÇ≈çÏê¨ÇµÇƒÇ¢ÇÈÇÃÇ≈ÅAÇ±Ç±Ç≈ÇÕîjä¸ÇµÇ»Ç¢
+	m_pManager = nullptr;
 	m_hWnd = nullptr;
 	m_pDx11 = nullptr;
 	m_pDx9 = nullptr;

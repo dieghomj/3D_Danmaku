@@ -2,6 +2,7 @@
 #include "CDirectX9.h"
 #include "CDirectX11.h"
 #include "CTime.h"
+#include "CSceneManager.h"
 
 /********************************************************************************
 *	ゲームシーンクラス.
@@ -10,7 +11,7 @@ class CScene
 {
 public:
 
-	CScene(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime);
+	CScene(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& m_pManager);
 
 	virtual ~CScene();
 
@@ -18,6 +19,7 @@ public:
 	virtual HRESULT LoadData() = 0;
 	virtual void Release() = 0;
 
+	virtual void Start() = 0;
 	virtual void Update();
 	virtual void Draw() = 0;
 
@@ -30,6 +32,7 @@ protected:
 	//ウィンドウハンドル.
 	HWND			m_hWnd;
 	CTime*			m_pTime;
+	CSceneManager*	m_pManager;
 
 	//mouse入力
 	POINT m_mousePos;

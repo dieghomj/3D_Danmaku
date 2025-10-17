@@ -1,6 +1,8 @@
 #pragma once
-#include "CScene.h"
 #include <map>
+
+class CScene;
+
 class CSceneManager
 {
 public:
@@ -16,13 +18,13 @@ public:
 	//シーン変更
 	CScene* ChangeScene(const char* name);
 
-	//現在のシーンを更新
+	//現在のシーン更新
 	void Update();
-	//現在のシーンを描画
+	//現在のシーン描画
 	void Draw();	
 
 private:
-
+	
 	CScene* m_pCurrentScene;
 	std::map< const char*, CScene* > m_pSceneList;
 };

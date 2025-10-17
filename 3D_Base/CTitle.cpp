@@ -1,11 +1,12 @@
 #include "CTitle.h"
 
-CTitle::CTitle(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime)
-		: CScene(pDx9, pDx11, hWnd, pTime)
+CTitle::CTitle(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& pManager)
+		: CScene(pDx9, pDx11, hWnd, pTime, pManager)
 		, m_pTitleBackground	(nullptr)
 		, m_pTitleFont			(nullptr)
 {
 }
+
 
 CTitle::~CTitle()
 {
@@ -38,13 +39,17 @@ void CTitle::Release()
 {
 }
 
+void CTitle::Start()
+{
+}
+
 void CTitle::Update()
 {
 	CScene::Update();
 
-	if (GetAsyncKeyState(VK_RETURN & 0x0001) || m_mouseDelta.x != 0)
+	if (GetAsyncKeyState(VK_RETURN) & 0x0001)
 	{
-
+		m_pManager->ChangeScene("GameMain");
 	}
 }
 

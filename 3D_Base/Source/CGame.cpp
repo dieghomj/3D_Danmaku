@@ -4,8 +4,8 @@
 #include <random>
 
 //コンストラクタ.
-CGame::CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime ) 
-	: CScene::CScene(pDx9,pDx11,hWnd,pTime)
+CGame::CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& pManager ) 
+	: CScene(pDx9,pDx11,hWnd,pTime, pManager)
 	, m_pDbgText		( nullptr )
 	, m_pRayY			( nullptr )
 	, m_pCrossRay		()
@@ -198,7 +198,6 @@ HRESULT CGame::LoadData()
 {
 	std::random_device rd;
 
-
 	//デバッグテキストの読み込み
 	if (FAILED(m_pDbgText->Init( *m_pDx11 ))){
 		return E_FAIL;
@@ -326,8 +325,57 @@ HRESULT CGame::LoadData()
 //解放関数.
 void CGame::Release()
 {
+
+
+
 }
 
+
+void CGame::Start()
+{
+	std::random_device rd;
+
+	m_Score = 0;
+
+	//キャラクターの初期座標を設定
+	m_pPlayer->SetPosition(0.f, 1.f, 6.f);
+	m_pPlayer->SetHealth(100.0f);
+	m_pPlayer->SetShotType(CCharacter::Simple);
+	m_pPlayer->SetShotNumber(CCharacter::Single);
+
+
+	m_pBoss->SetPosition(0.f, -10.f, 0.f);
+	m_pBoss->SetScale(3.0);
+	m_pBoss->SetHealth(1000.f);
+	m_pBoss->SetEnemyState(CEnemy::DESPAWN);
+
+	for (int sNo = 0; sNo < BULLET_MAX; sNo++)
+	{
+		m_pShot[sNo]->SetDisplay(false);
+		m_pBossShot[sNo]->SetDisplay(false);
+	}
+
+	//エネミー複数設定
+	for (int No = 0; No < m_EnemyMax; No++) {
+		auto& pE = m_ppEnemies[No];
+		std::mt19937 gen(rd());
+		std::uniform_real_distribution<float> dis(0.0, 1.0f);
+		float rng = dis(gen);
+		//ランダムでAかBを選択して設定
+		if (rng < 0.25f)
+		{
+			CreateElite(pE);
+			pE->Respawn();
+		}
+		else
+		{
+			pE->AttachMesh(*m_pStaticMeshRoboA);
+			pE->SetScale(1.0f);
+			pE->CreateBSphereForMesh(*m_pStaticMeshBSphere);
+			pE->Respawn();
+		}
+	}
+}
 
 //更新処理.
 void CGame::Update()
@@ -341,13 +389,14 @@ void CGame::Update()
 		//m_GameState = enGameScene::GameOver;
 		//GAME OVER
 		m_pPlayer->SetPosition(0.f, -2.f, 0.f);
+		m_pManager->ChangeScene("GameMain");
 	}
 	if (m_Score > 5000)
 	{
-		m_pPlayer->SetShotType(CPlayer::Triple);
+		m_pPlayer->SetShotNumber(CCharacter::Triple);
 	}
 	else if(m_Score > 1000)
-		m_pPlayer->SetShotType(CPlayer::Double);
+		m_pPlayer->SetShotNumber(CCharacter::Double);
 
 	m_pPlayer->Update();
 	m_pPlayer->TickInvTimer(m_pTime->GetFixedDeltaTime()/1000.f);
@@ -504,6 +553,7 @@ void CGame::Draw()
 				//RESULT
 				m_Score += 10000;
 				m_pBoss->SetPosition(0.f,-10.f,0.f);
+				m_pManager->ChangeScene("Title");
 			}
 		}
 
@@ -529,7 +579,7 @@ void CGame::Draw()
 	m_pDbgText->SetColor(1.f, 1.f, 1.f);
 	TCHAR dbgText[64];
 	_stprintf_s(dbgText, _T("SCORE:%d"), m_Score);
-	m_pDbgText->Render( dbgText, 10, 110 );
+	m_pDbgText->Render( dbgText, 60, 110);
 	m_pDbgText->SetColor(1.f, 1.f, 1.f);
 	_stprintf_s(dbgText, _T("HEALTH:%d"), m_pPlayer->GetHealth() );
 	m_pDbgText->Render(dbgText, 10, 150);

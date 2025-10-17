@@ -56,14 +56,16 @@ public:
 	static constexpr int ENEMY_MAX = 3;		//エネミーの最大数
 	static constexpr int BULLET_MAX = 100;	//弾の最大
 
-	CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime );
+	CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& pManager);
 	~CGame();
 
 	void Create();
 	HRESULT LoadData();
 	void Release();
-	void Update();
-	void Draw();
+
+	void Start() override;
+	void Update() override;
+	void Draw() override;
 
 private:
 	//カメラ関数.
@@ -153,11 +155,4 @@ private:
 	float	m_shotCd;
 	float	m_bossCd;
 
-
-private:
-	//=delete「削除定義」と呼ばれる機能.
-	//指定された場合、その関数は呼び出せなくなる.
-	CGame() = delete;	//デフォルトコンストラクタ禁止.
-	CGame( const CGame& ) = delete;
-	CGame& operator = (const CGame& rhs ) = delete;
 };

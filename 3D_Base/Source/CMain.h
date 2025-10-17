@@ -1,11 +1,12 @@
 #pragma once
 #include <Windows.h>
+#include "CScene.h"
+#include "CSceneManager.h"
 
 //ƒNƒ‰ƒX‚Ì‘O•ûéŒ¾.
 class CDirectX9;
 class CDirectX11;
 class CGame;
-class CSceneManager;
 class CTime;
 class CTitle;
 
