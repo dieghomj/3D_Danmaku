@@ -579,13 +579,13 @@ void CGame::Draw()
 	m_pDbgText->SetColor(1.f, 1.f, 1.f);
 	TCHAR dbgText[64];
 	_stprintf_s(dbgText, _T("SCORE:%d"), m_Score);
-	m_pDbgText->Render( dbgText, 60, 110);
+	m_pDbgText->Render( dbgText, 60, 120, 20);
 	m_pDbgText->SetColor(1.f, 1.f, 1.f);
 	_stprintf_s(dbgText, _T("HEALTH:%d"), m_pPlayer->GetHealth() );
-	m_pDbgText->Render(dbgText, 10, 150);
+	m_pDbgText->Render(dbgText, 10, 200, 20);
 
 	_stprintf_s(dbgText, _T("TIME:%.2f"), m_pTime->GetTotalTime()/1000.f);
-	m_pDbgText->Render(dbgText, 10, 100);
+	m_pDbgText->Render(dbgText, 10, 100, 20);
 }
 
 //ƒJƒƒ‰ŠÖ”.

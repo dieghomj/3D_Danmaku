@@ -50,7 +50,7 @@ public:
 
 
 	//レンダリング用.
-	void Render(LPCTSTR text, int x, int y);
+	void Render(LPCTSTR text, int x, int y, float FontSize);
 
 	//α値を設定.
 	void SetAlpha(float alpha) { m_Alpha = alpha; }
@@ -74,7 +74,7 @@ private:
 	HRESULT CreateSampler();
 
 	//フォントレンダリング
-	void RenderFont(int FontIndex, float x, float y);
+	void RenderFont(int FontIndex, float x, float y, float FontSize);
 
 	//解放.
 	void Release();

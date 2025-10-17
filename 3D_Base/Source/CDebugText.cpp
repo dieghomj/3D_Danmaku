@@ -349,14 +349,16 @@ HRESULT CDebugText::CreateSampler()
 }
 
 //フォントレンダリング
-void CDebugText::RenderFont(int FontIndex, float x, float y)
+void CDebugText::RenderFont(int FontIndex, float x, float y, float FontSize)
 {
 	//ワールド行列.
 	D3DXMATRIX	mWorld;
 	D3DXMATRIX	mTrans, mScale;
 
+	float scale = FontSize/SPRITE_MAX_W;
+
 	//拡大縮小行列.
-	D3DXMatrixScaling( &mScale, 1.f, 1.f, 1.f );
+	D3DXMatrixScaling( &mScale, scale, scale, 1.0);
 
 	//平行行列（平行移動）.
 	D3DXMatrixTranslation( &mTrans, x, y, 0.f );
@@ -410,7 +412,7 @@ void CDebugText::RenderFont(int FontIndex, float x, float y)
 }
 
 //レンダリング用.
-void CDebugText::Render(LPCTSTR text, int x, int y)
+void CDebugText::Render(LPCTSTR text, int x, int y, float FontSize)
 {
 	//使用するシェーダの登録.
 	m_pContext11->VSSetShader( m_pVertexShader, nullptr, 0 );
@@ -433,6 +435,8 @@ void CDebugText::Render(LPCTSTR text, int x, int y)
 	float fx = static_cast<float>(x);
 	float fy = static_cast<float>(y);
 
+	float scale = FontSize / SPRITE_MAX_H;
+
 	//文字数分ループ
 	for (int i = 0; i < lstrlen(text); i++)
 	{
@@ -440,8 +444,8 @@ void CDebugText::Render(LPCTSTR text, int x, int y)
 		int index = font - 32;	//フォントインデックス作成
 
 		//フォントレンダリング
-		RenderFont( index, fx, fy );
+		RenderFont( index, fx, fy, FontSize);
 
-		fx += m_Kerning[index];
+		fx += scale * m_Kerning[index];
 	}
 }
