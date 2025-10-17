@@ -152,6 +152,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CFont.cpp" />
     <ClCompile Include="Result.cpp" />
     <ClCompile Include="Source\CBoss.cpp" />
     <ClCompile Include="Source\CBoundingSphere.cpp" />
@@ -195,6 +196,7 @@
     <ClCompile Include="CTitle.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CFont.h" />
     <ClInclude Include="Result.h" />
     <ClInclude Include="Source\CBoss.h" />
     <ClInclude Include="Source\CBoundingSphere.h" />
