@@ -18,7 +18,7 @@ CPlayer::CPlayer()
 	, m_Health			(100.f)
 	, m_IsInv			(false)
 	, m_InvTimer		(0.f)
-	, m_InvTimeMax		(2.f)
+	, m_InvTimeMax		(1.f)
 	
 {
 }

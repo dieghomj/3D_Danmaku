@@ -7,8 +7,9 @@ CScene::CScene(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSce
 	, m_pTime(&pTime)
 	, m_pManager(&pManager)
 
-	, m_mousePos		({0,0})
-	, m_mouseBeforePos	({0,0})
+	, m_mousePos		( {0,0} )
+	, m_mouseSeudoPos({ WND_W / 2,WND_H / 2 })
+	, m_mouseBeforePos	( {0,0} )
 	, m_mouseDelta		({ 0,0 })
 	, m_mouseSense		( 0.01f )
 {
@@ -39,8 +40,15 @@ void CScene::UpdateMousePos()
 	POINT center = { WND_W / 2, WND_H / 2 };
 	m_mouseDelta.x = mousePos.x - center.x;
 	m_mouseDelta.y = mousePos.y - center.y;
-
-	// Reset cursor to center
+	m_mouseSeudoPos.x += m_mouseDelta.x;
+	m_mouseSeudoPos.y += m_mouseDelta.y;
+	//// Reset cursor to center
 	ClientToScreen(m_hWnd, &center);
 	SetCursorPos(center.x, center.y);
+
+}
+
+POINT CScene::GetMouseSeudoPos()
+{
+	return m_mouseSeudoPos;
 }

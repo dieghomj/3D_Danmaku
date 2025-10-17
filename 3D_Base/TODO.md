@@ -15,7 +15,6 @@
 - ~~Timer~~
 - ~~Score~~
 - ~~Restart~~
-- Lives
 - Game Over
 - Pause
 
@@ -77,7 +76,6 @@
 - Game Over screen
 - Health bar
 - Score display
-- Lives display
 - Timer display
 - Pause menu
 - Power-up indicators

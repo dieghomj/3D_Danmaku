@@ -3,7 +3,7 @@
 #include "CDirectX11.h"
 #include "CGame.h"
 #include "CTime.h"
-#include "../CTitle.h"
+#include "CTitle.h"
 
 //ウィンドウを画面中央で起動を有効にする.
 //#define ENABLE_WINDOWS_CENTERING

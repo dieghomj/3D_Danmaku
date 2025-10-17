@@ -3,6 +3,7 @@
 #include "CDirectX11.h"
 #include "CTime.h"
 #include "CSceneManager.h"
+#include "CSprite2D.h"
 
 /********************************************************************************
 *	ゲームシーンクラス.
@@ -22,6 +23,7 @@ public:
 	virtual void Start() = 0;
 	virtual void Update();
 	virtual void Draw() = 0;
+	POINT GetMouseSeudoPos();
 
 private :
 	void UpdateMousePos();
@@ -36,6 +38,7 @@ protected:
 
 	//mouse入力
 	POINT m_mousePos;
+	POINT m_mouseSeudoPos;
 	POINT m_mouseBeforePos;
 	POINT m_mouseDelta;
 	float m_mouseSense;

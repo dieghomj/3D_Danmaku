@@ -152,7 +152,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Result.cpp" />
     <ClCompile Include="Source\CBoss.cpp" />
     <ClCompile Include="Source\CBoundingSphere.cpp" />
     <ClCompile Include="Source\CCharacter.cpp" />
@@ -185,17 +184,17 @@
     <ClCompile Include="Source\CStaticMesh.cpp" />
     <ClCompile Include="Source\CStaticMeshObject.cpp" />
     <ClCompile Include="Source\CTime.cpp" />
+    <ClCompile Include="Source\CTitle.cpp" />
     <ClCompile Include="Source\CUIObject.cpp" />
     <ClCompile Include="Source\CZako.cpp" />
+    <ClCompile Include="Source\Result.cpp" />
     <ClCompile Include="Source\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Source\WinMain.cpp" />
-    <ClCompile Include="CTitle.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Result.h" />
     <ClInclude Include="Source\CBoss.h" />
     <ClInclude Include="Source\CBoundingSphere.h" />
     <ClInclude Include="Source\CCharacter.h" />
@@ -225,12 +224,13 @@
     <ClInclude Include="Source\CStaticMesh.h" />
     <ClInclude Include="Source\CStaticMeshObject.h" />
     <ClInclude Include="Source\CTime.h" />
+    <ClInclude Include="Source\CTitle.h" />
     <ClInclude Include="Source\CUIObject.h" />
     <ClInclude Include="Source\CZako.h" />
     <ClInclude Include="Source\Global.h" />
     <ClInclude Include="Source\MyMacro.h" />
+    <ClInclude Include="Source\Result.h" />
     <ClInclude Include="Source\stdafx.h" />
-    <ClInclude Include="CTitle.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Data\Shader\DebugText.hlsl">
