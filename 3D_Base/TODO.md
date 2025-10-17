@@ -12,34 +12,40 @@
 
 # Mechanics
 
-- Timer
-- Score
+- ~~Timer~~
+- ~~Score~~
+- ~~Restart~~
 - Lives
 - Game Over
-- Restart
 - Pause
 
 # Player
 
 - ~~single shot shooting~~
 - ~~n-way shooting~~
+- ~~fix bullets rotation~~
+- ~~Health~~
+- ~~Death~~
 - movement *almost done*
-- fix bullets rotation <--
-- Health
-- Death
 - Power-ups
 - Animation
 - Sound effects
 
 # Enemies
 
+- ~~Health~~
+- ~~Death~~
+- ~~Boss~~
 - Movement
-- Shooting
-- Health
-- Death
-- Spawn
+	- ~~Chasing player~~
+	- Group moving
+	- Movement variance
+- Spawn (ˆê‰žo—ˆ‚½)
+	- ~~Random~~
+	- Elite spawn structure?
+	- 
 - Waves
-- Boss
+- Shooting
 - Animation
 - Sound effects
 
@@ -50,6 +56,9 @@
 - Player sprite
 - Enemy sprites
 - Bullet sprites
+	- ~~Player~~
+	- ~~Boss~~
+	- Enemies
 - Background
 - Explosions
 - Power-ups
