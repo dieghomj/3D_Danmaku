@@ -158,6 +158,7 @@
     <ClCompile Include="Source\CEffect.cpp" />
     <ClCompile Include="Source\CEnemy.cpp" />
     <ClCompile Include="Source\CFont.cpp" />
+    <ClCompile Include="Source\CResult.cpp" />
     <ClCompile Include="Source\CScene.cpp" />
     <ClCompile Include="Source\CSceneManager.cpp" />
     <ClCompile Include="Source\CGround.cpp" />
@@ -189,7 +190,6 @@
     <ClCompile Include="Source\CTitle.cpp" />
     <ClCompile Include="Source\CUIObject.cpp" />
     <ClCompile Include="Source\CZako.cpp" />
-    <ClCompile Include="Source\Result.cpp" />
     <ClCompile Include="Source\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -203,6 +203,7 @@
     <ClInclude Include="Source\CEffect.h" />
     <ClInclude Include="Source\CEnemy.h" />
     <ClInclude Include="Source\CFont.h" />
+    <ClInclude Include="Source\CResult.h" />
     <ClInclude Include="Source\CScene.h" />
     <ClInclude Include="Source\CSceneManager.h" />
     <ClInclude Include="Source\CGround.h" />
@@ -233,7 +234,6 @@
     <ClInclude Include="Source\CZako.h" />
     <ClInclude Include="Source\Global.h" />
     <ClInclude Include="Source\MyMacro.h" />
-    <ClInclude Include="Source\Result.h" />
     <ClInclude Include="Source\stdafx.h" />
   </ItemGroup>
   <ItemGroup>

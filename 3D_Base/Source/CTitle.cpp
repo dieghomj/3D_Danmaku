@@ -6,6 +6,8 @@ CTitle::CTitle(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSce
 		, m_pDbgText			(nullptr)
 		, m_pCursorSprite		(nullptr)
 		, m_pCursor				(nullptr)
+		, m_pTitleSprite		(nullptr)
+		, startMenuColor({ 1.f, 1.f, 1.f })
 {
 }
 
@@ -19,13 +21,11 @@ void CTitle::Create()
 	m_pTitleBackground	= new CUIObject();
 	m_pCursor			= new CUIObject();
 	m_pCursorSprite		= new CSprite2D();
-	m_pDbgText			= new CDebugText();
+	m_pDbgText			= new CFont();
 }
 
 HRESULT CTitle::LoadData()
 {
-
-	
 
 	CSprite2D::SPRITE_STATE SSGround;
 	SSGround.Disp.w = WND_W;
@@ -49,6 +49,9 @@ HRESULT CTitle::LoadData()
 	{
 		return E_FAIL;
 	}
+
+	m_pTitleSprite->SetAlpha(0.5f);
+
 	if( FAILED(m_pCursorSprite->Init(*m_pDx11,
 		_T("Data\\Texture\\Player.png"), SSPlayer)))
 	{
@@ -74,6 +77,7 @@ void CTitle::Release()
 
 void CTitle::Start()
 {
+	m_pDx11->SetDepth(false);
 }
 
 void CTitle::Update()
@@ -98,13 +102,12 @@ void CTitle::Update()
 
 void CTitle::Draw()
 {
-
+	m_pTitleBackground->Draw();
 	m_pCursor->Draw();
 
 	TCHAR dbgText[64];
 	m_pDbgText->SetColor(startMenuColor.r, startMenuColor.g, startMenuColor.b);
 	_stprintf_s(dbgText, _T("START"));
-	m_pDbgText->Render(dbgText, 100, 140, 50);
+	m_pDbgText->Render(dbgText, 100, 140, 10);
 
-	m_pTitleBackground->Draw();
 }

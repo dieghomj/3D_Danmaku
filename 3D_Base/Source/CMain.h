@@ -49,10 +49,10 @@ private:
 	CSceneManager*	m_pSceneManager;
 	
 	//ÉVÅ[Éì
-	CGame*			m_pGame;
-	CTitle*			m_pTitle;
-	CTest*			m_pTest;		
-	//CScene*			m_pResult;
+	CScene*			m_pGame;
+	CScene*			m_pTitle;
+	CScene*			m_pTest;
+	CScene*			m_pResult;
 	//CScene*			m_pGameOver;
 	
 	CTime*			m_pTime;

@@ -7,6 +7,7 @@
 CGame::CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& pManager ) 
 	: CScene(pDx9,pDx11,hWnd,pTime, pManager)
 	, m_pDbgText		( nullptr )
+	, m_pFont			( nullptr )
 	, m_pRayY			( nullptr )
 	, m_pCrossRay		()
 	, m_mView			()
@@ -130,7 +131,8 @@ CGame::~CGame()
 void CGame::Create()
 {
 	//デバッグテキストのインスタンス作成
-	m_pDbgText = new CDebugText();
+	m_pDbgText	= new CDebugText();
+	m_pFont		= new CFont();
 
 	//レイ表示クラスのインスタス作成
 	m_pRayY = new CRay();
@@ -200,6 +202,10 @@ HRESULT CGame::LoadData()
 
 	//デバッグテキストの読み込み
 	if (FAILED(m_pDbgText->Init( *m_pDx11 ))){
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pFont->Init(*m_pDx11))) {
 		return E_FAIL;
 	}
 
@@ -335,6 +341,8 @@ void CGame::Start()
 {
 	std::random_device rd;
 
+	m_pDx11->SetDepth(true);
+
 	m_Score = 0;
 
 	//キャラクターの初期座標を設定
@@ -383,6 +391,11 @@ void CGame::Update()
 	//BGMのループ再生
 	//CSoundManager::PlayLoop(CSoundManager::BGM_Bonus);
 	CScene::Update();
+
+	if (IsPause())
+	{
+		return;
+	}
 
 	if (m_pPlayer->GetHealth() <= 0.f)
 	{
@@ -553,7 +566,7 @@ void CGame::Draw()
 				//RESULT
 				m_Score += 10000;
 				m_pBoss->SetPosition(0.f,-10.f,0.f);
-				m_pManager->ChangeScene("Title");
+				m_pManager->ChangeScene("Result");
 			}
 		}
 
@@ -576,16 +589,19 @@ void CGame::Draw()
 	}
 
 	//デバッグテキスト(数値入り)の描画
-	m_pDbgText->SetColor(1.f, 1.f, 1.f);
+	m_pFont->SetColor(1.f, 1.f, 1.f);
 	TCHAR dbgText[64];
 	_stprintf_s(dbgText, _T("SCORE:%d"), m_Score);
-	m_pDbgText->Render( dbgText, 60, 120, 20);
-	m_pDbgText->SetColor(1.f, 1.f, 1.f);
+	m_pFont->Render( dbgText, 10, 100, 10);
+	m_pFont->SetColor(1.f, 1.f, 1.f);
 	_stprintf_s(dbgText, _T("HEALTH:%d"), m_pPlayer->GetHealth() );
-	m_pDbgText->Render(dbgText, 10, 200, 20);
+	m_pFont->Render(dbgText, 10, 140, 10);
 
-	_stprintf_s(dbgText, _T("TIME:%.2f"), m_pTime->GetTotalTime()/1000.f);
-	m_pDbgText->Render(dbgText, 10, 100, 20);
+	if (IsPause())
+	{
+		_stprintf_s(dbgText, _T("PAUSE"));
+		m_pFont->Render(dbgText, WND_W / 2 - 20, WND_H/2 - 20, 10);
+	}
 }
 
 //カメラ関数.

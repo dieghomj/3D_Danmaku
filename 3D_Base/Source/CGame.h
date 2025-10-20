@@ -17,6 +17,7 @@
 #include "CSkinMesh.h"
 #include "CZako.h"
 #include "CRay.h"
+#include "CFont.h"
 #include <vector>
 #include <queue>
 
@@ -97,6 +98,7 @@ private:
 
 private:
 	CDebugText*		m_pDbgText;	//デバッグテキスト
+	CFont*			m_pFont;	//フォント
 
 	//レイ表示クラス
 	CRay*			m_pRayY;	//Y方向(垂直)

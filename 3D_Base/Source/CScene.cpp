@@ -28,6 +28,12 @@ CScene::~CScene()
 void CScene::Update()
 {
 	UpdateMousePos();
+
+	if (GetAsyncKeyState('P') & 0x0001)
+	{
+		m_IsPause = !m_IsPause;
+	}
+
 }
 
 void CScene::UpdateMousePos()

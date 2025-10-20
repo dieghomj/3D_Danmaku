@@ -24,16 +24,13 @@ CScene* CSceneManager::ChangeScene(const char* name)
 	if (m_pCurrentScene)
 	{
 		m_pCurrentScene->Release();
-		//m_pCurrentScene->~CScene();	
-		//delete m_pCurrentScene;
-		//m_pCurrentScene = nullptr;
 	}
 
 	m_pCurrentScene = m_pSceneList[name];
 
 	if (m_pCurrentScene)
 	{
-		Sleep(500);
+		Sleep(200);
 		m_pCurrentScene->Start();
 	}
 

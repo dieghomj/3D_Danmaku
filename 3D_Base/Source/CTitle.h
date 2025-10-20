@@ -3,6 +3,7 @@
 #include "CUIObject.h"
 #include "CScene.h"
 #include "CDebugText.h"
+#include "CFont.h"
 /********************************************************************************
 *	タイトルシーンクラス.
 **/
@@ -33,7 +34,7 @@ private:
     CUIObject*   m_pTitleBackground;
     CSprite2D*   m_pCursorSprite;
     CUIObject*   m_pCursor;
-    CDebugText*  m_pDbgText;
+    CFont*       m_pDbgText;
 
     Color startMenuColor;
 };

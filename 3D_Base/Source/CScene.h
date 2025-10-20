@@ -23,6 +23,9 @@ public:
 	virtual void Start() = 0;
 	virtual void Update();
 	virtual void Draw() = 0;
+
+	bool IsPause() const { return m_IsPause; }
+
 	POINT GetMouseSeudoPos();
 
 private :
@@ -35,6 +38,8 @@ protected:
 	HWND			m_hWnd;
 	CTime*			m_pTime;
 	CSceneManager*	m_pManager;
+
+	bool m_IsPause = false;
 
 	//mouse“ü—Í
 	POINT m_mousePos;

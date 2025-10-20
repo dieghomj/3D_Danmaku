@@ -46,10 +46,10 @@ float4 PS_Main(VS_OUTPUT input) : SV_Target
 	
 	// Calculate smoothing width based on screen-space derivatives
 	// This provides automatic antialiasing at any scale
-    float smoothing = fwidth(dist) * 0.2; // Adjust multiplier for sharpness (0.3-1.0)
+    float smoothing = fwidth(dist) * 0.5; // Adjust multiplier for sharpness (0.3-1.0)
 	
 	// Create smooth alpha transition around edge (0.5 threshold)
-    float alpha = smoothstep(0.4 - smoothing, 0.4 + smoothing, dist);
+    float alpha = smoothstep(0.5 - smoothing, 0.5 + smoothing, dist);
 	
 	// Combine text color with calculated alpha
     float4 outColor = float4(g_Color.rgb, g_Color.a * alpha);
