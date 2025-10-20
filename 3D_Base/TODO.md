@@ -15,8 +15,8 @@
 - ~~Timer~~
 - ~~Score~~
 - ~~Restart~~
-- Game Over
-- Pause
+- ~~Pause~~
+- Game Over - **Right now the game just restarts when the player dies*
 
 # Player
 
@@ -44,7 +44,7 @@
 	- Elite spawn structure?
 	- 
 - Waves
-- Shooting
+- Shooting **Right now only the boss shoots*
 - Animation
 - Sound effects
 
@@ -62,6 +62,7 @@
 - Explosions
 - Power-ups
 - UI elements
+	- Text fonts is almost done
 
 # Shader
 
@@ -72,7 +73,7 @@
 ## UI
 
 - Main Menu
-- Result screen
+- Result screen 
 - Game Over screen
 - Health bar
 - Score display

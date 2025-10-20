@@ -17,6 +17,8 @@ class CFont
 {
 public:
 
+	enum class FontMode { SDF, MSDF };
+
 	struct GlyphInfo {
 		float uvLeft, uvTop, uvRight, uvBottom;
 		float advance;
@@ -25,17 +27,19 @@ public:
 	std::unordered_map<int, GlyphInfo> m_GlyphMap; // ASCII code -> glyph info
 	
 	// Constants
-	static constexpr int SPRITE_MAX_W = 10;
-	static constexpr int SPRITE_MAX_H = 10;
+	static constexpr int SPRITE_MAX_W = 10.0f;
+	static constexpr int SPRITE_MAX_H = 10.0f;
 	static constexpr int SPRITE_MAX = SPRITE_MAX_W * SPRITE_MAX_H;
 
 	// Structures
 	struct SHADER_CONSTANT_BUFFER
 	{
-		ALIGN16 D3DXMATRIX	mWorld;				// World matrix
-		ALIGN16 D3DXVECTOR4	vColor;				// Color (RGBA)
-		ALIGN16 float fViewPortWidth;			// Viewport width
-		ALIGN16 float fViewPortHeight;			// Viewport height
+		ALIGN16 D3DXMATRIX	mWorld;
+		ALIGN16 D3DXVECTOR4	vColor;
+		ALIGN16 float fViewPortWidth;
+		ALIGN16 float fViewPortHeight;
+		ALIGN16 float fPxRange;          // NEW: Distance field range (typically 4-8)
+		ALIGN16 float fPadding[3];       // NEW: Padding for 16-byte alignment
 	};
 
 	struct VERTEX
@@ -54,6 +58,8 @@ public:
 	// Render text string
 	void Render(LPCTSTR text, int x, int y, float FontSize);
 
+	void SetFontMode(FontMode mode){ m_FontMode = mode; }
+
 	// Set alpha value (0.0 = fully transparent, 1.0 = fully opaque)
 	void SetAlpha(float alpha) { m_Alpha = alpha; }
 
@@ -64,6 +70,8 @@ public:
 		m_Color.y = g;
 		m_Color.z = b;
 	}
+
+	void SetPxRange(float pxRange) { m_PxRange = pxRange; }
 
 private:
 	// Create shaders
@@ -105,4 +113,8 @@ private:
 	float			m_Alpha;					// Alpha value (0-1)
 	D3DXVECTOR3		m_Color;					// Color (RGB)
 	float			m_Kerning[SPRITE_MAX];		// Kerning values per glyph
+
+	float			m_PxRange;
+	FontMode		m_FontMode;
+
 };

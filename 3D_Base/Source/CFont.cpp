@@ -17,6 +17,8 @@ CFont::CFont()
 	, m_Alpha(1.0f)
 	, m_Color(1.f, 1.f, 1.f)
 	, m_Kerning()
+	, m_PxRange(2.0f)
+	, m_FontMode(FontMode::MSDF)
 {
 }
 
@@ -50,7 +52,7 @@ HRESULT CFont::Init(CDirectX11& pDx11)
 	}
 
 	// Load SDF texture atlas
-	if (FAILED(CreateTexture(_T("Data\\Font\\ascii_sdf.png"))))
+	if (FAILED(CreateTexture(_T("Data\\Font\\ascii_msdf.png"))))
 	{
 		return E_FAIL;
 	}
@@ -165,7 +167,7 @@ HRESULT CFont::CreateShader()
 			SHADER_NAME,
 			nullptr,
 			nullptr,
-			"PS_Main",
+			(m_FontMode == FontMode::SDF ? "PS_Main_SDF" : "PS_Main"),
 			"ps_5_0",
 			uCompileFlag,
 			0,
@@ -239,9 +241,8 @@ HRESULT CFont::CreateModel()
 	constexpr float TEXTURE_H = 320.0f;	// Total texture height
 
 	// Calculate how many pixels each character occupies in the atlas
-	// For a 10Å~10 grid on 128Å~128 texture: each cell is 12.8Å~12.8 pixels
-	constexpr float CELL_W = TEXTURE_W / SPRITE_MAX_W;  // 12.8 pixels
-	constexpr float CELL_H = TEXTURE_H / SPRITE_MAX_H;  // 12.8 pixels
+	constexpr float CELL_W = TEXTURE_W / SPRITE_MAX_W;  // 10 pixels
+	constexpr float CELL_H = TEXTURE_H / SPRITE_MAX_H;  // 10 pixels
 
 	int count = 0;
 
@@ -334,8 +335,7 @@ void CFont::RenderFont(int FontIndex, float x, float y, float FontSize)
 	D3DXMATRIX	mWorld;
 	D3DXMATRIX	mTrans, mScale;
 
-	// Use consistent scale basis (fixed from original bug)
-	float scale = FontSize / SPRITE_MAX_H;
+	float scale = 1.0f;
 
 	// Build world matrix
 	D3DXMatrixScaling(&mScale, scale, scale, 1.0);
@@ -406,7 +406,7 @@ void CFont::Render(LPCTSTR text, int x, int y, float FontSize)
 	float fx = static_cast<float>(x);
 	float fy = static_cast<float>(y);
 
-	float scale = FontSize / SPRITE_MAX_H;
+	float scale = 1.0f;
 
 	// Render each character
 	for (int i = 0; i < lstrlen(text); i++)

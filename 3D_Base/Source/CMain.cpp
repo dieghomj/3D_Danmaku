@@ -106,7 +106,7 @@ HRESULT CMain::Create()
 	m_pSceneManager->AddScene(	m_pResult,	"Result");
 
 	//シーン変更でシーンを用意する
-	m_pSceneManager->ChangeScene("Title");
+	m_pSceneManager->ChangeScene("Test");
 
 	return S_OK;
 }
