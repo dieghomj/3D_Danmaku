@@ -9,6 +9,7 @@ class CDirectX11;
 class CGame;
 class CTime;
 class CTitle;
+class CTest;
 
 /**************************************************
 *	メインクラス.
@@ -43,10 +44,16 @@ private:
 	HWND			m_hWnd;	//ウィンドウハンドル.
 	CDirectX9*		m_pDx9;	//DirectX9セットアップクラス
 	CDirectX11*		m_pDx11;//DirectX11セットアップクラス.
+
+	//シーン管理クラス.
+	CSceneManager*	m_pSceneManager;
+	
+	//シーン
 	CGame*			m_pGame;
 	CTitle*			m_pTitle;
+	CTest*			m_pTest;		
 	//CScene*			m_pResult;
 	//CScene*			m_pGameOver;
-	CSceneManager*	m_pSceneManager;
+	
 	CTime*			m_pTime;
 };

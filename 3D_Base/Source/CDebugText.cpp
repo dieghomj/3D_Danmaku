@@ -9,11 +9,11 @@ CDebugText::CDebugText()
 	: m_pDx11			( nullptr )
 	, m_pDevice11		( nullptr )
 	, m_pContext11		( nullptr )
-	, m_pVertexShader	( nullptr )
-	, m_pVertexLayout	( nullptr )
-	, m_pPixelShader	( nullptr )
-	, m_pConstantBuffer	( nullptr )
-	, m_pVertexBuffer	()
+	, m_pVertexShader	( nullptr )		//頂点シェーダ.
+	, m_pVertexLayout	( nullptr )		//頂点レイアウト.
+	, m_pPixelShader	( nullptr )		//ピクセルシェーダ.
+	, m_pConstantBuffer	( nullptr )		//コンスタントバッファ.
+	, m_pVertexBuffer	()				//頂点バッファ.
 	, m_pSampleLinear	( nullptr )
 	, m_pTexture		( nullptr )
 	, m_Alpha			( 1.0f )

@@ -3,6 +3,7 @@
 #include "CDirectX11.h"
 #include "CGame.h"
 #include "CTime.h"
+#include "CTest.h"
 #include "../CTitle.h"
 
 //ウィンドウを画面中央で起動を有効にする.
@@ -27,7 +28,8 @@ CMain::CMain()
 	, m_pDx9	( nullptr )
 	, m_pDx11	( nullptr )
 	, m_pGame	( nullptr )
-	, m_pTitle   ( nullptr )
+	, m_pTitle  ( nullptr )
+	, m_pTest	( nullptr )
 	, m_pTime	( nullptr )
 	, m_pSceneManager (nullptr)
 {
@@ -91,13 +93,15 @@ HRESULT CMain::Create()
 	//ゲームシーンクラスのインスタンス生成.
 	m_pGame = new CGame( *m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager);
 	m_pTitle = new CTitle(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager);
+	m_pTest = new CTest(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager);
 
 	//シーンリストに追加
 	m_pSceneManager->AddScene(m_pGame, "GameMain");
 	m_pSceneManager->AddScene(m_pTitle, "Title");
+	m_pSceneManager->AddScene(m_pTest, "Test");
 
 	//シーン変更でシーンを用意する
-	m_pSceneManager->ChangeScene("Title");
+	m_pSceneManager->ChangeScene("Test");
 
 	return S_OK;
 }
