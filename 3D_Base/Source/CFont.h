@@ -20,28 +20,30 @@ public:
 	enum class FontMode { SDF, MSDF };
 
 	struct GlyphInfo {
+		int unicode;
 		float uvLeft, uvTop, uvRight, uvBottom;
 		float advance;
 	};
 
 	std::unordered_map<int, GlyphInfo> m_GlyphMap; // ASCII code -> glyph info
 	
-	// Constants
-	static constexpr int SPRITE_MAX_W = 10.0f;
-	static constexpr int SPRITE_MAX_H = 10.0f;
-	static constexpr int SPRITE_MAX = SPRITE_MAX_W * SPRITE_MAX_H;
+	// 定数定義.
+	static constexpr int SPRITE_MAX_W = 14.0f;	// 10文字横並び.
+	static constexpr int SPRITE_MAX_H = 14.0f;	// 10文字縦並び.
+	static constexpr int SPRITE_MAX = 95.f;		// 表示可能文字数 (ASCII 32-126).
 
-	// Structures
+	// シェーダー用定数バッファ.
 	struct SHADER_CONSTANT_BUFFER
 	{
 		ALIGN16 D3DXMATRIX	mWorld;
 		ALIGN16 D3DXVECTOR4	vColor;
 		ALIGN16 float fViewPortWidth;
 		ALIGN16 float fViewPortHeight;
-		ALIGN16 float fPxRange;          // NEW: Distance field range (typically 4-8)
-		ALIGN16 float fPadding[3];       // NEW: Padding for 16-byte alignment
+		ALIGN16 float fPxRange;
+		ALIGN16 float fPadding[3];
 	};
 
+	// 頂点フォーマット.
 	struct VERTEX
 	{
 		D3DXVECTOR3 Pos;	// Vertex position
@@ -56,7 +58,7 @@ public:
 	HRESULT Init(CDirectX11& pDx11);
 
 	// Render text string
-	void Render(LPCTSTR text, int x, int y, float FontSize);
+	void Render(LPCTSTR text, int x, int y, float FontSize, bool vertical = false);
 
 	void SetFontMode(FontMode mode){ m_FontMode = mode; }
 
@@ -116,5 +118,6 @@ private:
 
 	float			m_PxRange;
 	FontMode		m_FontMode;
+	GlyphInfo		m_GlyphInfo[SPRITE_MAX];
 
 };

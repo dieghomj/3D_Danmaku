@@ -100,12 +100,12 @@ HRESULT CMain::Create()
 	m_pTest = new CTest(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager);
 
 	//シーンリストに追加
-	m_pSceneManager->AddScene(	m_pGame,	"GameMain");
-	m_pSceneManager->AddScene(	m_pTitle,	"Title");
+	////m_pSceneManager->AddScene(	m_pGame,	"GameMain");
+	//m_pSceneManager->AddScene(	m_pTitle,	"Title");
 	m_pSceneManager->AddScene(	m_pTest,	"Test");
-	m_pSceneManager->AddScene(	m_pResult,	"Result");
+	//m_pSceneManager->AddScene(	m_pResult,	"Result");
 
-	//シーン変更でシーンを用意する
+	////シーン変更でシーンを用意する
 	m_pSceneManager->ChangeScene("Test");
 
 	return S_OK;

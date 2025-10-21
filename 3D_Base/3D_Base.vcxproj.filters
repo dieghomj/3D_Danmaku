@@ -186,12 +186,10 @@
     <ClCompile Include="Source\CSceneManager.cpp">
       <Filter>Source\GameScene</Filter>
     </ClCompile>
-    <ClCompile Include="CTitle.cpp">
-      <Filter>Source\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Result.cpp">
-      <Filter>Source\Game</Filter>
-    </ClCompile>
+    <ClCompile Include="Source\CFont.cpp" />
+    <ClCompile Include="Source\CResult.cpp" />
+    <ClCompile Include="Source\CTest.cpp" />
+    <ClCompile Include="Source\CTitle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\CDirectX11.h">
@@ -296,12 +294,10 @@
     <ClInclude Include="Source\CSceneManager.h">
       <Filter>Source\GameScene</Filter>
     </ClInclude>
-    <ClInclude Include="CTitle.h">
-      <Filter>Source\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Result.h">
-      <Filter>Source\Game</Filter>
-    </ClInclude>
+    <ClInclude Include="Source\CFont.h" />
+    <ClInclude Include="Source\CResult.h" />
+    <ClInclude Include="Source\CTest.h" />
+    <ClInclude Include="Source\CTitle.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Data\Shader\Sprite3D.hlsl">
@@ -322,8 +318,12 @@
     <FxCompile Include="Data\Shader\Ray.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="Data\Shader\SDFText.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TODO.md" />
+    <None Include="Data\Font\atlas.csv">
+      <Filter>Resource</Filter>
+    </None>
   </ItemGroup>
 </Project>

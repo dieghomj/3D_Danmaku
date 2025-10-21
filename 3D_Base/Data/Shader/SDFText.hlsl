@@ -53,28 +53,21 @@ float4 PS_Main(VS_OUTPUT input) : SV_Target
     // Sample all three channels (RGB contain distance information)
     float3 msd = g_Texture.Sample(g_samLinear, input.UV).rgb;
     
-    // Calculate median distance (reconstructs the true signed distance)
+    // Calculate median distance
     float sd = median(msd.r, msd.g, msd.b);
     
     // Calculate screen-space distance
-    // fwidth gives us the rate of change, allowing scale-independent rendering
-    float2 unitRange = fwidth(input.UV); // Texture size (adjust if needed)
-    float screenPxDistance = (sd - 0.2) * g_PxRange / length(unitRange);
+    float2 unitRange = g_PxRange / fwidth(input.UV);
+    float screenPxDistance = (sd - 0.3) * dot(unitRange, 0.3);
     
     // Calculate opacity with smooth antialiasing
-    float opacity = clamp(screenPxDistance + 0.2, 0.0, 1.0);
+    float opacity = clamp(screenPxDistance + 0.5, 0.0, 1.0);
     
-    // Mix with fallback for single-channel SDF (uses red channel only)
-    // Uncomment the following lines if you want automatic fallback:
-    //float sdfOpacity = smoothstep(0.5 - fwidth(sd) * 0.5, 0.5 + fwidth(sd) * 0.5, sd);
-    //opacity = lerp(sdfOpacity, opacity, 1.0); // Use MSDF by default
-    
-    // Combine text color with calculated opacity
-    float4 outColor = float4(g_Color.rgb, g_Color.a * (1-opacity));
+    // Combine text color with calculated opacity (NO inversion)
+    float4 outColor = float4(g_Color.rgb, g_Color.a * opacity);
     
     return outColor;
 }
-
 // Alternative: Single-channel SDF fallback pixel shader
 // Use this if you want to support both SDF and MSDF textures
 float4 PS_Main_SDF(VS_OUTPUT input) : SV_Target

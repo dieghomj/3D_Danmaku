@@ -1,5 +1,6 @@
 #include "CFont.h"
 #include "CDirectX11.h"
+#include <stdio.h>
 
 const TCHAR SHADER_NAME[] = _T("Data\\Shader\\SDFText.hlsl");
 
@@ -19,6 +20,7 @@ CFont::CFont()
 	, m_Kerning()
 	, m_PxRange(2.0f)
 	, m_FontMode(FontMode::MSDF)
+	, m_GlyphInfo()
 {
 }
 
@@ -225,7 +227,7 @@ HRESULT CFont::CreateTexture(LPCTSTR lpFileName)
 		&m_pTexture,
 		nullptr)))
 	{
-		_ASSERT_EXPR(false, _T("SDF texture loading failed"));
+		_ASSERT_EXPR(false, _T("SDFテクスチャー読み込み失敗"));
 		return E_FAIL;
 	}
 
@@ -235,72 +237,75 @@ HRESULT CFont::CreateTexture(LPCTSTR lpFileName)
 HRESULT CFont::CreateModel()
 {
 	// Constants matching your texture atlas layout
-	constexpr float CHAR_W = 32.f;		// Width of each character cell in pixels
-	constexpr float CHAR_H = 32.f;		// Height of each character cell in pixels
-	constexpr float TEXTURE_W = 320.0f;	// Total texture width
-	constexpr float TEXTURE_H = 320.0f;	// Total texture height
+	constexpr float TEXTURE_W = 128.f;	// Total texture width
+	constexpr float TEXTURE_H = 128.f;	// Total texture height
+	// 定数定義.
+	constexpr float CHAR_W = 10.f;		// Width of each character cell in pixels
+	constexpr float CHAR_H = 10.f;		// Height of each character cell in pixels
 
 	// Calculate how many pixels each character occupies in the atlas
 	constexpr float CELL_W = TEXTURE_W / SPRITE_MAX_W;  // 10 pixels
 	constexpr float CELL_H = TEXTURE_H / SPRITE_MAX_H;  // 10 pixels
 
+	if (FAILED(LoadAtlasJSON(_T("Data\\Font\\atlas.csv"))))
+	{
+		return E_FAIL;
+	}
+
 	int count = 0;
 
-	// Iterate row-by-row (top-to-bottom, left-to-right)
-	// This matches ASCII ordering: space(32) at (0,0), '!'(33) at (1,0), etc.
-	for (int y = 0; y < SPRITE_MAX_H; y++)     // Row first
+	for (int code = 32; code <= 126; code++)     // Row first
 	{
-		for (int x = 0; x < SPRITE_MAX_W; x++)  // Column second
+
+		if (m_GlyphMap.find(code) == m_GlyphMap.end())
 		{
-			// Set kerning (horizontal advance for rendering)
-			m_Kerning[count] = CHAR_W;
-
-			// Calculate pixel coordinates in texture
-			float left_px = x * CELL_W;
-			float top_px = y * CELL_H;
-			float right_px = left_px + CHAR_W;  // Use CHAR_W, not kerning!
-			float bottom_px = top_px + CHAR_H;
-
-			// Normalize to UV coordinates [0, 1]
-			float left = left_px / TEXTURE_W;
-			float top = top_px / TEXTURE_H;
-			float right = right_px / TEXTURE_W;
-			float bottom = bottom_px / TEXTURE_H;
-
-			// Create quad vertices (triangle strip order)
-			// DirectX UV convention: (0,0) = top-left, (1,1) = bottom-right
-			VERTEX vertices[] =
-			{
-				// Position (world space)                UV coordinates
-				D3DXVECTOR3(0.0f,   CHAR_H, 0.0f),   D3DXVECTOR2(left,  bottom),  // Bottom-left
-				D3DXVECTOR3(0.0f,   0.0f,   0.0f),   D3DXVECTOR2(left,  top),     // Top-left
-				D3DXVECTOR3(CHAR_W, CHAR_H, 0.0f),   D3DXVECTOR2(right, bottom),  // Bottom-right
-				D3DXVECTOR3(CHAR_W, 0.0f,   0.0f),   D3DXVECTOR2(right, top)      // Top-right
-			};
-			UINT uVerMax = sizeof(vertices) / sizeof(vertices[0]);
-
-			// Buffer description
-			D3D11_BUFFER_DESC bd;
-			bd.Usage = D3D11_USAGE_DEFAULT;
-			bd.ByteWidth = sizeof(VERTEX) * uVerMax;
-			bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-			bd.CPUAccessFlags = 0;
-			bd.MiscFlags = 0;
-			bd.StructureByteStride = 0;
-
-			// Subresource data
-			D3D11_SUBRESOURCE_DATA InitData;
-			InitData.pSysMem = vertices;
-
-			// Create vertex buffer
-			if (FAILED(m_pDevice11->CreateBuffer(&bd, &InitData, &m_pVertexBuffer[count])))
-			{
-				_ASSERT_EXPR(false, _T("Vertex buffer creation failed"));
-				return E_FAIL;
-			}
-
-			count++;
+			continue;
 		}
+
+		GlyphInfo& glyph = m_GlyphMap[code];
+
+		// 
+		m_Kerning[count] = glyph.advance * CHAR_W;
+
+		// Normalize to UV coordinates [0, 1]
+		float left		= glyph.uvLeft;
+		float top		= glyph.uvTop;
+		float right		= glyph.uvRight;
+		float bottom	= glyph.uvBottom;
+
+		// Create quad vertices (triangle strip order)
+		// DirectX UV convention: (0,0) = top-left, (1,1) = bottom-right
+		VERTEX vertices[] =
+		{
+			// Position (world space)                UV coordinates
+			D3DXVECTOR3(0.0f,   CHAR_H, 0.0f),   D3DXVECTOR2(left,  bottom),  // Bottom-left
+			D3DXVECTOR3(0.0f,   0.0f,   0.0f),   D3DXVECTOR2(left,  top),     // Top-left
+			D3DXVECTOR3(CHAR_W, CHAR_H, 0.0f),   D3DXVECTOR2(right, bottom),  // Bottom-right
+			D3DXVECTOR3(CHAR_W, 0.0f,   0.0f),   D3DXVECTOR2(right, top)      // Top-right
+		};
+		UINT uVerMax = sizeof(vertices) / sizeof(vertices[0]);
+
+		// Buffer description
+		D3D11_BUFFER_DESC bd;
+		bd.Usage = D3D11_USAGE_DEFAULT;
+		bd.ByteWidth = sizeof(VERTEX) * uVerMax;
+		bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		bd.CPUAccessFlags = 0;
+		bd.MiscFlags = 0;
+		bd.StructureByteStride = 0;
+
+		// Subresource data
+		D3D11_SUBRESOURCE_DATA InitData;
+		InitData.pSysMem = vertices;
+
+		// Create vertex buffer
+		if (FAILED(m_pDevice11->CreateBuffer(&bd, &InitData, &m_pVertexBuffer[count])))
+		{
+			_ASSERT_EXPR(false, _T("頂点バッファ作成失敗"));
+			return E_FAIL;
+		}
+
+		count++;
 	}
 
 	return S_OK;
@@ -335,7 +340,7 @@ void CFont::RenderFont(int FontIndex, float x, float y, float FontSize)
 	D3DXMATRIX	mWorld;
 	D3DXMATRIX	mTrans, mScale;
 
-	float scale = 1.0f;
+	float scale = FontSize / 10.f;
 
 	// Build world matrix
 	D3DXMatrixScaling(&mScale, scale, scale, 1.0);
@@ -345,6 +350,8 @@ void CFont::RenderFont(int FontIndex, float x, float y, float FontSize)
 	// Update constant buffer
 	D3D11_MAPPED_SUBRESOURCE pData;
 	SHADER_CONSTANT_BUFFER cb;
+	ZeroMemory(&cb, sizeof(cb));  // Initialize to prevent garbage values
+
 	if (SUCCEEDED(
 		m_pContext11->Map(m_pConstantBuffer,
 			0, D3D11_MAP_WRITE_DISCARD, 0, &pData)))
@@ -358,6 +365,7 @@ void CFont::RenderFont(int FontIndex, float x, float y, float FontSize)
 
 		cb.fViewPortWidth = static_cast<float>(WND_W);
 		cb.fViewPortHeight = static_cast<float>(WND_H);
+		cb.fPxRange = m_PxRange;
 
 		memcpy_s(pData.pData, pData.RowPitch,
 			(void*)(&cb), sizeof(cb));
@@ -382,7 +390,7 @@ void CFont::RenderFont(int FontIndex, float x, float y, float FontSize)
 }
 
 // Render text string
-void CFont::Render(LPCTSTR text, int x, int y, float FontSize)
+void CFont::Render(LPCTSTR text, int x, int y, float FontSize, bool vertical)
 {
 	// Set shaders
 	m_pContext11->VSSetShader(m_pVertexShader, nullptr, 0);
@@ -406,19 +414,30 @@ void CFont::Render(LPCTSTR text, int x, int y, float FontSize)
 	float fx = static_cast<float>(x);
 	float fy = static_cast<float>(y);
 
-	float scale = 1.0f;
+	float scale = FontSize / 10.f;
 
 	// Render each character
 	for (int i = 0; i < lstrlen(text); i++)
 	{
 		TCHAR font = text[i];
-		int index = font - 33;	// ASCII offset
+		int index = font - 32;	// ASCII offset
+
+		// Bounds check
+		if (index < 0 || index >= SPRITE_MAX)
+			continue;
 
 		// Render glyph
 		RenderFont(index, fx, fy, FontSize);
 
 		// Advance position
-		fx += scale * m_Kerning[index];
+		if (vertical)
+		{
+			fy += scale * m_Kerning[index];
+		}
+		else
+		{
+			fx += scale * m_Kerning[index];
+		}
 	}
 }
 
@@ -427,6 +446,66 @@ void CFont::Render(LPCTSTR text, int x, int y, float FontSize)
 // In CFont.cpp, add a LoadAtlasJSON() method:
 HRESULT CFont::LoadAtlasJSON(LPCTSTR jsonPath)
 {
+
+	const int atlasWidth = 128;  // Texture atlas width in pixels
+	const int atlasHeight = 128; // Texture atlas height in pixels
+
+	const int atlasLineCount = 95; // Number of lines in the CSV file
+
+	//
+	const char filename[] = "Data\\Font\\atlas.csv";
+	FILE* pf;
+	errno_t err = fopen_s(&pf, filename, "r");
+
+	if (err != 0) {
+		_ASSERT_EXPR(false, _T("CSVファイル読み込み失敗"));
+		return E_FAIL;
+	}
+
+	char lineBuffer[256] = "";
+	char delim[] = ",";
+	char* ctx = nullptr;
+
+	int successCount = 0;
+	for (int line = 0; line < atlasLineCount; line++)
+	{
+		if (fgets(lineBuffer, 256, pf) == nullptr)
+			break;
+
+		char* pNext = strtok_s(lineBuffer, delim, &ctx);
+
+		int column = 0;
+		int unicode = 0;
+		float values[9] = { 0 };
+
+		// Parse all columns first
+		while (pNext != nullptr && column < 9)
+		{
+			values[column] = static_cast<float>(atof(pNext));
+			pNext = strtok_s(nullptr, delim, &ctx);
+			column++;
+		}
+		// Extract unicode
+		unicode = static_cast<int>(values[0]);
+
+		GlyphInfo& glyph = m_GlyphMap[unicode];
+		glyph.unicode = unicode;
+		glyph.advance = values[1];
+
+		float left = values[5];
+		float top = values[6];
+		float right = values[7];
+		float bottom = values[8];
+
+		glyph.uvLeft = left / atlasWidth;
+		glyph.uvTop = top / atlasHeight;
+		glyph.uvRight = right / atlasWidth;
+		glyph.uvBottom = bottom / atlasHeight;
+	}
+
+	fclose(pf);
+
+
 	// Read JSON file (use a library or manual parsing)
 	// For each glyph in JSON:
 	//   GlyphInfo info;
