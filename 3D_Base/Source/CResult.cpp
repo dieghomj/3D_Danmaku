@@ -97,14 +97,14 @@ void CResult::Draw()
 	TCHAR dbgText[64];
 	m_pDbgText->SetColor(MenuColor.r, MenuColor.g, MenuColor.b);
 	_stprintf_s(dbgText, _T("RESULT"));
-	m_pDbgText->Render(dbgText, 100, 140, 10);
+	m_pDbgText->Render(dbgText, 100, 140, 50);
 	_stprintf_s(dbgText, _T("Score: 000000"));
-	m_pDbgText->Render(dbgText, 100, 240, 10);
+	m_pDbgText->Render(dbgText, 100, 240, 50);
 	_stprintf_s(dbgText, _T("Enemies Killed: 000"));
-	m_pDbgText->Render(dbgText, 100, 280, 10);
+	m_pDbgText->Render(dbgText, 100, 280, 50);
 	_stprintf_s(dbgText, _T("Boss Killed: Yes"));
-	m_pDbgText->Render(dbgText, 100, 320, 10);
+	m_pDbgText->Render(dbgText, 100, 320, 50);
 	_stprintf_s(dbgText, _T("CONTINUE?"));
-	m_pDbgText->Render(dbgText, 100, 400, 10);
+	m_pDbgText->Render(dbgText, 100, 400, 50);
 
 }

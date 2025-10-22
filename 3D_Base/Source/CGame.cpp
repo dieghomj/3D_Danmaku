@@ -592,15 +592,15 @@ void CGame::Draw()
 	m_pFont->SetColor(1.f, 1.f, 1.f);
 	TCHAR dbgText[64];
 	_stprintf_s(dbgText, _T("SCORE:%d"), m_Score);
-	m_pFont->Render( dbgText, 10, 100, 10);
+	m_pFont->Render( dbgText, 10, 100, 50.f);
 	m_pFont->SetColor(1.f, 1.f, 1.f);
 	_stprintf_s(dbgText, _T("HEALTH:%d"), m_pPlayer->GetHealth() );
-	m_pFont->Render(dbgText, 10, 140, 10);
+	m_pFont->Render(dbgText, 10, 140, 50.f);
 
 	if (IsPause())
 	{
 		_stprintf_s(dbgText, _T("PAUSE"));
-		m_pFont->Render(dbgText, WND_W / 2 - 20, WND_H/2 - 20, 10);
+		m_pFont->Render(dbgText, WND_W / 2 - 20, WND_H/2 - 20, 50.f);
 	}
 }
 

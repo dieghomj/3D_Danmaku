@@ -108,6 +108,6 @@ void CTitle::Draw()
 	TCHAR dbgText[64];
 	m_pDbgText->SetColor(startMenuColor.r, startMenuColor.g, startMenuColor.b);
 	_stprintf_s(dbgText, _T("START"));
-	m_pDbgText->Render(dbgText, 100, 140, 10);
+	m_pDbgText->Render(dbgText, 100, 140, 50.f);
 
 }
