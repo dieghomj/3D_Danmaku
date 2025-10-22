@@ -28,9 +28,7 @@ public:
 	std::unordered_map<int, GlyphInfo> m_GlyphMap; // ASCII code -> glyph info
 	
 	// 定数定義.
-	static constexpr int SPRITE_MAX_W = 14.0f;	// 10文字横並び.
-	static constexpr int SPRITE_MAX_H = 14.0f;	// 10文字縦並び.
-	static constexpr int SPRITE_MAX = 95.f;		// 表示可能文字数 (ASCII 32-126).
+	static constexpr int SPRITE_MAX = 95;		// 表示可能文字数 (ASCII 32-126).
 
 	// シェーダー用定数バッファ.
 	struct SHADER_CONSTANT_BUFFER
@@ -95,7 +93,7 @@ private:
 	void Release();
 
 	// Load glyph metrics from JSON file
-	HRESULT LoadAtlasJSON(LPCTSTR jsonPath);
+	HRESULT LoadAtlasCSV(LPCTSTR filePath);
 
 private:
 	CDirectX11* m_pDx11;

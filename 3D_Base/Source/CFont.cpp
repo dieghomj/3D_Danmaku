@@ -1,4 +1,4 @@
-#include "CFont.h"
+ï»¿#include "CFont.h"
 #include "CDirectX11.h"
 #include <stdio.h>
 
@@ -18,7 +18,7 @@ CFont::CFont()
 	, m_Alpha(1.0f)
 	, m_Color(1.f, 1.f, 1.f)
 	, m_Kerning()
-	, m_PxRange(2.0f)
+	, m_PxRange(4.0f)
 	, m_FontMode(FontMode::MSDF)
 	, m_GlyphInfo()
 {
@@ -34,7 +34,7 @@ CFont::~CFont()
 	m_pDx11 = nullptr;
 }
 
-// ‰Šú‰»ŠÖ”.
+// åˆæœŸåŒ–é–¢æ•°.
 HRESULT CFont::Init(CDirectX11& pDx11)
 {
 	m_pDx11 = &pDx11;
@@ -68,7 +68,7 @@ HRESULT CFont::Init(CDirectX11& pDx11)
 	return S_OK;
 }
 
-//‰ğ•úŠÖ”.
+//è§£æ”¾é–¢æ•°.
 void CFont::Release()
 {
 	SAFE_RELEASE(m_pSampleLinear);
@@ -85,7 +85,7 @@ void CFont::Release()
 	m_pDevice11 = nullptr;
 }
 
-// ƒVƒF[ƒ_ì¬.
+// ã‚·ã‚§ãƒ¼ãƒ€ä½œæˆ.
 HRESULT CFont::CreateShader()
 {
 	ID3DBlob* pCompiledShader = nullptr;
@@ -95,7 +95,7 @@ HRESULT CFont::CreateShader()
 	uCompileFlag = D3D10_SHADER_DEBUG | D3D10_SHADER_SKIP_OPTIMIZATION;
 #endif
 
-	//ƒVƒF[ƒ_[‚ÌƒRƒ“ƒpƒCƒ‹.
+	//ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«.
 	if (FAILED(
 		D3DX11CompileFromFile(
 			SHADER_NAME,
@@ -110,7 +110,7 @@ HRESULT CFont::CreateShader()
 			&pErrors,
 			nullptr)))
 	{
-		_ASSERT_EXPR(false, _T("SDFhlsl“Ç‚İ‚İ¸”s"));
+		_ASSERT_EXPR(false, _T("SDFhlslèª­ã¿è¾¼ã¿å¤±æ•—"));
 		return E_FAIL;
 	}
 	SAFE_RELEASE(pErrors);
@@ -123,7 +123,7 @@ HRESULT CFont::CreateShader()
 			nullptr,
 			&m_pVertexShader)))
 	{
-		_ASSERT_EXPR(false, _T("SDFƒo[ƒeƒbƒNƒXƒVƒF[ƒ_ì¬¸”s"));
+		_ASSERT_EXPR(false, _T("SDFãƒãƒ¼ãƒ†ãƒƒã‚¯ã‚¹ã‚·ã‚§ãƒ¼ãƒ€ä½œæˆå¤±æ•—"));
 		return E_FAIL;
 	}
 
@@ -158,7 +158,7 @@ HRESULT CFont::CreateShader()
 			pCompiledShader->GetBufferSize(),
 			&m_pVertexLayout)))
 	{
-		_ASSERT_EXPR(false, _T("’¸“_ƒCƒ“ƒvƒbƒgƒŒƒCƒAƒEƒgì¬¸”s"));
+		_ASSERT_EXPR(false, _T("é ‚ç‚¹ã‚¤ãƒ³ãƒ—ãƒƒãƒˆãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆä½œæˆå¤±æ•—"));
 		return E_FAIL;
 	}
 	SAFE_RELEASE(pCompiledShader);
@@ -178,7 +178,7 @@ HRESULT CFont::CreateShader()
 			&pErrors,
 			nullptr)))
 	{
-		_ASSERT_EXPR(false, _T("SDF hlsl“Ç‚İ‚İ¸”s"));
+		_ASSERT_EXPR(false, _T("SDF hlslèª­ã¿è¾¼ã¿å¤±æ•—"));
 		return E_FAIL;
 	}
 	SAFE_RELEASE(pErrors);
@@ -191,7 +191,7 @@ HRESULT CFont::CreateShader()
 			nullptr,
 			&m_pPixelShader)))
 	{
-		_ASSERT_EXPR(false, _T("SDFƒsƒNƒZƒ‹ƒVƒF[ƒ_ì¬¸”s"));
+		_ASSERT_EXPR(false, _T("SDFãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ä½œæˆå¤±æ•—"));
 		return E_FAIL;
 	}
 	SAFE_RELEASE(pCompiledShader);
@@ -211,7 +211,7 @@ HRESULT CFont::CreateShader()
 			nullptr,
 			&m_pConstantBuffer)))
 	{
-		_ASSERT_EXPR(false, _T("ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@ì¬¸”s"));
+		_ASSERT_EXPR(false, _T("ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ä½œæˆå¤±æ•—"));
 		return E_FAIL;
 	}
 
@@ -227,7 +227,7 @@ HRESULT CFont::CreateTexture(LPCTSTR lpFileName)
 		&m_pTexture,
 		nullptr)))
 	{
-		_ASSERT_EXPR(false, _T("SDFƒeƒNƒXƒ`ƒƒ[“Ç‚İ‚İ¸”s"));
+		_ASSERT_EXPR(false, _T("SDFãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼èª­ã¿è¾¼ã¿å¤±æ•—"));
 		return E_FAIL;
 	}
 
@@ -236,72 +236,63 @@ HRESULT CFont::CreateTexture(LPCTSTR lpFileName)
 
 HRESULT CFont::CreateModel()
 {
-	// Constants matching your texture atlas layout
-	constexpr float TEXTURE_W = 128.f;	// Total texture width
-	constexpr float TEXTURE_H = 128.f;	// Total texture height
-	// ’è”’è‹`.
-	constexpr float CHAR_W = 10.f;		// Width of each character cell in pixels
-	constexpr float CHAR_H = 10.f;		// Height of each character cell in pixels
+	constexpr float ATLAS_W = 320.f;   // -dimensions 320 320
+	constexpr float ATLAS_H = 320.f;
+	constexpr float BASE_SIZE = 32.f;  // -size 32
 
-	// Calculate how many pixels each character occupies in the atlas
-	constexpr float CELL_W = TEXTURE_W / SPRITE_MAX_W;  // 10 pixels
-	constexpr float CELL_H = TEXTURE_H / SPRITE_MAX_H;  // 10 pixels
-
-	if (FAILED(LoadAtlasJSON(_T("Data\\Font\\atlas.csv"))))
+	if (FAILED(LoadAtlasCSV(_T("Data\\Font\\atlas.csv"))))
 	{
 		return E_FAIL;
 	}
 
+	// äº‹å‰ã‚¯ãƒªã‚¢
+	for (int i = 0; i < SPRITE_MAX; ++i) {
+		m_pVertexBuffer[i] = nullptr;
+		m_Kerning[i] = 0.0f;
+	}
+
 	int count = 0;
 
-	for (int code = 32; code <= 126; code++)     // Row first
+	for (int code = 32; code <= 126; ++code)
 	{
-
-		if (m_GlyphMap.find(code) == m_GlyphMap.end())
-		{
+		auto it = m_GlyphMap.find(code);
+		if (it == m_GlyphMap.end()) {
 			continue;
 		}
+		const GlyphInfo& glyph = it->second;
 
-		GlyphInfo& glyph = m_GlyphMap[code];
+		// UVã‚µã‚¤ã‚ºã‹ã‚‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ä¸Šã®ãƒ”ã‚¯ã‚»ãƒ«å¯¸æ³•ã‚’è¨ˆç®—
+		const float glyphWidthPx = (glyph.uvRight - glyph.uvLeft) * ATLAS_W;
+		const float glyphHeightPx = (glyph.uvBottom - glyph.uvTop) * ATLAS_H;
 
-		// 
-		m_Kerning[count] = glyph.advance * CHAR_W;
+		// æ–‡å­—é€ã‚Š = advance[em] * BASE_SIZE[px]
+		const int bufIndex = code - 32;
+		m_Kerning[bufIndex] = glyph.advance * BASE_SIZE;
 
-		// Normalize to UV coordinates [0, 1]
-		float left		= glyph.uvLeft;
-		float top		= glyph.uvTop;
-		float right		= glyph.uvRight;
-		float bottom	= glyph.uvBottom;
-
-		// Create quad vertices (triangle strip order)
-		// DirectX UV convention: (0,0) = top-left, (1,1) = bottom-right
+		// ã‚°ãƒªãƒ•å®Ÿå¯¸ã®çŸ©å½¢ã§é ‚ç‚¹ã‚’ä½œæˆï¼ˆæç”»æ™‚ã«FontSize/BASE_SIZEã§ã‚¹ã‚±ãƒ¼ãƒ«ï¼‰
 		VERTEX vertices[] =
 		{
-			// Position (world space)                UV coordinates
-			D3DXVECTOR3(0.0f,   CHAR_H, 0.0f),   D3DXVECTOR2(left,  bottom),  // Bottom-left
-			D3DXVECTOR3(0.0f,   0.0f,   0.0f),   D3DXVECTOR2(left,  top),     // Top-left
-			D3DXVECTOR3(CHAR_W, CHAR_H, 0.0f),   D3DXVECTOR2(right, bottom),  // Bottom-right
-			D3DXVECTOR3(CHAR_W, 0.0f,   0.0f),   D3DXVECTOR2(right, top)      // Top-right
+			{ D3DXVECTOR3(0.0f,         glyphHeightPx, 0.0f), D3DXVECTOR2(glyph.uvLeft,  glyph.uvBottom) }, // BL
+			{ D3DXVECTOR3(0.0f,         0.0f,          0.0f), D3DXVECTOR2(glyph.uvLeft,  glyph.uvTop)    }, // TL
+			{ D3DXVECTOR3(glyphWidthPx, glyphHeightPx, 0.0f), D3DXVECTOR2(glyph.uvRight, glyph.uvBottom) }, // BR
+			{ D3DXVECTOR3(glyphWidthPx, 0.0f,          0.0f), D3DXVECTOR2(glyph.uvRight, glyph.uvTop)    }, // TR
 		};
-		UINT uVerMax = sizeof(vertices) / sizeof(vertices[0]);
+		const UINT vcount = _countof(vertices);
 
-		// Buffer description
 		D3D11_BUFFER_DESC bd;
 		bd.Usage = D3D11_USAGE_DEFAULT;
-		bd.ByteWidth = sizeof(VERTEX) * uVerMax;
+		bd.ByteWidth = sizeof(VERTEX) * vcount;
 		bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		bd.CPUAccessFlags = 0;
 		bd.MiscFlags = 0;
 		bd.StructureByteStride = 0;
 
-		// Subresource data
 		D3D11_SUBRESOURCE_DATA InitData;
 		InitData.pSysMem = vertices;
 
-		// Create vertex buffer
 		if (FAILED(m_pDevice11->CreateBuffer(&bd, &InitData, &m_pVertexBuffer[count])))
 		{
-			_ASSERT_EXPR(false, _T("’¸“_ƒoƒbƒtƒ@ì¬¸”s"));
+			_ASSERT_EXPR(false, _T("é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ä½œæˆå¤±æ•—"));
 			return E_FAIL;
 		}
 
@@ -340,7 +331,8 @@ void CFont::RenderFont(int FontIndex, float x, float y, float FontSize)
 	D3DXMATRIX	mWorld;
 	D3DXMATRIX	mTrans, mScale;
 
-	float scale = FontSize / 10.f;
+	constexpr float BASE_SIZE = 32.0f;
+	float scale = FontSize / BASE_SIZE;
 
 	// Build world matrix
 	D3DXMatrixScaling(&mScale, scale, scale, 1.0);
@@ -414,7 +406,8 @@ void CFont::Render(LPCTSTR text, int x, int y, float FontSize, bool vertical)
 	float fx = static_cast<float>(x);
 	float fy = static_cast<float>(y);
 
-	float scale = FontSize / 10.f;
+	constexpr float BASE_SIZE = 32.0f;
+	float scale = FontSize / BASE_SIZE;
 
 	// Render each character
 	for (int i = 0; i < lstrlen(text); i++)
@@ -443,12 +436,12 @@ void CFont::Render(LPCTSTR text, int x, int y, float FontSize, bool vertical)
 
 
 
-// In CFont.cpp, add a LoadAtlasJSON() method:
-HRESULT CFont::LoadAtlasJSON(LPCTSTR jsonPath)
+// In CFont.cpp, add a LoadAtlasCSV() method:
+HRESULT CFont::LoadAtlasCSV(LPCTSTR filePath)
 {
 
-	const int atlasWidth = 128;  // Texture atlas width in pixels
-	const int atlasHeight = 128; // Texture atlas height in pixels
+	const int atlasWidth = 320;  // Texture atlas width in pixels
+	const int atlasHeight = 320; // Texture atlas height in pixels
 
 	const int atlasLineCount = 95; // Number of lines in the CSV file
 
@@ -458,7 +451,7 @@ HRESULT CFont::LoadAtlasJSON(LPCTSTR jsonPath)
 	errno_t err = fopen_s(&pf, filename, "r");
 
 	if (err != 0) {
-		_ASSERT_EXPR(false, _T("CSVƒtƒ@ƒCƒ‹“Ç‚İ‚İ¸”s"));
+		_ASSERT_EXPR(false, _T("CSVãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿å¤±æ•—"));
 		return E_FAIL;
 	}
 
@@ -476,10 +469,10 @@ HRESULT CFont::LoadAtlasJSON(LPCTSTR jsonPath)
 
 		int column = 0;
 		int unicode = 0;
-		float values[9] = { 0 };
+		float values[10] = { 0 };
 
 		// Parse all columns first
-		while (pNext != nullptr && column < 9)
+		while (pNext != nullptr && column < 10)
 		{
 			values[column] = static_cast<float>(atof(pNext));
 			pNext = strtok_s(nullptr, delim, &ctx);
@@ -489,33 +482,21 @@ HRESULT CFont::LoadAtlasJSON(LPCTSTR jsonPath)
 		unicode = static_cast<int>(values[0]);
 
 		GlyphInfo& glyph = m_GlyphMap[unicode];
-		glyph.unicode = unicode;
-		glyph.advance = values[1];
+		glyph.unicode	= unicode;
+		glyph.advance	= values[1];
 
-		float left = values[5];
-		float top = values[6];
-		float right = values[7];
-		float bottom = values[8];
+		float left		= values[6];
+		float top		= values[7];
+		float right		= values[8];
+		float bottom	= values[9];
 
-		glyph.uvLeft = left / atlasWidth;
-		glyph.uvTop = top / atlasHeight;
-		glyph.uvRight = right / atlasWidth;
-		glyph.uvBottom = bottom / atlasHeight;
+		glyph.uvLeft	= left / atlasWidth;
+		glyph.uvTop		= top / atlasHeight;
+		glyph.uvRight	= right / atlasWidth;
+		glyph.uvBottom	= bottom / atlasHeight;
 	}
 
 	fclose(pf);
-
-
-	// Read JSON file (use a library or manual parsing)
-	// For each glyph in JSON:
-	//   GlyphInfo info;
-	//   info.uvLeft = atlasBounds.left / atlasWidth;
-	//   info.uvTop = atlasBounds.bottom / atlasHeight;
-	//   info.uvRight = atlasBounds.right / atlasWidth;
-	//   info.uvBottom = atlasBounds.top / atlasHeight;
-	//   info.advance = glyph.advance;
-	//   m_GlyphMap[glyph.unicode] = info;
-
 
 	return S_OK;
 }

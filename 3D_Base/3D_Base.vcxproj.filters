@@ -322,8 +322,5 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="TODO.md" />
-    <None Include="Data\Font\atlas.csv">
-      <Filter>Resource</Filter>
-    </None>
   </ItemGroup>
 </Project>
