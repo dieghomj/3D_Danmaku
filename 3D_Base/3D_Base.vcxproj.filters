@@ -85,6 +85,9 @@
     <Filter Include="Source\GameScene">
       <UniqueIdentifier>{36fb484d-c843-46ba-afb1-5a678918cf62}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Font">
+      <UniqueIdentifier>{b6fac8f0-f2f0-47f7-85c6-61bb7786bda0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CDirectX11.cpp">
@@ -186,10 +189,18 @@
     <ClCompile Include="Source\CSceneManager.cpp">
       <Filter>Source\GameScene</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CFont.cpp" />
-    <ClCompile Include="Source\CResult.cpp" />
-    <ClCompile Include="Source\CTest.cpp" />
-    <ClCompile Include="Source\CTitle.cpp" />
+    <ClCompile Include="Source\CResult.cpp">
+      <Filter>Source\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CTest.cpp">
+      <Filter>Source\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CTitle.cpp">
+      <Filter>Source\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CFont.cpp">
+      <Filter>Source\Font</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\CDirectX11.h">
@@ -294,10 +305,18 @@
     <ClInclude Include="Source\CSceneManager.h">
       <Filter>Source\GameScene</Filter>
     </ClInclude>
-    <ClInclude Include="Source\CFont.h" />
-    <ClInclude Include="Source\CResult.h" />
-    <ClInclude Include="Source\CTest.h" />
-    <ClInclude Include="Source\CTitle.h" />
+    <ClInclude Include="Source\CResult.h">
+      <Filter>Source\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CTest.h">
+      <Filter>Source\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CTitle.h">
+      <Filter>Source\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CFont.h">
+      <Filter>Source\Font</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Data\Shader\Sprite3D.hlsl">
@@ -318,7 +337,9 @@
     <FxCompile Include="Data\Shader\Ray.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="Data\Shader\SDFText.hlsl" />
+    <FxCompile Include="Data\Shader\Text.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="TODO.md" />

@@ -2,7 +2,7 @@
 #include "CDirectX11.h"
 #include <stdio.h>
 
-const TCHAR SHADER_NAME[] = _T("Data\\Shader\\SDFText.hlsl");
+const TCHAR SHADER_NAME[] = _T("Data\\Shader\\Text.hlsl");
 
 CFont::CFont()
 	: m_pDx11(nullptr)

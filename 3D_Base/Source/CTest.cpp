@@ -34,7 +34,7 @@ void CTest::Update()
 
 void CTest::Draw()
 {
-	m_SDFText->SetColor(1.0f, 1.0f, 1.0f);  // White
+	m_SDFText->SetColor(1.0f, 0.0f, 0.0f);  // White
 	m_SDFText->SetAlpha(1.0f);               // Fully opaque
 	m_SDFText->Render(_T(" SCORE: 1234567890"), 50, 50, 30.f);
 }	
