@@ -201,6 +201,9 @@
     <ClCompile Include="Source\CFont.cpp">
       <Filter>Source\Font</Filter>
     </ClCompile>
+    <ClCompile Include="Source\CCommon.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\CDirectX11.h">
@@ -316,6 +319,9 @@
     </ClInclude>
     <ClInclude Include="Source\CFont.h">
       <Filter>Source\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CCommon.h">
+      <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

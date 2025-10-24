@@ -35,13 +35,7 @@ public:
 
 	void TickInvTimer(float dt) { m_InvTimer += dt; }
 
-	void SetDamageValue(int dmg) {
-		if (!m_IsInv)
-		{
-			SetInvincible();
-			m_Health -= dmg;
-		}
-	};
+	void SetDamageValue(int dmg);
 
 	void SetHealth(float hp) { m_Health = hp; }
 	void SetInvincible();

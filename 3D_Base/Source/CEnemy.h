@@ -35,7 +35,7 @@ public:
 
 	void SetEnemyState(enEnemyState state) { m_EnemyState = state; }
 	void SetTargetPos(D3DXVECTOR3 pos) { m_vTargetPos = pos; }
-	void SetDamagedValue(float dmg) { m_Health -= dmg; }
+	void SetDamagedValue(float dmg);
 	void SetHealth(float hp) { m_Health = hp; }
 
 	bool IsInTarget() const { return m_IsInTarget; }

@@ -1,5 +1,7 @@
 #pragma once
 #include "CSound.h"		//サウンドクラス.
+#include <vector>
+#include <unordered_map>
 
 /**************************************************
 *	サウンドマネージャークラス.
@@ -13,8 +15,17 @@ public:
 	enum enList
 	{
 		BGM_Bonus,	//ボーナスステージ.
+		BGM_Battle,	//ボーナスステージ.
+		BGM_Menu,	//ボーナスステージ.
 		SE_Jump,	//ジャンプ.
 		SE_Clear,	//クリア.
+		SE_PlayerHit,
+		SE_PlayerShot,	//.
+		SE_EnemyHit,	//.
+		SE_BossShot,//.
+		SE_BossRotShot,//.
+		SE_Boss,	//.
+		SE_Explosion,//.
 
 		//音が増えたら「ここ」に追加してください.
 		max,		//最大数.
@@ -47,9 +58,17 @@ public:
 	static void PlayLoop( enList list ) {
 		CSoundManager::GetInstance()->m_pSound[list]->PlayLoop();
 	}
+	static void SetVolume(enList list, int volume) {
+		CSoundManager::GetInstance()->m_pSound[list]->SetVolume(volume);
+	}
 	//停止する.
 	static void Stop( enList list ) {
 		CSoundManager::GetInstance()->m_pSound[list]->Stop();
+	}
+
+	bool CreateVoicePool(enList list, int count, HWND hWnd);
+	static void PlaySEPoly(enList list) {
+		CSoundManager::GetInstance()->PlayFromPool(list);
 	}
 
 private://外部からアクセス不可能.
@@ -64,4 +83,19 @@ private://外部からアクセス不可能.
 
 private:
 	CSound*		m_pSound[enList::max];
+	//込んだファイル情報を保持（プール再オープン用）
+	struct SoundInfo {
+		TCHAR path[256]{};
+		TCHAR alias[32]{};
+	};
+	SoundInfo m_SoundInfo[enList::max]{};
+	struct VoicePool {
+		std::vector<CSound*> voices;
+		size_t index = 0;
+	};
+
+	std::unordered_map<int, VoicePool> m_voicePools;
+
+	// 追加: プールから再生
+	void PlayFromPool(enList list);
 };

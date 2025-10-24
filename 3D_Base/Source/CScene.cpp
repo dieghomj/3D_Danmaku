@@ -1,4 +1,5 @@
 #include "CScene.h"
+#include "CSoundManager.h"
 
 CScene::CScene(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& pManager)
 	: m_pDx9(&pDx9)
@@ -13,6 +14,13 @@ CScene::CScene(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSce
 	, m_mouseDelta		({ 0,0 })
 	, m_mouseSense		( 0.01f )
 {
+	//サウンドデータの読み込み
+	CSoundManager::GetInstance()->Load(m_hWnd);
+	CSoundManager::GetInstance()->CreateVoicePool(CSoundManager::SE_PlayerShot, 16, m_hWnd);
+	CSoundManager::GetInstance()->CreateVoicePool(CSoundManager::SE_BossShot, 32, m_hWnd);
+	CSoundManager::GetInstance()->CreateVoicePool(CSoundManager::SE_EnemyHit, 16, m_hWnd);
+	CSoundManager::GetInstance()->CreateVoicePool(CSoundManager::SE_PlayerHit, 8, m_hWnd);
+
 }
 
 CScene::~CScene()

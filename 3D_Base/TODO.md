@@ -48,8 +48,6 @@
 - Animation
 - Sound effects
 
-
-
 ## Graphics
 
 - Player sprite
@@ -81,3 +79,10 @@
 - Pause menu
 - Power-up indicators
 
+## Sound
+
+- Background music
+- Sound effects
+	- Player actions
+	- Enemy actions
+	- UI interactions

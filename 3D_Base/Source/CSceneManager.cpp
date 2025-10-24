@@ -30,7 +30,7 @@ CScene* CSceneManager::ChangeScene(const char* name)
 
 	if (m_pCurrentScene)
 	{
-		Sleep(200);
+		Sleep(250);
 		m_pCurrentScene->Start();
 	}
 

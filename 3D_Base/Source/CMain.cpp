@@ -102,11 +102,10 @@ HRESULT CMain::Create()
 	//シーンリストに追加
 	m_pSceneManager->AddScene(	m_pGame,	"GameMain");
 	m_pSceneManager->AddScene(	m_pTitle,	"Title");
-	m_pSceneManager->AddScene(	m_pTest,	"Test");
 	m_pSceneManager->AddScene(	m_pResult,	"Result");
 
 	////シーン変更でシーンを用意する
-	m_pSceneManager->ChangeScene("Result");
+	m_pSceneManager->ChangeScene("Title");
 
 	return S_OK;
 }

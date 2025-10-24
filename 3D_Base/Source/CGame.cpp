@@ -209,10 +209,13 @@ HRESULT CGame::LoadData()
 		return E_FAIL;
 	}
 
-	//サウンドデータの読み込み
-	if (CSoundManager::GetInstance()->Load(m_hWnd) == false) {
-		return E_FAIL;
-	}
+	////サウンドデータの読み込み
+	//if (CSoundManager::GetInstance()->Load(m_hWnd) == false) {
+	//	return E_FAIL;
+	//}
+
+
+
 
 	//Effectクラス
 	if (FAILED(CEffect::GetInstance()->LoadData())) {
@@ -383,6 +386,8 @@ void CGame::Start()
 			pE->Respawn();
 		}
 	}
+
+	CSoundManager::PlayLoop(CSoundManager::BGM_Battle);
 }
 
 //更新処理.
@@ -397,14 +402,35 @@ void CGame::Update()
 		return;
 	}
 
+	CSoundManager::Stop(CSoundManager::BGM_Menu);
+	CSoundManager::SetVolume(CSoundManager::BGM_Battle, 50);
+	CSoundManager::PlayLoop(CSoundManager::BGM_Battle);
+
+	if (m_pBoss->GetHealth() <= 0)
+	{
+		//m_GameState = enGameScene::Result;
+		//RESULT
+		m_Score += 10000;
+		m_pBoss->SetPosition(0.f, -10.f, 0.f);
+		CCommon::SCORE = m_Score;
+		CCommon::BOSS_CLEAR = (m_pBoss->GetHealth() <= 0.f);
+		CCommon::CLEAR_TIME += m_pTime->GetTotalTime() / 1000.f;
+		m_pManager->ChangeScene("Result");
+		return;
+	}
+
 	if (m_pPlayer->GetHealth() <= 0.f)
 	{
 		//m_GameState = enGameScene::GameOver;
 		//GAME OVER
 		m_pPlayer->SetPosition(0.f, -2.f, 0.f);
-		m_pManager->ChangeScene("GameMain");
+		CCommon::SCORE = m_Score;
+		CCommon::BOSS_CLEAR = (m_pBoss->GetHealth() <= 0.f);
+		CCommon::CLEAR_TIME += m_pTime->GetTotalTime() / 1000.f;
+		m_pManager->ChangeScene("Result");
+		return;
 	}
-	if (m_Score > 5000)
+	if (m_Score > 3000)
 	{
 		m_pPlayer->SetShotNumber(CCharacter::Triple);
 	}
@@ -433,6 +459,7 @@ void CGame::Update()
 
 	if (m_Score >= 50 && m_pBoss->GetEnemyState() == CEnemy::DESPAWN /*&& m_GameState != enGameScene::Result*/)
 	{
+		CSoundManager::PlaySE(CSoundManager::SE_Boss);
 		m_pBoss->SetEnemyState(CEnemy::CHASING);
 		m_pBoss->SetPosition(0.f, 1.f, m_pPlayer->GetPosition().z + 40.f);
 	}
@@ -560,14 +587,7 @@ void CGame::Draw()
 			m_pShot[No]->SetDisplay(false);
 			m_pShot[No]->SetPosition(0.f, -10.f, 0.f);	//地面に埋める
 			m_pBoss->SetDamagedValue(10);
-			if (m_pBoss->GetHealth() <= 0)
-			{
-				//m_GameState = enGameScene::Result;
-				//RESULT
-				m_Score += 10000;
-				m_pBoss->SetPosition(0.f,-10.f,0.f);
-				m_pManager->ChangeScene("Result");
-			}
+			
 		}
 
 	}
@@ -581,12 +601,6 @@ void CGame::Draw()
 	//Effectクラス
 	CEffect::GetInstance()->Draw(m_mView, m_mProj, m_Light, m_Camera);
 
-	//レイの描画
-	m_pRayY->Render(m_mView, m_mProj, m_pPlayer->GetRayY());
-	for (int dir = 0; dir < CROSSRAY::max; dir++) {
-		m_pCrossRay[dir]->Render(
-			m_mView, m_mProj, m_pPlayer->GetCrossRay().Ray[dir]);
-	}
 
 	//デバッグテキスト(数値入り)の描画
 	m_pFont->SetColor(1.f, 1.f, 1.f);
@@ -695,7 +709,7 @@ void CGame::TopDownCamera(
 	pCamera->vLook		= TargetPos;
 
 	pCamera->vPosition	+= vecAxisY * 25.f ;
-	pCamera->vLook		+= vecAxisZ * 8.f - vecAxisY * 1.f;
+	pCamera->vLook		+= vecAxisZ * 5.f - vecAxisY * 1.f;
 
 }
 
@@ -727,72 +741,45 @@ float CGame::GetNWayRot(float spreadDeg, int bulletCount, int bulletNo)
 
 void CGame::HandleBossShot()
 {
+
+	if (m_ShotQue.empty())		//弾が無いので発射できない
+		return;
+
 	int attackPattern = m_pBoss->GetAttackPattern();
+	m_pBoss->DecCadenceTimer(m_pTime->GetFixedDeltaTime());	//連射速度を減少
+	CShot* bullet = nullptr;
+
 	if (m_pBoss->IsShot() == true)
 	{
-		float cadence = m_bossCd;					//連射速度
-		m_bossCd -= m_pTime->GetFixedDeltaTime();	//連射速度を減少
-
 		switch (attackPattern)
 		{
-		case CBoss::ROTATING:
-	
-			if (m_bossCd <= 0.0f)
-			{
-				CShot* bullet = m_BossShotQue.front();
+			case CBoss::ROTATING:
+
+				bullet = m_BossShotQue.front();
 				bullet->Reload(
 					m_pBoss->GetPosition(),
 					m_pBoss->GetRotation().y);
 				//弾をキューの最後に移動
-				m_bossCd = m_pBoss->GetShootCd();
-
 				m_BossShotQue.pop();
 				m_BossShotQue.push(bullet);
+				
+				break;
 
-				m_bossCd = m_pBoss->GetShootCd();
-			}
-
-			break;
-		case CBoss::WAYCROSS:
-
-			if (m_bossCd <= 0.0f)
-			{
-				CShot* bullet = m_BossShotQue.front();
-				bullet->Reload(
-					m_pBoss->GetPosition(),
-					m_pBoss->GetRotation().y + PI/4);
-				//弾をキューの最後に移動
-				m_BossShotQue.pop();
-				m_BossShotQue.push(bullet);
-
-				bullet = m_BossShotQue.front();
-				bullet->Reload(
-					m_pBoss->GetPosition(),
-					m_pBoss->GetRotation().y + PI/4 + PI/2);
-				//弾をキューの最後に移動
-				m_BossShotQue.pop();
-				m_BossShotQue.push(bullet);
-
-				bullet = m_BossShotQue.front();
-				bullet->Reload(
-					m_pBoss->GetPosition(),
-					m_pBoss->GetRotation().y + PI/4 + PI);
-				//弾をキューの最後に移動
-				m_BossShotQue.pop();
-				m_BossShotQue.push(bullet);
-
-				bullet = m_BossShotQue.front();
-				bullet->Reload(
-					m_pBoss->GetPosition(),
-					m_pBoss->GetRotation().y + PI/4 + 3 * PI /2);
-				//弾をキューの最後に移動
-				m_BossShotQue.pop();
-				m_BossShotQue.push(bullet);
-
-
-				m_bossCd = m_pBoss->GetShootCd();
-			}
-
+			case CBoss::WAYCROSS:
+				if(!m_BossShotQue.front()->IsDisplay())
+					CSoundManager::PlaySEPoly(CSoundManager::SE_BossShot);
+				for (int i = 0; i < 4; i++)
+				{
+					bullet = m_BossShotQue.front();
+					bullet->Reload(
+						m_pBoss->GetPosition(),
+						m_pBoss->GetRotation().y + PI/2 * i);
+					//弾をキューの最後に移動
+					m_BossShotQue.pop();
+					m_BossShotQue.push(bullet);
+				}
+				break;
+			
 		}
 
 		
@@ -811,11 +798,13 @@ void CGame::HandlePlayerShot()
 
 	if (m_pPlayer->IsShot() == true)
 	{
+
 		switch (m_pPlayer->GetShotType())
 		{
 		default:
 		case CCharacter::Simple:
 			HandleNWayShot(bulletCount);
+			CSoundManager::PlaySEPoly(CSoundManager::SE_PlayerShot);
 			break;
 		case CCharacter::Charged:
 			HandleChargedShot();

@@ -10,7 +10,7 @@ CPlayer::CPlayer()
 	, m_shotMax			(10)
 	, m_ShotNumber		(enShotNumber::Single)
 	, m_ShotType		(enShotType::Simple)
-	, m_Cadence			(100.0f)	//˜AË‘¬“x
+	, m_Cadence			(200.0f)	//˜AË‘¬“x
 	, m_NWaySrpeadDeg	(12.0f)	//NWay’e‚ÌL‚ª‚èŠp“x
 	, m_ChargedShotTime	(0.f)
 	, m_CadenceTimer	(0.f)
@@ -144,10 +144,10 @@ void CPlayer::HandleInput()
 	//’e‚ğ”ò‚Î‚µ‚½‚¢!
 	if (fireDown) 
 	{
-		m_IsCharging = true;
+		//m_IsCharging = true;
 
-		m_ChargedShotTime += 1000.0f / FPS;
-		m_ChargedShotTime = min(m_ChargedShotTime, m_ChargedShotMax);
+		//m_ChargedShotTime += 1000.0f / FPS;
+		//m_ChargedShotTime = min(m_ChargedShotTime, m_ChargedShotMax);
 
 		if (m_CadenceTimer <= 0.0f && m_ShotType == CCharacter::Simple)
 		{
@@ -158,17 +158,27 @@ void CPlayer::HandleInput()
 
 	}
 
-	if (!fireDown && m_WasFireDown)
+//	if (!fireDown && m_WasFireDown)
+//	{
+//		m_Shot = true;
+//
+//		ChargedTime = m_ChargedShotTime;
+//		m_ChargedShotTime = 0.0f;
+//		m_IsCharging = false;
+//	}
+//
+//	m_WasFireDown = fireDown;
+//
+}
+
+void CPlayer::SetDamageValue(int dmg)
+{
+	if (!m_IsInv)
 	{
-		m_Shot = true;
-
-		ChargedTime = m_ChargedShotTime;
-		m_ChargedShotTime = 0.0f;
-		m_IsCharging = false;
+		SetInvincible();
+		m_Health -= dmg;
+		CSoundManager::PlaySEPoly(CSoundManager::SE_PlayerHit);
 	}
-
-	m_WasFireDown = fireDown;
-
 }
 
 void CPlayer::SetInvincible()

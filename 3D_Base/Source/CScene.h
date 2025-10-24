@@ -4,6 +4,7 @@
 #include "CTime.h"
 #include "CSceneManager.h"
 #include "CSprite2D.h"
+#include "CCommon.h"
 
 /********************************************************************************
 *	ゲームシーンクラス.

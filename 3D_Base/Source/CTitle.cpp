@@ -1,4 +1,5 @@
 #include "CTitle.h"
+#include "CSoundManager.h"
 
 CTitle::CTitle(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& pManager)
 		: CScene(pDx9, pDx11, hWnd, pTime, pManager)
@@ -84,11 +85,13 @@ void CTitle::Update()
 {
 	CScene::Update();
 
+	CSoundManager::PlayLoop(CSoundManager::BGM_Menu);
+
 	POINT mousePos = GetMouseSeudoPos();
 	m_pCursor->SetPosition(mousePos.x,mousePos.y,0.f);
 
 	if (mousePos.x <= 100 + 50 * 6 && mousePos.x >= 100 &&
-		mousePos.y <= 140 + 50 && mousePos.y >= 140)
+		mousePos.y <= 180 + 50 && mousePos.y >= 180)
 	{
 		startMenuColor = Color(1.f, 0.f, 0.f);
 		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
@@ -106,8 +109,9 @@ void CTitle::Draw()
 	m_pCursor->Draw();
 
 	TCHAR dbgText[64];
+
 	m_pDbgText->SetColor(startMenuColor.r, startMenuColor.g, startMenuColor.b);
 	_stprintf_s(dbgText, _T("START"));
-	m_pDbgText->Render(dbgText, 100, 140, 50.f);
+	m_pDbgText->Render(dbgText, 100, 180, 50.f);
 
 }
