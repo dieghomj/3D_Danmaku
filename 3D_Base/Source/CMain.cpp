@@ -2,6 +2,10 @@
 #include "CDirectX9.h"
 #include "CDirectX11.h"
 #include "CGame.h"
+#include "CTime.h"
+#include "CTest.h"
+#include "CTitle.h"
+#include "CResult.h"
 
 //ウィンドウを画面中央で起動を有効にする.
 //#define ENABLE_WINDOWS_CENTERING
@@ -25,11 +29,16 @@ CMain::CMain()
 	, m_pDx9	( nullptr )
 	, m_pDx11	( nullptr )
 	, m_pGame	( nullptr )
+	, m_pTitle  ( nullptr )
+	, m_pTest	( nullptr )
 	, m_pTime	( nullptr )
+	, m_pResult	( nullptr )
+	, m_pSceneManager (nullptr)
 {
 	m_pDx9	= new CDirectX9();
 	m_pDx11 = new CDirectX11();
 	m_pTime = new CTime();
+	m_pSceneManager = new CSceneManager();
 }
 
 
@@ -40,6 +49,7 @@ CMain::~CMain()
 {
 	SAFE_DELETE( m_pTime );
 	SAFE_DELETE( m_pGame );
+	SAFE_DELETE( m_pSceneManager )
 	SAFE_DELETE( m_pDx11 );
 	SAFE_DELETE( m_pDx9 );
 
@@ -50,19 +60,19 @@ CMain::~CMain()
 //更新処理.
 void CMain::Update()
 {
+
 	//更新処理.
-	m_pGame->Update();
+	m_pSceneManager->Update();
 
 	//バックバッファをクリアにする.
 	m_pDx11->ClearBackBuffer();
 
 	//描画処理.
-	m_pGame->Draw();
+	m_pSceneManager->Draw();
 	
 	//画面に表示.
 	m_pDx11->Present();
 
-	//m_pTime->Tick();
 }
 
 
@@ -80,12 +90,22 @@ HRESULT CMain::Create()
 	{
 		return E_FAIL;
 	}
+	//シーン管理クラスのインスタンス生成
+	m_pSceneManager = new CSceneManager();
 
-	//ゲームクラスのインスタンス生成.
-	m_pGame = new CGame( *m_pDx9, *m_pDx11, m_hWnd, *m_pTime);
+	//ゲームシーンクラスのインスタンス生成.
+	m_pGame = new CGame( *m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager);
+	m_pTitle = new CTitle(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager);
+	m_pResult = new CResult(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager);
+	m_pTest = new CTest(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager);
 
-	//ゲームクラスの構築（Loadも含める）.
-	m_pGame->Create();
+	//シーンリストに追加
+	m_pSceneManager->AddScene(	m_pGame,	"GameMain");
+	m_pSceneManager->AddScene(	m_pTitle,	"Title");
+	m_pSceneManager->AddScene(	m_pResult,	"Result");
+
+	////シーン変更でシーンを用意する
+	m_pSceneManager->ChangeScene("Title");
 
 	return S_OK;
 }
@@ -93,8 +113,6 @@ HRESULT CMain::Create()
 //データロード処理.
 HRESULT CMain::LoadData()
 {
-	//データロード処理.
-	m_pGame->LoadData();
 
 	return S_OK;
 }

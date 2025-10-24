@@ -82,6 +82,12 @@
     <Filter Include="Source\GameObject\SpriteObject\Shot">
       <UniqueIdentifier>{e2fb0f87-92e3-486c-b646-f236537f419a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\GameScene">
+      <UniqueIdentifier>{36fb484d-c843-46ba-afb1-5a678918cf62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Font">
+      <UniqueIdentifier>{b6fac8f0-f2f0-47f7-85c6-61bb7786bda0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CDirectX11.cpp">
@@ -172,6 +178,30 @@
       <Filter>Source\Ray</Filter>
     </ClCompile>
     <ClCompile Include="Source\CTime.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CBoss.cpp">
+      <Filter>Source\GameObject\StaticMeshObject\Character\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CScene.cpp">
+      <Filter>Source\GameScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CSceneManager.cpp">
+      <Filter>Source\GameScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CResult.cpp">
+      <Filter>Source\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CTest.cpp">
+      <Filter>Source\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CTitle.cpp">
+      <Filter>Source\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CFont.cpp">
+      <Filter>Source\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CCommon.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
@@ -269,6 +299,30 @@
     <ClInclude Include="Source\CTime.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Source\CBoss.h">
+      <Filter>Source\GameObject\StaticMeshObject\Character\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CScene.h">
+      <Filter>Source\GameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CSceneManager.h">
+      <Filter>Source\GameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CResult.h">
+      <Filter>Source\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CTest.h">
+      <Filter>Source\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CTitle.h">
+      <Filter>Source\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CFont.h">
+      <Filter>Source\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CCommon.h">
+      <Filter>Source</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Data\Shader\Sprite3D.hlsl">
@@ -287,6 +341,9 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="Data\Shader\Ray.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Data\Shader\Text.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

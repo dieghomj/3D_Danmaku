@@ -42,7 +42,7 @@ public:
 	void Present();
 
 	//デバイスを取得.
-	ID3D11Device* GetDevice() const { return m_pDevice11; }
+	ID3D11Device* GetDevice() const { return m_pDevice11;  }
 	//デバイスコンテキストを取得.
 	ID3D11DeviceContext* GetContext() const { return m_pContext11; }
 

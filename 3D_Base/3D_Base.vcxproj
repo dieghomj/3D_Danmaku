@@ -122,6 +122,7 @@
       <ForcedIncludeFiles>stdafx.h</ForcedIncludeFiles>
       <AdditionalIncludeDirectories>Source\Effekseer\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -141,6 +142,7 @@
       <ForcedIncludeFiles>stdafx.h</ForcedIncludeFiles>
       <AdditionalIncludeDirectories>Source\Effekseer\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -154,8 +156,13 @@
     <ClCompile Include="Source\CBoss.cpp" />
     <ClCompile Include="Source\CBoundingSphere.cpp" />
     <ClCompile Include="Source\CCharacter.cpp" />
+    <ClCompile Include="Source\CCommon.cpp" />
     <ClCompile Include="Source\CEffect.cpp" />
     <ClCompile Include="Source\CEnemy.cpp" />
+    <ClCompile Include="Source\CFont.cpp" />
+    <ClCompile Include="Source\CResult.cpp" />
+    <ClCompile Include="Source\CScene.cpp" />
+    <ClCompile Include="Source\CSceneManager.cpp" />
     <ClCompile Include="Source\CGround.cpp" />
     <ClCompile Include="Source\CRay.cpp" />
     <ClCompile Include="Source\CShot.cpp" />
@@ -180,7 +187,9 @@
     <ClCompile Include="Source\CSprite3D.cpp" />
     <ClCompile Include="Source\CStaticMesh.cpp" />
     <ClCompile Include="Source\CStaticMeshObject.cpp" />
+    <ClCompile Include="Source\CTest.cpp" />
     <ClCompile Include="Source\CTime.cpp" />
+    <ClCompile Include="Source\CTitle.cpp" />
     <ClCompile Include="Source\CUIObject.cpp" />
     <ClCompile Include="Source\CZako.cpp" />
     <ClCompile Include="Source\stdafx.cpp">
@@ -193,8 +202,13 @@
     <ClInclude Include="Source\CBoss.h" />
     <ClInclude Include="Source\CBoundingSphere.h" />
     <ClInclude Include="Source\CCharacter.h" />
+    <ClInclude Include="Source\CCommon.h" />
     <ClInclude Include="Source\CEffect.h" />
     <ClInclude Include="Source\CEnemy.h" />
+    <ClInclude Include="Source\CFont.h" />
+    <ClInclude Include="Source\CResult.h" />
+    <ClInclude Include="Source\CScene.h" />
+    <ClInclude Include="Source\CSceneManager.h" />
     <ClInclude Include="Source\CGround.h" />
     <ClInclude Include="Source\CRay.h" />
     <ClInclude Include="Source\CShot.h" />
@@ -216,7 +230,9 @@
     <ClInclude Include="Source\CSprite3D.h" />
     <ClInclude Include="Source\CStaticMesh.h" />
     <ClInclude Include="Source\CStaticMeshObject.h" />
+    <ClInclude Include="Source\CTest.h" />
     <ClInclude Include="Source\CTime.h" />
+    <ClInclude Include="Source\CTitle.h" />
     <ClInclude Include="Source\CUIObject.h" />
     <ClInclude Include="Source\CZako.h" />
     <ClInclude Include="Source\Global.h" />
@@ -250,6 +266,14 @@
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS_Main</EntryPointName>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VS_Main</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Data\Shader\Text.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS_Main</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VS_Main</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="Data\Shader\SkinMesh.hlsl">

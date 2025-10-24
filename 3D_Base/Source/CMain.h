@@ -1,10 +1,15 @@
 #pragma once
 #include <Windows.h>
+#include "CScene.h"
+#include "CSceneManager.h"
 
 //クラスの前方宣言.
 class CDirectX9;
 class CDirectX11;
 class CGame;
+class CTime;
+class CTitle;
+class CTest;
 
 /**************************************************
 *	メインクラス.
@@ -39,6 +44,16 @@ private:
 	HWND			m_hWnd;	//ウィンドウハンドル.
 	CDirectX9*		m_pDx9;	//DirectX9セットアップクラス
 	CDirectX11*		m_pDx11;//DirectX11セットアップクラス.
-	CGame*			m_pGame;
+
+	//シーン管理クラス.
+	CSceneManager*	m_pSceneManager;
+	
+	//シーン
+	CScene*			m_pGame;
+	CScene*			m_pTitle;
+	CScene*			m_pTest;
+	CScene*			m_pResult;
+	//CScene*			m_pGameOver;
+	
 	CTime*			m_pTime;
 };

@@ -4,46 +4,33 @@
 #include <random>
 
 //コンストラクタ.
-CGame::CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime )
-	: m_pDx9			( &pDx9 )
-	, m_pDx11			( &pDx11 )
+CGame::CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& pManager ) 
+	: CScene(pDx9,pDx11,hWnd,pTime, pManager)
 	, m_pDbgText		( nullptr )
+	, m_pFont			( nullptr )
 	, m_pRayY			( nullptr )
 	, m_pCrossRay		()
-	, m_hWnd			( hWnd )
 	, m_mView			()
 	, m_mProj			()
-
 
 	, m_Camera			()
 	, m_Light			()
 
-	, m_pSpriteGround	( nullptr )
-	, m_pSpritePlayer	( nullptr )
-	, m_pSpriteExplosion( nullptr )
-
-	, m_pSprite2DPmon	( nullptr )
+	, m_pSpriteGround		( nullptr )
+	, m_pSpritePlayer		( nullptr )
+	, m_pSpriteExplosion	( nullptr )
+	, m_pSpriteBossBullet	( nullptr )
 
 	, m_pStaticMeshFighter	( nullptr )
 	, m_pStaticMeshGround	( nullptr )
 	, m_pStaticMeshRoboA	( nullptr )
 	, m_pStaticMeshRoboB	( nullptr )
-	, m_pSpriteBullet	( nullptr )
+	, m_pSpriteBullet		( nullptr )
 	, m_pStaticMeshBSphere	( nullptr )
-
-	, m_pSkinMeshZako	( nullptr ) 
-	, m_ZakoAnimNo		()
-	, m_ZakoAnimTime	()
-	, m_ZakoBonePos		()
+	, m_pStaticMeshBoss		( nullptr )
 
 	, m_pExplosion		( nullptr )
 
-	, m_pPmon			( nullptr )
-	, m_pBeedrill		( nullptr )
-	, m_pParasect		( nullptr )
-	, m_pScyther		( nullptr )
-
-	, m_pStcMeshObj		( nullptr )
 	, m_pPlayer			( nullptr )
 	, m_pEnemy			( nullptr )
 	, m_pBoss			(nullptr)
@@ -56,16 +43,8 @@ CGame::CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime )
 	, m_pShot			()
 	, m_pBossShot		()
 
-	, m_pZako			( nullptr )
-
-	, m_mousePos		({0,0})
-	, m_mouseBeforePos	({0,0})
-	, m_mouseDelta		({ 0,0 })
-	, m_mouseSense		(0.01f)
-
 	, m_Score			(0)
 
-	, m_pTime			(&pTime)
 	, m_shotCd			(0)
 	, m_bossCd			(0)
 {
@@ -81,17 +60,6 @@ CGame::CGame( CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime )
 //デストラクタ.
 CGame::~CGame()
 {
-	//ザコ複数の破棄
-	// rbegin()	:末尾を指す逆イテレータを取得
-	// rend()	:先頭を指す逆イテレータを取得
-	for (auto it = m_Zako.rbegin(); it != m_Zako.rend(); ++it)
-	{
-		SAFE_DELETE( *it );
-	}
-
-
-	//ザコの破棄
-	SAFE_DELETE( m_pZako );
 
 	//弾の破棄
 	if (m_pShot != nullptr) {
@@ -124,20 +92,12 @@ CGame::~CGame()
 	//プレイヤーの破棄.
 	SAFE_DELETE( m_pPlayer );
 
-	//スタティックメッシュオブジェクトの破棄
-	SAFE_DELETE( m_pStcMeshObj );
-
 	//UIオブジェクトの破棄
-	SAFE_DELETE( m_pScyther );
-	SAFE_DELETE( m_pParasect );
-	SAFE_DELETE( m_pBeedrill );
-	SAFE_DELETE( m_pPmon );
 
 	//爆発の破棄.
 	SAFE_DELETE( m_pExplosion );
 
 	//スキンメッシュの破棄
-	SAFE_DELETE( m_pSkinMeshZako );
 
 	//スタティックメッシュの破棄
 	SAFE_DELETE( m_pStaticMeshBoss );
@@ -148,9 +108,6 @@ CGame::~CGame()
 	SAFE_DELETE( m_pStaticMeshRoboA );
 	SAFE_DELETE( m_pStaticMeshGround );
 	SAFE_DELETE( m_pStaticMeshFighter );
-
-	//スプライト2Dの破棄
-	SAFE_DELETE( m_pSprite2DPmon );
 
 	//爆発スプライトの解放.
 	SAFE_DELETE( m_pSpriteExplosion );
@@ -168,17 +125,14 @@ CGame::~CGame()
 	//デバッグテキストの破棄
 	SAFE_DELETE( m_pDbgText );
 
-	//外部で作成しているので、ここでは破棄しない
-	m_hWnd = nullptr;
-	m_pDx11 = nullptr;
-	m_pDx9 = nullptr;
 }
 
 //構築.
 void CGame::Create()
 {
 	//デバッグテキストのインスタンス作成
-	m_pDbgText = new CDebugText();
+	m_pDbgText	= new CDebugText();
+	m_pFont		= new CFont();
 
 	//レイ表示クラスのインスタス作成
 	m_pRayY = new CRay();
@@ -193,9 +147,6 @@ void CGame::Create()
 	m_pSpriteBullet		= new CSprite3D();
 	m_pSpriteBossBullet		= new CSprite3D();
 
-	//スプライト2Dのインスタンス作成
-	m_pSprite2DPmon	= new CSprite2D();
-
 	//スタティックメッシュのインスタンス作成
 	m_pStaticMeshFighter	= new CStaticMesh();
 	m_pStaticMeshGround		= new CStaticMesh();
@@ -204,20 +155,10 @@ void CGame::Create()
 	m_pStaticMeshBSphere	= new CStaticMesh();
 	m_pStaticMeshBoss		= new CStaticMesh();
 
-	//スキンメッシュのインスタンス作成
-	m_pSkinMeshZako		= new CSkinMesh();
-
 	//スプライトオブジェクトクラスのインスタス作成.
 	m_pExplosion	= new CExplosion();
 
 	//UIオブジェクトのインスタス作成
-	m_pPmon			= new CUIObject();
-	m_pBeedrill		= new CUIObject();
-	m_pParasect		= new CUIObject();
-	m_pScyther		= new CUIObject();
-
-	//スタティックメッシュオブジェクトのインスタンス作成
-	m_pStcMeshObj	= new CStaticMeshObject();
 
 	//キャラクタークラスのインスタンス作成
 	m_pPlayer		= new CPlayer();
@@ -248,16 +189,6 @@ void CGame::Create()
 		m_BossShotQue.push(m_pBossShot[No]);
 	}
 
-	//ザコクラスのインスタス作成
-	m_pZako = new CZako();
-
-	//ザコ複数
-	for (int i = 0; i < 3; i++) {
-		//push_back(値)	:配列の末尾へ要素を追加
-		//size()		:配列の要素数を取得
-		m_Zako.push_back(new CZako());
-	}
-
 	//Effectクラス
 	CEffect::GetInstance()->Create(
 		m_pDx11->GetDevice(),
@@ -269,16 +200,22 @@ HRESULT CGame::LoadData()
 {
 	std::random_device rd;
 
-
 	//デバッグテキストの読み込み
 	if (FAILED(m_pDbgText->Init( *m_pDx11 ))){
 		return E_FAIL;
 	}
 
-	//サウンドデータの読み込み
-	if (CSoundManager::GetInstance()->Load(m_hWnd) == false) {
+	if (FAILED(m_pFont->Init(*m_pDx11))) {
 		return E_FAIL;
 	}
+
+	////サウンドデータの読み込み
+	//if (CSoundManager::GetInstance()->Load(m_hWnd) == false) {
+	//	return E_FAIL;
+	//}
+
+
+
 
 	//Effectクラス
 	if (FAILED(CEffect::GetInstance()->LoadData())) {
@@ -304,7 +241,6 @@ HRESULT CGame::LoadData()
 	//地面スプライトの読み込み.
 	m_pSpriteGround->Init( *m_pDx11,
 		_T( "Data\\Texture\\Ground.png" ), SSGround);
-
 	//プレイヤースプライトの構造体
 	CSprite3D::SPRITE_STATE SSPlayer =
 		{ 1.f, 1.f, 64.f, 64.f, 64.f, 64.f };
@@ -314,7 +250,7 @@ HRESULT CGame::LoadData()
 
 	//爆発スプライトの構造体
 	CSprite3D::SPRITE_STATE SSExplosion =
-		{ 1.f, 1.f, 256.f, 256.f, 32.f, 32.f };
+		{ 2.f, 2.f, 256.f, 256.f, 32.f, 32.f };
 		//爆発スプライトの読み込み.
 	m_pSpriteExplosion->Init( *m_pDx11,
 		_T( "Data\\Texture\\explosion.png" ), SSExplosion);
@@ -325,23 +261,6 @@ HRESULT CGame::LoadData()
 		_T("Data\\Texture\\Bullet\\bullet.png"), SSBullet); 
 	m_pSpriteBossBullet->Init(*m_pDx11,
 			_T("Data\\Texture\\Bullet\\bossBullet.png"), SSBullet);
-
-
-
-#if 1
-	//Pモンスプライトの構造体
-	CSprite2D::SPRITE_STATE SSPmon =
-	{ 64.f, 64.f, 896.f, 560.f, 896.f / 16.f, 560.f / 10.f };
-#else
-	//Pモンスプライトの構造体
-	CSprite2D::SPRITE_STATE SSPmon;
-	SSPmon.Disp.w = 896.f;
-	SSPmon.Disp.h = 560.f;
-	SSPmon.Base = SSPmon.Stride = SSPmon.Disp;
-#endif
-	//Pモンスプライトの読み込み
-	m_pSprite2DPmon->Init( *m_pDx11,
-		_T( "Data\\Texture\\pmon.png" ), SSPmon );
 
 	//スタティックメッシュの読み込み
 	m_pStaticMeshFighter->Init( *m_pDx9, *m_pDx11,
@@ -361,77 +280,32 @@ HRESULT CGame::LoadData()
 	m_pStaticMeshBSphere->Init(*m_pDx9, *m_pDx11,
 		_T("Data\\Collision\\Sphere.x"));
 
-
-	//スキンメッシュの読み込み
-	m_pSkinMeshZako->Init(*m_pDx9, *m_pDx11,
-		_T("Data\\Mesh\\Skin\\zako\\zako.x"));
-
 	//爆発スプライトを設定.
-	m_pExplosion->AttachSprite( *m_pSpriteExplosion );
-	m_pExplosion->SetScale(2.0f);
+	m_pSpriteExplosion->SetBillboardMode(CSprite3D::BILLBOARD_YAXIS);
+	m_pExplosion->AttachSprite(*m_pSpriteExplosion);
 	for (int No = 0; No < BULLET_MAX; No++) {
 		m_pShot[No]->AttachSprite(*m_pSpriteBullet);
 		m_pBossShot[No]->AttachSprite(*m_pSpriteBossBullet);
 	}
 
-	//Pモンスプライトを設定
-	m_pPmon->AttachSprite( *m_pSprite2DPmon );
-	m_pBeedrill->AttachSprite( *m_pSprite2DPmon );
-	m_pParasect->AttachSprite( *m_pSprite2DPmon );
-	m_pScyther->AttachSprite( *m_pSprite2DPmon );
-
 	//スタティックメッシュを設定
-	m_pStcMeshObj->AttachMesh( *m_pStaticMeshFighter );
 	m_pPlayer->AttachMesh( *m_pStaticMeshFighter );
 	m_pPlayer->SetScale(2.f);
 	m_pGround->AttachMesh( *m_pStaticMeshGround );
 	m_pEnemy->AttachMesh( *m_pStaticMeshRoboB );
 	m_pBoss->AttachMesh(*m_pStaticMeshBoss);
 
-	//スキンメッシュを設定
-	m_pZako->AttachMesh( *m_pSkinMeshZako );
-	m_pZako->SetScale( 0.002f );
-	m_pZako->SetPosition( 0.f, 0.f, 8.f );
-
-	//ザコ複数
-	//範囲for文
-	//auto:自動で型を推論、&をつけると参照になり不要なコピーを避けれる
-	for (auto& e : m_Zako)
-	{
-		int i = static_cast<int>(&e - &m_Zako[0]);	//現在のインデックス番号算出
-
-		e->SetPosition( -3.f + ( i * 3.f ), 0.f, 12.f);
-		e->SetScale( 0.002f );
-		e->AttachMesh( *m_pSkinMeshZako );
-		e->SetAnimSpeed( 0.0001 + ( i * 0.0001 ) );
-	}
-
-	//Pモンそれぞれの画像パターンを設定
-	m_pBeedrill->SetPatternNo( 14, 0 );
-	m_pParasect->SetPatternNo( 14, 2 );
-	m_pScyther->SetPatternNo( 10, 7 );
-
-	//Pモンそれぞれの位置を設定
-	const float size = SSPmon.Disp.w * 0.5f;	// 64.f
-	const float pos_y = static_cast<float>(WND_H) - SSPmon.Disp.h;
-	m_pBeedrill->SetPosition( size * 0.f, pos_y, 0.f );
-	m_pParasect->SetPosition( size * 1.f, pos_y, 0.f );
-	m_pScyther->SetPosition(  size * 2.f, pos_y, 0.f );
 
 	//バウンディングスフィアの作成
 	m_pPlayer->CreateBSphereForMesh(*m_pStaticMeshBSphere);
-	m_pEnemy->CreateBSphereForMesh(*m_pStaticMeshBSphere);
 	m_pBoss->CreateBSphereForMesh(*m_pStaticMeshBSphere);
-
-	//m_pShot->CreateBSphereForMesh(*m_pStaticMeshBullet);
 
 	//キャラクターの初期座標を設定
 	m_pPlayer->SetPosition( 0.f, 1.f, 6.f );
-	m_pEnemy->SetPosition( 0.f, -10.f, 16.f );
 	m_pBoss->SetPosition( 0.f, -10.f, 0.f );
 	m_pBoss->SetScale(3.0);
+
 	//エネミー複数設定
-#if 1
 	for (int No = 0; No < m_EnemyMax; No++) {
 		auto& pE = m_ppEnemies[No];
 		std::mt19937 gen(rd());
@@ -451,14 +325,6 @@ HRESULT CGame::LoadData()
 			pE->Respawn();
 		}
 	}
-#else
-	for (int No = 0; No < ENEMY_MAX; No++) {
-		auto& pE = m_pEnemies[No];
-		pE->AttachMesh(*m_pStaticMeshRoboA);
-		pE->CreateBSphereForMesh(*m_pStaticMeshBSphere);
-		pE->SetPosition(-3.f + (No * 3.f), 1.f, 10.f);
-	}
-#endif
 
 	return S_OK;
 }
@@ -468,111 +334,120 @@ HRESULT CGame::LoadData()
 //解放関数.
 void CGame::Release()
 {
+
+
+
 }
 
+
+void CGame::Start()
+{
+	std::random_device rd;
+
+	m_pDx11->SetDepth(true);
+
+	m_Score = 0;
+
+	//キャラクターの初期座標を設定
+	m_pPlayer->SetPosition(0.f, 1.f, 6.f);
+	m_pPlayer->SetHealth(100.0f);
+	m_pPlayer->SetShotType(CCharacter::Simple);
+	m_pPlayer->SetShotNumber(CCharacter::Single);
+
+
+	m_pBoss->SetPosition(0.f, -10.f, 0.f);
+	m_pBoss->SetScale(3.0);
+	m_pBoss->SetHealth(1000.f);
+	m_pBoss->SetEnemyState(CEnemy::DESPAWN);
+
+	for (int sNo = 0; sNo < BULLET_MAX; sNo++)
+	{
+		m_pShot[sNo]->SetDisplay(false);
+		m_pBossShot[sNo]->SetDisplay(false);
+	}
+
+	//エネミー複数設定
+	for (int No = 0; No < m_EnemyMax; No++) {
+		auto& pE = m_ppEnemies[No];
+		std::mt19937 gen(rd());
+		std::uniform_real_distribution<float> dis(0.0, 1.0f);
+		float rng = dis(gen);
+		//ランダムでAかBを選択して設定
+		if (rng < 0.25f)
+		{
+			CreateElite(pE);
+			pE->Respawn();
+		}
+		else
+		{
+			pE->AttachMesh(*m_pStaticMeshRoboA);
+			pE->SetScale(1.0f);
+			pE->CreateBSphereForMesh(*m_pStaticMeshBSphere);
+			pE->Respawn();
+		}
+	}
+
+	CSoundManager::PlayLoop(CSoundManager::BGM_Battle);
+}
 
 //更新処理.
 void CGame::Update()
 {
 	//BGMのループ再生
 	//CSoundManager::PlayLoop(CSoundManager::BGM_Bonus);
-	
-	POINT mousePos;
-	GetCursorPos(&mousePos);
-	ScreenToClient(m_hWnd, &mousePos);
+	CScene::Update();
 
-	// Calculate delta from center
-	POINT center = { WND_W / 2, WND_H / 2 };
-	m_mouseDelta.x = mousePos.x - center.x;
-	m_mouseDelta.y = mousePos.y - center.y;
+	if (IsPause())
+	{
+		return;
+	}
 
-	// Reset cursor to center
-	ClientToScreen(m_hWnd, &center);
-	SetCursorPos(center.x, center.y);
+	CSoundManager::Stop(CSoundManager::BGM_Menu);
+	CSoundManager::SetVolume(CSoundManager::BGM_Battle, 50);
+	CSoundManager::PlayLoop(CSoundManager::BGM_Battle);
+
+	if (m_pBoss->GetHealth() <= 0)
+	{
+		//m_GameState = enGameScene::Result;
+		//RESULT
+		m_Score += 10000;
+		m_pBoss->SetPosition(0.f, -10.f, 0.f);
+		CCommon::SCORE = m_Score;
+		CCommon::BOSS_CLEAR = (m_pBoss->GetHealth() <= 0.f);
+		CCommon::CLEAR_TIME += m_pTime->GetTotalTime() / 1000.f;
+		m_pManager->ChangeScene("Result");
+		return;
+	}
 
 	if (m_pPlayer->GetHealth() <= 0.f)
 	{
-		m_GameState = enGameScene::GameOver;
+		//m_GameState = enGameScene::GameOver;
+		//GAME OVER
 		m_pPlayer->SetPosition(0.f, -2.f, 0.f);
+		CCommon::SCORE = m_Score;
+		CCommon::BOSS_CLEAR = (m_pBoss->GetHealth() <= 0.f);
+		CCommon::CLEAR_TIME += m_pTime->GetTotalTime() / 1000.f;
+		m_pManager->ChangeScene("Result");
+		return;
 	}
-	if (m_Score > 5000)
+	if (m_Score > 3000)
 	{
-		m_pPlayer->SetShotType(CPlayer::Triple);
+		m_pPlayer->SetShotNumber(CCharacter::Triple);
 	}
 	else if(m_Score > 1000)
-		m_pPlayer->SetShotType(CPlayer::Double);
+		m_pPlayer->SetShotNumber(CCharacter::Double);
 
 	m_pPlayer->Update();
 	m_pPlayer->TickInvTimer(m_pTime->GetFixedDeltaTime()/1000.f);
 
 	m_pGround->Update();
 
-	if (m_pBoss->IsShot() == true) 
-	{
-		for (int No = 0; No < BULLET_MAX; No++)
-		{
-			float cadence = m_bossCd;					//連射速度
-			m_bossCd -= m_pTime->GetFixedDeltaTime();	//連射速度を減少
-			if (m_bossCd <= 0.0f)
-			{
-				CShot* bullet = m_BossShotQue.front();
-				bullet->Reload(
-					m_pBoss->GetPosition(),
-					m_pBoss->GetRotation().y);
-				//弾をキューの最後に移動
-				m_bossCd = m_pBoss->GetShootCd();
 
-				m_BossShotQue.pop();
-				m_BossShotQue.push(bullet);
-			}
-
-		}
-	}
-
-#if 1
 	//弾を飛ばしたい!
-	int bulletCount = m_pPlayer->GetShotNumber() + 1; // existing convention: enum value + 1
-	const float spreadDeg = 20.0f; // total spread in degrees (change to widen/narrow pattern)
-	const float spreadRad = (bulletCount > 1) ? D3DXToRadian(spreadDeg) : 0.0f;
-	const float startAngle = -spreadRad * 0.5f; // start relative to forward (-half spread)
-	const float angleStep = (bulletCount > 1) ? (spreadRad / (bulletCount - 1)) : 0.0f;
+	HandlePlayerShot();
+	HandleBossShot();
 
-	if (m_pPlayer->IsShot() == true) {
-		
-		float cadence = m_shotCd;					//連射速度
-		m_shotCd -= m_pTime->GetFixedDeltaTime();	//連射速度を減少
-		
-		//連射速度を超えたら弾を発射
-		if (m_shotCd <= 0.0f)
-		{
-			for (int No = 0; No < bulletCount; No++)
-			{
-				CShot* bullet = m_ShotQue.front();		//キューの先頭を取得
-
-				const float rotY = m_pPlayer->GetRotation().y + startAngle + angleStep * No;
-
-				bullet->Reload(
-					m_pPlayer->GetPosition(),
-					rotY);
-				m_shotCd = bullet->GetCadence();
-
-				//弾をキューの最後に移動
-				m_ShotQue.pop();
-				m_ShotQue.push(bullet);
-			}
-		}
-
-	}
-
-#else
-	//弾を飛ばしたい!
-	//dynamic_cast：親クラスのポインタを子クラスのポインタに変換する
-	if (dynamic_cast<CPlayer*>(m_pPlayer)->IsShot() == true) {
-		m_pShot->Reload(m_pPlayer->GetPosition());
-	}
-#endif
 	for (int sNo = 0; sNo < BULLET_MAX; sNo++) {
-
 		m_pShot[sNo]->Update();
 		m_pBossShot[sNo]->Update();
 	}
@@ -582,10 +457,11 @@ void CGame::Update()
 		m_ppEnemies[No]->Update();
 	}
 
-	if (m_Score >= 50 && m_pBoss->GetEnemyState() == CEnemy::DESPAWN && m_GameState != enGameScene::Result)
+	if (m_Score >= 50 && m_pBoss->GetEnemyState() == CEnemy::DESPAWN /*&& m_GameState != enGameScene::Result*/)
 	{
+		CSoundManager::PlaySE(CSoundManager::SE_Boss);
 		m_pBoss->SetEnemyState(CEnemy::CHASING);
-		m_pBoss->SetPosition(0.f, 1.f, m_pPlayer->GetPosition().z + 100.f);
+		m_pBoss->SetPosition(0.f, 1.f, m_pPlayer->GetPosition().z + 40.f);
 	}
 
 	m_pBoss->Update();
@@ -614,11 +490,6 @@ void CGame::Update()
 	float rotX = m_Camera.yaw;
 	m_pPlayer->SetRotation(0, rotX, 0);
 
-	////三人称カメラ
-	//ThirdPersonCamera(
-	//	&m_Camera,
-	//	m_pPlayer->GetPosition(),
-	//	m_pPlayer->GetRotation().y);
 }
 
 //描画処理.
@@ -627,7 +498,6 @@ void CGame::Draw()
 	Camera();
 	Projection();
 
-#if 1
 	m_pGround->Draw( m_mView, m_mProj, m_Light, m_Camera );
 
 	m_pPlayer->Draw( m_mView, m_mProj, m_Light, m_Camera );
@@ -717,12 +587,7 @@ void CGame::Draw()
 			m_pShot[No]->SetDisplay(false);
 			m_pShot[No]->SetPosition(0.f, -10.f, 0.f);	//地面に埋める
 			m_pBoss->SetDamagedValue(10);
-			if (m_pBoss->GetHealth() <= 0)
-			{
-				m_GameState = enGameScene::Result;
-				m_Score += 10000;
-				m_pBoss->SetPosition(0.f,-10.f,0.f);
-			}
+			
 		}
 
 	}
@@ -733,48 +598,24 @@ void CGame::Draw()
 		m_pBossShot[No]->Draw(m_mView, m_mProj);
 	}
 
-#else
-	//ゲームオブジェクトのポインタのリストを作成
-	CGameObject* pObjList[] =
-	{
-		m_pGround,
-		m_pPlayer,
-		m_pExplosion,
-		m_pPmon,
-		m_pBeedrill,
-		m_pParasect,
-		m_pScyther,
-	};
-	//配列の最大要素数を算出
-	const int ObjListMax = sizeof(pObjList) / sizeof(pObjList[0]);
-	//作成したリストでループ処理する
-	for (int i = 0; i < ObjListMax; i++) {
-		pObjList[i]->Draw( m_mView, m_mProj, m_Light, m_Camera );
-	}
-
-#endif
-
 	//Effectクラス
 	CEffect::GetInstance()->Draw(m_mView, m_mProj, m_Light, m_Camera);
 
-	//レイの描画
-	m_pRayY->Render(m_mView, m_mProj, m_pPlayer->GetRayY());
-	for (int dir = 0; dir < CROSSRAY::max; dir++) {
-		m_pCrossRay[dir]->Render(
-			m_mView, m_mProj, m_pPlayer->GetCrossRay().Ray[dir]);
-	}
 
 	//デバッグテキスト(数値入り)の描画
-	m_pDbgText->SetColor(1.f, 1.f, 1.f);
+	m_pFont->SetColor(1.f, 1.f, 1.f);
 	TCHAR dbgText[64];
 	_stprintf_s(dbgText, _T("SCORE:%d"), m_Score);
-	m_pDbgText->Render( dbgText, 10, 110 );
-	m_pDbgText->SetColor(1.f, 1.f, 1.f);
+	m_pFont->Render( dbgText, 10, 100, 50.f);
+	m_pFont->SetColor(1.f, 1.f, 1.f);
 	_stprintf_s(dbgText, _T("HEALTH:%d"), m_pPlayer->GetHealth() );
-	m_pDbgText->Render(dbgText, 10, 150);
+	m_pFont->Render(dbgText, 10, 140, 50.f);
 
-	_stprintf_s(dbgText, _T("TIME:%.2f"), m_pTime->GetTotalTime()/1000.f);
-	m_pDbgText->Render(dbgText, 10, 100);
+	if (IsPause())
+	{
+		_stprintf_s(dbgText, _T("PAUSE"));
+		m_pFont->Render(dbgText, WND_W / 2 - 20, WND_H/2 - 20, 50.f);
+	}
 }
 
 //カメラ関数.
@@ -868,7 +709,7 @@ void CGame::TopDownCamera(
 	pCamera->vLook		= TargetPos;
 
 	pCamera->vPosition	+= vecAxisY * 25.f ;
-	pCamera->vLook		+= vecAxisZ * 8.f - vecAxisY * 1.f;
+	pCamera->vLook		+= vecAxisZ * 5.f - vecAxisY * 1.f;
 
 }
 
@@ -885,6 +726,134 @@ void CGame::CameraRotToMouse(CAMERA* pCamera, const D3DXVECTOR3& TargetPos, POIN
 	D3DXVECTOR3 position = D3DXVECTOR3(TargetPos.x, 0, TargetPos.z);
 
 	pCamera->vLook =  position + lookDirection;
+
+}
+
+float CGame::GetNWayRot(float spreadDeg, int bulletCount, int bulletNo)
+{
+	const float spreadRad = (bulletCount > 1) ? D3DXToRadian(spreadDeg) : 0.0f;
+	const float startAngle = -spreadRad * 0.5f; // start relative to forward (-half spread)
+	const float angleStep = (bulletCount > 1) ? (spreadRad / (bulletCount - 1)) : 0.0f;
+
+	return startAngle + angleStep * bulletNo;
+
+}
+
+void CGame::HandleBossShot()
+{
+
+	if (m_ShotQue.empty())		//弾が無いので発射できない
+		return;
+
+	int attackPattern = m_pBoss->GetAttackPattern();
+	m_pBoss->DecCadenceTimer(m_pTime->GetFixedDeltaTime());	//連射速度を減少
+	CShot* bullet = nullptr;
+
+	if (m_pBoss->IsShot() == true)
+	{
+		switch (attackPattern)
+		{
+			case CBoss::ROTATING:
+
+				bullet = m_BossShotQue.front();
+				bullet->Reload(
+					m_pBoss->GetPosition(),
+					m_pBoss->GetRotation().y);
+				//弾をキューの最後に移動
+				m_BossShotQue.pop();
+				m_BossShotQue.push(bullet);
+				
+				break;
+
+			case CBoss::WAYCROSS:
+				if(!m_BossShotQue.front()->IsDisplay())
+					CSoundManager::PlaySEPoly(CSoundManager::SE_BossShot);
+				for (int i = 0; i < 4; i++)
+				{
+					bullet = m_BossShotQue.front();
+					bullet->Reload(
+						m_pBoss->GetPosition(),
+						m_pBoss->GetRotation().y + PI/2 * i);
+					//弾をキューの最後に移動
+					m_BossShotQue.pop();
+					m_BossShotQue.push(bullet);
+				}
+				break;
+			
+		}
+
+		
+	}
+}
+
+
+void CGame::HandlePlayerShot()
+{
+	if (m_ShotQue.empty())		//弾が無いので発射できない
+		return;
+	
+	int bulletCount = m_pPlayer->GetShotNumber() + 1;				//連射数
+	m_pPlayer->DecCadenceTimer(m_pTime->GetFixedDeltaTime());	//連射速度を減少
+	//連射速度を超えたら弾を発射
+
+	if (m_pPlayer->IsShot() == true)
+	{
+
+		switch (m_pPlayer->GetShotType())
+		{
+		default:
+		case CCharacter::Simple:
+			HandleNWayShot(bulletCount);
+			CSoundManager::PlaySEPoly(CSoundManager::SE_PlayerShot);
+			break;
+		case CCharacter::Charged:
+			HandleChargedShot();
+			break;
+		case CCharacter::Homing:
+			break;
+
+		}
+
+	}
+}
+
+void CGame::HandleChargedShot()
+{
+	std::vector<CShot*> tempShots;
+	tempShots.clear();
+
+	for (int No = 0; No < m_ShotQue.size(); No++)
+	{
+		CShot* bullet = m_ShotQue.front();		//キューの先頭を取得
+		float ratio = 1.0f + m_pPlayer->ChargedTime/m_pPlayer->GetChargedShotMax();
+		bullet->SetScale(ratio);			//大きくする
+		bullet->Reload(
+		m_pPlayer->GetPosition(),
+		m_pPlayer->GetRotation().y);
+	}
+
+}
+
+void CGame::HandleNWayShot(int bulletCount)
+{
+	//NWay弾を発射
+	for (int No = 0; No < bulletCount; No++)
+	{
+		CShot* bullet = m_ShotQue.front();		//キューの先頭を取得
+
+		const float rotY =
+			m_pPlayer->GetRotation().y +
+			GetNWayRot(m_pPlayer->GetNWaySpreadDeg(), bulletCount, No);	//弾のY軸回転を計算
+
+		bullet->Reload(
+			m_pPlayer->GetPosition(),
+			rotY);
+
+
+		//弾をキューの最後に移動
+		m_ShotQue.pop();
+		m_ShotQue.push(bullet);
+	}
 
 }
 

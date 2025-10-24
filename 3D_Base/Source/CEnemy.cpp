@@ -1,4 +1,5 @@
 #include "CEnemy.h"
+#include "CSoundManager.h"
 #include <random>
 
 
@@ -28,6 +29,12 @@ void CEnemy::Respawn()
 	m_vPosition.z = m_vTargetPos.z + 150.0 * rng;
 	m_vPosition.y = -10.f;
 	m_Health = MAX_HEALTH;
+}
+
+void CEnemy::SetDamagedValue(float dmg)
+{
+	m_Health -= dmg;
+	CSoundManager::PlaySEPoly(CSoundManager::SE_EnemyHit);
 }
 
 void CEnemy::Update()

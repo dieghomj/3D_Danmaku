@@ -12,53 +12,42 @@
 
 # Mechanics
 
-- Boss fight
-- Timer
-- Score
-- Health bar
-- Game Over
-- Restart
-- Pause
+- ~~Timer~~
+- ~~Score~~
+- ~~Restart~~
+- ~~Pause~~
+- Game Over - **Right now the game just restarts when the player dies*
 
 # Player
 
 - ~~single shot shooting~~
 - ~~n-way shooting~~
-- ~~fix bullets rotation~~
-- Invincibility frames
-- Homing bullets
-- Bomb
-- Charged shot
 - movement *almost done*
+- fix bullets rotation <--
 - Health
 - Death
-- Power-ups ( health, speed )
+- Power-ups
 - Animation
 - Sound effects
 
 # Enemies
 
+- ~~Health~~
+- ~~Death~~
+- ~~Boss~~
 - Movement
-- Shooting
-- Health
-- Death
-- Spawn
+	- ~~Chasing player~~
+	- Group moving
+	- Movement variance
+- Spawn (ˆê‰žo—ˆ‚½)
+	- ~~Random~~
+	- Elite spawn structure?
+	- 
 - Waves
-- Boss
+- Shooting **Right now only the boss shoots*
 - Animation
 - Sound effects
 
-# Boss
-
-- Movement
-- Shooting
-	- Attak patterns:
-		- Circular spread
-		- Targeted shots
-		- Random shots
-		- Wave shots
-- Health ( Partially destroy parts of it )
-- Death
 
 
 ## Graphics
@@ -66,10 +55,14 @@
 - Player sprite
 - Enemy sprites
 - Bullet sprites
+	- ~~Player~~
+	- ~~Boss~~
+	- Enemies
 - Background
 - Explosions
 - Power-ups
 - UI elements
+	- Text fonts is almost done
 
 # Shader
 
@@ -80,12 +73,18 @@
 ## UI
 
 - Main Menu
-- Result screen
+- Result screen 
 - Game Over screen
 - Health bar
 - Score display
-- Lives display
 - Timer display
 - Pause menu
 - Power-up indicators
 
+## Sound
+
+- Background music
+- Sound effects
+	- Player actions
+	- Enemy actions
+	- UI interactions

@@ -11,7 +11,6 @@ class CCharacter
 public:
 	enum enShotNumber
 	{
-		Zero,
 		Single = 0,
 		Double,
 		Triple,
@@ -19,10 +18,10 @@ public:
 
 	enum enShotType
 	{
-		Simple = 0,
-		Rapid,
-		Homing,
-		Laser,
+		Simple = 0,		//一発発射
+		Charged,		//チャージショット
+		Homing,			//ホーミング
+		Laser,			//レーザー
 	};
 
 public:

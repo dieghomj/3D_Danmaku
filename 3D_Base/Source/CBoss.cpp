@@ -1,9 +1,10 @@
 #include "CBoss.h"
+#include "CSoundManager.h"
 
 CBoss::CBoss()
-	: m_ShootCd			(2000.0f)
+	: m_ShootCd			(125.0f)
 	, m_ShootTimer		(0.0f)
-	, m_AttackPattern	(0)
+	, m_AttackPattern	(1)
 	, m_PatternStep		(0)
 	, m_PatternTimer	(0.0f)
 	, m_angleStep		(0.0f)
@@ -13,11 +14,7 @@ CBoss::CBoss()
 	m_MoveSpeed = 0.04f;
 }
 
-enum enAttackPatter
-{
-	ROTATING,
-	WAVE,
-};
+
 
 CBoss::~CBoss()
 {
@@ -30,9 +27,22 @@ void CBoss::Update()
 	float distance;
 	GetTargetDir(&dir, &distance);
 
+	const int prevPattern = m_AttackPattern;
+
 	if (m_EnemyState == CEnemy::DESPAWN)
 	{
+		m_AttackPattern = enAttackPattern::WAYCROSS;
+	}
 
+	if (m_Health <= 500.f)
+	{
+		m_AttackPattern = enAttackPattern::ROTATING;
+	}
+
+	if (m_AttackPattern == enAttackPattern::ROTATING &&
+		prevPattern != enAttackPattern::ROTATING)
+	{
+		CSoundManager::PlaySEPoly(CSoundManager::SE_BossRotShot);
 	}
 
 
@@ -47,15 +57,35 @@ void CBoss::Update()
 	}
 
 	float angle = 0.1f * PI / 2;
+	float crossAngle = PI / 4;
 
 	m_Shot = false;
 
 	if (m_EnemyState == enEnemyState::ATTACKING)
 	{
-		SetRotation(0.f, m_angleStep * angle, 0.f);
-		m_angleStep++;
 
-		m_Shot = true;
+		switch (m_AttackPattern)
+		{
+
+		case enAttackPattern::ROTATING:
+			SetRotation(0.f, m_angleStep * angle, 0.f);
+			m_angleStep++;
+			m_ShootCd = 25.f;
+
+			if (m_ShootTimer <= 0.0f) {
+				m_Shot = true;
+				m_ShootTimer = m_ShootCd;
+			}
+
+			break;
+		case enAttackPattern::WAYCROSS:
+			m_EnemyState = CEnemy::CHASING;
+			m_angleStep++;
+			if (m_ShootTimer <= 0.0f) {
+				m_Shot = true;
+				m_ShootTimer = m_ShootCd;
+			}
+		}
 
 		if (distance >= 200.f)
 			m_EnemyState = CEnemy::CHASING;
